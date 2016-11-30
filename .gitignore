@@ -1,0 +1,11 @@
+# a comment - this is ignored
+# ignore share lib
+*/.sl*
+# ignore .consign, *.d, *.so, *.eps, *.swp, all the log file and script in StRoot
+*.swp
+temp_gccflags.c
+McPhiResCorr/McPhi*
+McPhiResCorr/*_C.*
+McPhiResCorr/*.pdf
+McPhiResCorr/*.eps
+!McPhiResCorr/McPhiResCorr.C
