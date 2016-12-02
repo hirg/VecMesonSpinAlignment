@@ -10,110 +10,12 @@
 #include "TGaxis.h"
 #include "TLegend.h"
 #include "TRandom3.h"
+#include "../Utility/functions.h"
+#include "../Utility/draw.h"
+#include "../Utility/StSpinAlignmentCons.h"
 
 using namespace std;
 
-double flow(double *x_val, double *par)
-{
-  double x, y, v2, Norm;
-  x = x_val[0];
-  v2 = par[0];
-  Norm = par[1];
-
-  y = Norm*(1.0 + 2.0*v2*cos(2.0*x));
-
-  return y;
-}
-
-double v2_pT_FitFunc(double* x_val, double* par)
-{
-  // Fit function for v2 vs. pT
-  // From arXiv:nucl-th/0403030v5: Resonance decay effects on anisotrotpy parameters
-  double v2, pT, a, b, c, d, n;
-  pT = x_val[0];
-  n  = par[0]; // number-of-constituent quarks
-  a  = par[1];
-  b  = par[2];
-  c  = par[3];
-  d  = par[4];
-
-  if(c != 0.0)
-  {
-    v2 = a*n/(1.0 + exp(-(pT/n - b)/c)) - d*n;
-  }
-  else v2 = 0.0;
-
-  return v2;
-}
-
-double SpinDensity(double *x_val, double *par)
-{
-  double x = x_val[0];
-  double rho00 = par[0];
-  double Norm = par[1];
-
-  double dNdCosThetaStar = Norm*((1.0-rho00)+(3.0*rho00-1)*x*x);
-
-  return dNdCosThetaStar;
-}
-
-double pTLevy(double *var, double *par)
-{
-  double const m0 = 1.01940; // phi-meson mass
-  double pT   = var[0];
-  double mT   = sqrt(pT*pT+m0*m0);
-  double dNdy = par[0];
-  double n    = par[1];
-  double T    = par[2];
-
-  double numer = dNdy*(n-1)*(n-2);
-  double denom = n*T*(n*T+m0*(n-2));
-  double power = pow(1+(mT-m0)/(n*T),-1.0*n);
-
-  double y = pT*numer*power/denom;
-
-  return y;
-}
-
-//----------------------------------------------------------------------------------------
-TLatex* plotTopLegend(char* label,Float_t x=-1,Float_t y=-1,Float_t size=0.06,Int_t color=1,Float_t angle=0.0, Int_t font = 42, Int_t NDC = 1)
-{
-  // coordinates in NDC!
-  // plots the string label in position x and y in NDC coordinates
-  // size is the text size
-  // color is the text color
-
-  //    if(x<0||y<0)
-  //    {   // defaults
-  //      x=gPad->GetLeftMargin()*1.15;
-  //      y=(1-gPad->GetTopMargin())*1.04;
-  //    }
-  TLatex* text=new TLatex(x,y,label);
-  text->SetTextFont(font);
-  text->SetTextSize(size);
-  if(NDC == 1) text->SetNDC();
-  text->SetTextColor(color);
-  text->SetTextAngle(angle);
-  text->Draw();
-  return text;
-}
-
-void PlotLine(double x1_val, double x2_val, double y1_val, double y2_val, Int_t Line_Col, Int_t LineWidth, Int_t LineStyle)
-{
-  TLine* Zero_line = new TLine();
-  Zero_line -> SetX1(x1_val);
-  Zero_line -> SetX2(x2_val);
-  Zero_line -> SetY1(y1_val);
-  Zero_line -> SetY2(y2_val);
-  Zero_line -> SetLineWidth(LineWidth);
-  Zero_line -> SetLineStyle(LineStyle);
-  Zero_line -> SetLineColor(Line_Col);
-  Zero_line -> Draw();
-  //delete Zero_line;
-}
-//----------------------------------------------------------------------------------------
-
-std::string const  mBeamEnergy[7] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
 std::pair<double, double> const momentumRange(0.2,5.0);
 int const pT_low = 1;
 int const pT_high = 14;
@@ -128,11 +30,10 @@ void plotMcPhiResCorr(int energy = 6)
 {
   TGaxis::SetMaxDigits(4);
   gRandom->SetSeed();
-  // int const BinRho = floor(60 * gRandom->Rndm());
-  int const BinRho = 40;
+  int const BinRho = floor(60 * gRandom->Rndm());
   float const rhoInPut = 0.01*BinRho;
 
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",mBeamEnergy[energy].c_str());
+  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
   TGraphAsymmErrors *g_v2 = (TGraphAsymmErrors*)File_InPut->Get("g_v2");
   TF1 *f_v2 = new TF1("f_v2",v2_pT_FitFunc,momentumRange.first,momentumRange.second,5);
@@ -146,7 +47,8 @@ void plotMcPhiResCorr(int energy = 6)
   f_v2->SetLineStyle(2);
   g_v2->Fit(f_v2,"N");
 
-  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2_40.root",mBeamEnergy[energy].c_str());
+  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
+  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Hist = TFile::Open(InPutHist.c_str());
   string HistTracks = Form("h_Tracks_%d",BinRho);
   TH3F *h_Tracks = (TH3F*)File_Hist->Get(HistTracks.c_str());
@@ -270,8 +172,8 @@ void plotMcPhiResCorr(int energy = 6)
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-    string HistName = Form("h_phiQAproj_%d",i_pt);
-    h_phiQAproj[i_pt] = (TH1F*)h_phiQA->ProjectionY(HistName.c_str(),i_pt+1,i_pt+1);
+    string phiQAproj = Form("h_phiQAproj_%d",i_pt);
+    h_phiQAproj[i_pt] = (TH1F*)h_phiQA->ProjectionY(phiQAproj.c_str(),i_pt+1,i_pt+1);
     TF1 *f_flow = new TF1("f_flow",flow,-1.0*TMath::Pi(),1.0*TMath::Pi(),2);
     f_flow->SetParameter(0,0.1);
     f_flow->SetParameter(1,100);
@@ -331,15 +233,15 @@ void plotMcPhiResCorr(int energy = 6)
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-    string HistName = Form("h_phiRPproj_%d",i_pt);
-    h_phiRPproj[i_pt] = (TH1F*)h_phiRP->ProjectionY(HistName.c_str(),i_pt+1,i_pt+1);
+    string phiRPproj = Form("h_phiRPproj_%d",i_pt);
+    h_phiRPproj[i_pt] = (TH1F*)h_phiRP->ProjectionY(phiRPproj.c_str(),i_pt+1,i_pt+1);
     TF1 *f_flow = new TF1("f_flow",flow,-1.0*TMath::Pi(),1.0*TMath::Pi(),2);
     f_flow->SetParameter(0,0.1);
     f_flow->SetParameter(1,100);
     h_phiRPproj[i_pt]->Fit(f_flow,"N");
     float v2 = f_flow->GetParameter(0);
     float err_v2 = f_flow->GetParError(0);
-    g_v2RP->SetPoint(i_pt,pt,v2);
+    g_v2RP->SetPoint(i_pt,pt+0.02,v2);
     g_v2RP->SetPointError(i_pt,0.0,0.0,err_v2,err_v2);
     if(i_pt == pT_low) c_v2fitRP->cd(1);
     if(i_pt == pT_high) c_v2fitRP->cd(2);
@@ -392,16 +294,16 @@ void plotMcPhiResCorr(int energy = 6)
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-    string HistName = Form("h_phiEPproj_%d",i_pt);
-    h_phiEPproj[i_pt] = (TH1F*)h_phiEP->ProjectionY(HistName.c_str(),i_pt+1,i_pt+1);
+    string phiEPproj = Form("h_phiEPproj_%d",i_pt);
+    h_phiEPproj[i_pt] = (TH1F*)h_phiEP->ProjectionY(phiEPproj.c_str(),i_pt+1,i_pt+1);
     TF1 *f_flow = new TF1("f_flow",flow,-1.0*TMath::Pi(),1.0*TMath::Pi(),2);
     f_flow->SetParameter(0,0.1);
     f_flow->SetParameter(1,100);
     h_phiEPproj[i_pt]->Fit(f_flow,"N");
     float v2 = f_flow->GetParameter(0);
     float err_v2 = f_flow->GetParError(0);
-    g_v2EP->SetPoint(i_pt,pt,v2/resolution);
-    g_v2EP->SetPointError(i_pt,0.0,0.0,err_v2,err_v2);
+    g_v2EP->SetPoint(i_pt,pt+0.05,v2/resolution);
+    g_v2EP->SetPointError(i_pt,0.0,0.0,err_v2/resolution,err_v2/resolution);
     if(i_pt == pT_low) c_v2fitEP->cd(1);
     if(i_pt == pT_high) c_v2fitEP->cd(2);
     if(i_pt == pT_low || i_pt == pT_high)
@@ -463,16 +365,19 @@ void plotMcPhiResCorr(int energy = 6)
 
   g_v2QA->SetMarkerStyle(MarkerStyleQA);
   g_v2QA->SetMarkerColor(MarkerColorQA);
+  g_v2QA->SetLineColor(MarkerColorQA);
   g_v2QA->SetMarkerSize(1.4);
   g_v2QA->Draw("pE same");
 
   g_v2RP->SetMarkerStyle(MarkerStyleRP);
   g_v2RP->SetMarkerColor(MarkerColorRP);
+  g_v2RP->SetLineColor(MarkerColorRP);
   g_v2RP->SetMarkerSize(1.4);
   g_v2RP->Draw("pE same");
 
   g_v2EP->SetMarkerStyle(MarkerStyleEP);
   g_v2EP->SetMarkerColor(MarkerColorEP);
+  g_v2EP->SetLineColor(MarkerColorEP);
   g_v2EP->SetMarkerSize(1.4);
   g_v2EP->Draw("pE same");
 
@@ -509,8 +414,8 @@ void plotMcPhiResCorr(int energy = 6)
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-    string HistName = Form("h_rhoQAproj_%d",i_pt);
-    h_cosQAproj[i_pt] = (TH1F*)h_cosQA->ProjectionY(HistName.c_str(),i_pt+1,i_pt+1);
+    string rhoQAproj = Form("h_rhoQAproj_%d",i_pt);
+    h_cosQAproj[i_pt] = (TH1F*)h_cosQA->ProjectionY(rhoQAproj.c_str(),i_pt+1,i_pt+1);
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
@@ -568,8 +473,8 @@ void plotMcPhiResCorr(int energy = 6)
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-    string HistName = Form("h_rhoRPproj_%d",i_pt);
-    h_cosRPproj[i_pt] = (TH1F*)h_cosRP->ProjectionY(HistName.c_str(),i_pt+1,i_pt+1);
+    string rhoRPproj = Form("h_rhoRPproj_%d",i_pt);
+    h_cosRPproj[i_pt] = (TH1F*)h_cosRP->ProjectionY(rhoRPproj.c_str(),i_pt+1,i_pt+1);
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
@@ -627,8 +532,8 @@ void plotMcPhiResCorr(int energy = 6)
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-    string HistName = Form("h_rhoEPproj_%d",i_pt);
-    h_cosEPproj[i_pt] = (TH1F*)h_cosEP->ProjectionY(HistName.c_str(),i_pt+1,i_pt+1);
+    string rhoEPproj = Form("h_rhoEPproj_%d",i_pt);
+    h_cosEPproj[i_pt] = (TH1F*)h_cosEP->ProjectionY(rhoEPproj.c_str(),i_pt+1,i_pt+1);
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
@@ -760,7 +665,7 @@ void plotMcPhiResCorr(int energy = 6)
   leg_rhoH->AddEntry((TObject*)0,leg_InPut.c_str(),"C");
   leg_rhoH->AddEntry(g_rhoQA,leg_rhoQA.c_str(),"p");
   leg_rhoH->AddEntry(g_rhoRP,leg_rhoRP.c_str(),"p");
-  // leg_rhoH->AddEntry(g_rhoEP,leg_rhoEP.c_str(),"p");
+  leg_rhoH->AddEntry(g_rhoEP,leg_rhoEP.c_str(),"p");
 
   if(rhoInPut > 1.0/3.0) leg_rhoL->Draw("same");
   else leg_rhoH->Draw("same");

@@ -8,70 +8,17 @@
 #include "TLegend.h"
 #include "TLine.h"
 #include "TLatex.h"
+#include "../Utility/functions.h"
+#include "../Utility/draw.h"
+#include "../Utility/StSpinAlignmentCons.h"
 
 using namespace std;
 
-double SpinDensity(double *x_val, double *par)
-{
-  double x = x_val[0];
-  double rho00 = par[0];
-  double Norm = par[1];
-
-  double dNdCosThetaStar = Norm*((1.0-rho00)+(3.0*rho00-1)*x*x);
-
-  return dNdCosThetaStar;
-}
-
-double Poly(double *x_val, double *par)
-{
-  Double_t x = x_val[0];
-  Double_t y = par[0] + par[1]*(x-1.0/3.0) + 1.0/3.0;
-
-  return y;
-}
-
-void PlotLine(double x1_val, double x2_val, double y1_val, double y2_val, Int_t Line_Col, Int_t LineWidth, Int_t LineStyle)
-{
-  TLine* Zero_line = new TLine();
-  Zero_line -> SetX1(x1_val);
-  Zero_line -> SetX2(x2_val);
-  Zero_line -> SetY1(y1_val);
-  Zero_line -> SetY2(y2_val);
-  Zero_line -> SetLineWidth(LineWidth);
-  Zero_line -> SetLineStyle(LineStyle);
-  Zero_line -> SetLineColor(Line_Col);
-  Zero_line -> Draw();
-  //delete Zero_line;
-}
-
-TLatex* plotTopLegend(char* label,Float_t x=-1,Float_t y=-1,Float_t size=0.06,Int_t color=1,Float_t angle=0.0, Int_t font = 42, Int_t NDC = 1)
-{
-  // coordinates in NDC!
-  // plots the string label in position x and y in NDC coordinates
-  // size is the text size
-  // color is the text color
-
-  //    if(x<0||y<0)
-  //    {   // defaults
-  //      x=gPad->GetLeftMargin()*1.15;
-  //      y=(1-gPad->GetTopMargin())*1.04;
-  //    }
-  TLatex* text=new TLatex(x,y,label);
-  text->SetTextFont(font);
-  text->SetTextSize(size);
-  if(NDC == 1) text->SetNDC();
-  text->SetTextColor(color);
-  text->SetTextAngle(angle);
-  text->Draw();
-  return text;
-}
-
-string const  mBeamEnergy[7] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
 pair<double, double> const momentumRange(0.2,5.0);
 
 void calPhiResCorr(int energy = 6)
 {
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",mBeamEnergy[energy].c_str());
+  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
   TH2F *h_cosRP[60], *h_cosEP[60];
   TGraphAsymmErrors *g_rhoRP[60], *g_rhoEP[60];
@@ -80,27 +27,27 @@ void calPhiResCorr(int energy = 6)
   float delta_pt = (momentumRange.second-momentumRange.first)/20.0;
   for(int i_rho = 0; i_rho < 60; ++i_rho)
   {
-    string HistCosRP = Form("h_cosRP_%d",i_rho+1);
+    string HistCosRP = Form("h_cosRP_%d",i_rho);
     h_cosRP[i_rho] = (TH2F*)File_InPut->Get(HistCosRP.c_str());
     g_rhoRP[i_rho] = new TGraphAsymmErrors();
-    string FuncCosRP = Form("f_cosRP_%d",i_rho+1);
+    string FuncCosRP = Form("f_cosRP_%d",i_rho);
     f_polRP[i_rho] = new TF1(FuncCosRP.c_str(),"pol0",momentumRange.first,momentumRange.second);
-    f_polRP[i_rho]->SetParameter(0,0.01*(i_rho+1));
+    f_polRP[i_rho]->SetParameter(0,0.01*(i_rho));
 
-    string HistCosEP = Form("h_cosEP_%d",i_rho+1);
+    string HistCosEP = Form("h_cosEP_%d",i_rho);
     h_cosEP[i_rho] = (TH2F*)File_InPut->Get(HistCosEP.c_str());
     g_rhoEP[i_rho] = new TGraphAsymmErrors();
-    string FuncCosEP = Form("f_cosEP_%d",i_rho+1);
+    string FuncCosEP = Form("f_cosEP_%d",i_rho);
     f_polEP[i_rho] = new TF1(FuncCosEP.c_str(),"pol0",momentumRange.first,momentumRange.second);
-    f_polEP[i_rho]->SetParameter(0,0.01*(i_rho+1));
+    f_polEP[i_rho]->SetParameter(0,0.01*(i_rho));
 
     for(int i_pt = 0; i_pt < 20; ++i_pt)
     {
       float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
-      string HistCosProjRP = Form("h_rhoRP_%d_proj_%d",i_rho+1,i_pt);
+      string HistCosProjRP = Form("h_rhoRP_%d_proj_%d",i_rho,i_pt);
       TH1F *h_cosRPproj = (TH1F*)h_cosRP[i_rho]->ProjectionY(HistCosProjRP.c_str(),i_pt+1,i_pt+1);
       TF1 *f_rhoRP = new TF1("f_rhoRP",SpinDensity,-1.0,1.0,2);
-      f_rhoRP->SetParameter(0,0.01*(i_rho+1));
+      f_rhoRP->SetParameter(0,0.01*(i_rho));
       f_rhoRP->SetParameter(1,100);
       h_cosRPproj->Fit(f_rhoRP,"NQ");
       float rhoRP = f_rhoRP->GetParameter(0);
@@ -108,10 +55,10 @@ void calPhiResCorr(int energy = 6)
       g_rhoRP[i_rho]->SetPoint(i_pt,pt,rhoRP);
       g_rhoRP[i_rho]->SetPointError(i_pt,0.0,0.0,err_rhoRP,err_rhoRP);
 
-      string HistCosProjEP = Form("h_rhoEP_%d_proj_%d",i_rho+1,i_pt);
+      string HistCosProjEP = Form("h_rhoEP_%d_proj_%d",i_rho,i_pt);
       TH1F *h_cosEPproj = (TH1F*)h_cosEP[i_rho]->ProjectionY(HistCosProjEP.c_str(),i_pt+1,i_pt+1);
       TF1 *f_rhoEP = new TF1("f_rhoEP",SpinDensity,-1.0,1.0,2);
-      f_rhoEP->SetParameter(0,0.01*(i_rho+1));
+      f_rhoEP->SetParameter(0,0.01*(i_rho));
       f_rhoEP->SetParameter(1,100);
       h_cosEPproj->Fit(f_rhoEP,"NQ");
       float rhoEP = f_rhoEP->GetParameter(0);
@@ -150,7 +97,7 @@ void calPhiResCorr(int energy = 6)
   g_Res->SetMarkerSize(1.2);
   g_Res->Draw("PE same");
   
-  TF1 *f_Res = new TF1("f_Res",Poly,0.0,0.6,2);
+  TF1 *f_Res = new TF1("f_Res",PolyRes,0.0,0.6,2);
   f_Res->SetParameter(0,0.01);
   f_Res->SetParameter(1,0.8);
   g_Res->Fit(f_Res,"N");

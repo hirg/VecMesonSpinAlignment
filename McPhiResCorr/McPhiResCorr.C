@@ -18,117 +18,16 @@
 #include "TCanvas.h"
 #include "TGraphAsymmErrors.h"
 #include "TVector3.h"
+#include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/functions.h"
+#include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/StSpinAlignmentCons.h"
 
 using namespace std;
 
-std::pair<int, int> const decayChannels(656,666); // phi decay channel
-std::pair<double, double> const momentumRange(0.2,5.0);
-double const acceptanceRapidity = 1.0;
-double const invMass = 1.01940;
-std::string const  mBeamEnergy[7] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
-int const BinPt = 20;
-int const BinY = 20;
-int const BinPhi = 36;
-// float const Resolution = 0.81;
-float const Resolution = 0.999;
-float const rhoDelta = 0.01;
-
-double flow(double *x_val, double *par)
-{
-  double x, y, v2;
-  x = x_val[0];
-  v2 = par[0];
-  y = 1.0 + 2.0*v2*cos(2.0*x);
-
-  return y;
-}
-
-double v2_pT_FitFunc(double *x_val, double *par)
-{
-  // Fit function for v2 vs. pT
-  // From arXiv:nucl-th/0403030v5: Resonance decay effects on anisotrotpy parameters
-  double v2, pT, a, b, c, d, n;
-  pT = x_val[0];
-  n  = par[0]; // number-of-constituent quarks
-  a  = par[1];
-  b  = par[2];
-  c  = par[3];
-  d  = par[4];
-
-  if(c != 0.0)
-  {
-    v2 = a*n/(1.0 + exp(-(pT/n - b)/c)) - d*n;
-  }
-  else v2 = 0.0;
-
-  return v2;
-}
-
-double Levy(double *var, double *par)
-{
-  double const m0 = 1.01940; // phi-meson mass
-  double pT   = var[0];
-  double mT   = sqrt(pT*pT+m0*m0);
-  double dNdy = par[0];
-  double n    = par[1];
-  double T    = par[2];
-
-  double numer = dNdy*(n-1)*(n-2);
-  double denom = n*T*(n*T+m0*(n-2));
-  double power = pow(1+(mT-m0)/(n*T),-1.0*n);
-
-  double y = numer*power/denom;
-
-  return y;
-}
-
-
-double pTLevy(double *var, double *par)
-{
-  double const m0 = 1.01940; // phi-meson mass
-  double pT   = var[0];
-  double mT   = sqrt(pT*pT+m0*m0);
-  double dNdy = par[0];
-  double n    = par[1];
-  double T    = par[2];
-
-  double numer = dNdy*(n-1)*(n-2);
-  double denom = n*T*(n*T+m0*(n-2));
-  double power = pow(1+(mT-m0)/(n*T),-1.0*n);
-
-  double y = pT*numer*power/denom;
-
-  return y;
-}
-
-double SpinDist(double *var, double *par)
-{
-  double CosThetaStar = var[0];
-  double rho = par[0];
-  double y = 0.75*((1.0-rho)+(3.0*rho-1)*CosThetaStar*CosThetaStar);
-
-  return y;
-}
-
-double GausSmearing(double *var, double *par)
-{
-  double Psi2 = var[0];
-  double res = par[0]; // res = <cos(2*(Psi2-Psi_RP))>
-
-  double sigma = acos(res)/2.0;
-  double sigmaSquare = sigma*sigma;
-  double norm = 1.0/sqrt(2.0*sigmaSquare*TMath::Pi());
-  double power = -1.0*Psi2*Psi2/(2.0*sigmaSquare);
-
-  double y = norm*exp(power);
-
-  return y;
-}
-
-TF1* readv2(int energy);
-TF1* readspec(int energy);
+float readRes(int energy, int pid, int centrality);
+TF1* readv2(int energy, int pid, int centrality);
+TF1* readspec(int energy, int pid, int centrality);
 void getKinematics(TLorentzVector& lPhi, double const mass);
-void setDecayChannels(int const mdme);
+void setDecayChannels(int const pid);
 void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters);
 void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 void write(int energy,int Nrho);
@@ -147,35 +46,47 @@ TF1 *f_v2, *f_spec, *f_flow, *f_rhoPhy, *f_gaus;
 
 TPythia6Decayer* pydecay;
 
-void McPhiResCorr(int energy = 6, int Nrho = 40, int const NMax = 1000000)
+void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 1000000)
 {
-  string Info = Form("sampling rhophy = %.2f with %d tracks!!!!",0.01*Nrho,NMax);
+  int   const BinPt    = vmsa::BinPt;
+  int   const BinY     = vmsa::BinY;
+  int   const BinPhi   = vmsa::BinPhi;
+  float const rhoDelta = vmsa::rhoDelta;
+
+  string Info = Form("sampling rhophy = %.2f with %d tracks!!!!",rhoDelta*Nrho,NMax);
   cout << Info.c_str() << endl;
+
   string HistName;
   HistName = Form("h_Tracks_%d",Nrho);
-  h_Tracks = new TH3F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinY,-1.0,1.0,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_Tracks = new TH3F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,BinPhi,-TMath::Pi(),TMath::Pi());
   HistName = Form("h_phiQA_%d",Nrho);
-  h_phiQA = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_phiQA = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   HistName = Form("h_phiRP_%d",Nrho);
-  h_phiRP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_phiRP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   HistName = Form("h_phiEP_%d",Nrho);
-  h_phiEP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_phiEP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   HistName = Form("h_cosQA_%d",Nrho);
-  h_cosQA = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinY,-1.0,1.0);
+  h_cosQA = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
   HistName = Form("h_cosRP_%d",Nrho);
-  h_cosRP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinY,-1.0,1.0);
+  h_cosRP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
   HistName = Form("h_cosEP_%d",Nrho);
-  h_cosEP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,momentumRange.first,momentumRange.second,BinY,-1.0,1.0);
+  h_cosEP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
   HistName = Form("h_Psi2_%d",Nrho);
   h_Psi2 = new TH1F(HistName.c_str(),HistName.c_str(),BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
 
-  f_v2   = readv2(energy);
-  f_spec = readspec(energy);
+  f_v2   = readv2(energy,pid,cent);
+  f_spec = readspec(energy,pid,cent);
 
-  f_flow = new TF1("f_flow",flow,-TMath::Pi(),TMath::Pi(),1);
+  f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
+
   float rhoPhy = Nrho*rhoDelta;
-  f_rhoPhy = new TF1("f_rhoPhy",SpinDist,-1.0,1.0,1);
+  f_rhoPhy = new TF1("f_rhoPhy",SpinDensity,-1.0,1.0,2);
   f_rhoPhy->FixParameter(0,rhoPhy);
+  f_rhoPhy->FixParameter(1,0.75);
+
+  // float const Resolution = 0.81; // xin's resolution
+  float const Resolution = readRes(energy,pid,cent);
+  cout << "InPut Resolution = " << Resolution << endl;
   f_gaus = new TF1("f_gaus",GausSmearing,-TMath::PiOver2(),TMath::PiOver2(),1);
   f_gaus->FixParameter(0,Resolution);
 
@@ -187,7 +98,7 @@ void McPhiResCorr(int energy = 6, int Nrho = 40, int const NMax = 1000000)
 
   pydecay = TPythia6Decayer::Instance();
   pydecay->Init();
-  setDecayChannels(656); // phi--> K+K-
+  setDecayChannels(pid); // phi--> K+K-
 
   TClonesArray ptl("TParticle", 10);
   TLorentzVector *lPhi = new TLorentzVector();
@@ -196,7 +107,7 @@ void McPhiResCorr(int energy = 6, int Nrho = 40, int const NMax = 1000000)
     if (floor(10.0*i_ran/ static_cast<float>(NMax)) > floor(10.0*(i_ran-1)/ static_cast<float>(NMax)))
     cout << "=> processing data: " << 100.0*i_ran/ static_cast<float>(NMax) << "%" << endl;
 
-    getKinematics(*lPhi,invMass);
+    getKinematics(*lPhi,vmsa::mMassPhi);
     decayAndFill(333,lPhi,ptl);
   }
   cout << "=> processing data: 100%" << endl;
@@ -208,12 +119,25 @@ void McPhiResCorr(int energy = 6, int Nrho = 40, int const NMax = 1000000)
   stopWatch->Print();
 }
 
-TF1* readv2(int energy)
+float readRes(int energy, int pid, int centrality)
 {
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",mBeamEnergy[energy].c_str());
-  TFile *File_InPut = TFile::Open(InPutFile.c_str());
-  TGraphAsymmErrors *g_v2 = (TGraphAsymmErrors*)File_InPut->Get("g_v2");
-  TF1 *f_v2 = new TF1("f_v2",v2_pT_FitFunc,momentumRange.first,momentumRange.second,5);
+  string InPutRes = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Resolution.root",vmsa::mBeamEnergy[energy].c_str());
+  TFile *File_Res = TFile::Open(InPutRes.c_str());
+  string HistName = Form("h_mRes_Centrality_%d_EtaGap_0_Phi_SysErrors_0",centrality);
+  TH1F *h_mRes = (TH1F*)File_Res->Get(HistName.c_str());
+  float resGaus = h_mRes->GetBinContent(1);
+  float resBW   = h_mRes->GetBinContent(2);
+  cout << "resGaus = " << resGaus << ", resBW = " << resBW << endl;
+
+  return 0.5*(resGaus+resBW);
+}
+
+TF1* readv2(int energy, int pid, int centrality)
+{
+  string InPutV2 = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",vmsa::mBeamEnergy[energy].c_str());
+  TFile *File_v2 = TFile::Open(InPutV2.c_str());
+  TGraphAsymmErrors *g_v2 = (TGraphAsymmErrors*)File_v2->Get("g_v2");
+  TF1 *f_v2 = new TF1("f_v2",v2_pT_FitFunc,vmsa::ptMin,vmsa::ptMax,5);
   f_v2->FixParameter(0,2);
   f_v2->SetParameter(1,0.1);
   f_v2->SetParameter(2,0.1);
@@ -251,12 +175,12 @@ TF1* readv2(int energy)
   return f_v2;
 }
 
-TF1* readspec(int energy)
+TF1* readspec(int energy, int pid, int centrality)
 {
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_Spec.root",mBeamEnergy[energy].c_str());
-  TFile *File_InPut = TFile::Open(InPutFile.c_str());
-  TGraphAsymmErrors *g_spec = (TGraphAsymmErrors*)File_InPut->Get("g_spec");
-  TF1 *f_Levy = new TF1("f_Levy",Levy,momentumRange.first,momentumRange.second,3);
+  string InPutSpec = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_Spec.root",vmsa::mBeamEnergy[energy].c_str());
+  TFile *File_Spec = TFile::Open(InPutSpec.c_str());
+  TGraphAsymmErrors *g_spec = (TGraphAsymmErrors*)File_Spec->Get("g_spec");
+  TF1 *f_Levy = new TF1("f_Levy",Levy,vmsa::ptMin,vmsa::ptMax,3);
   f_Levy->SetParameter(0,1);
   f_Levy->SetParameter(1,10);
   f_Levy->SetParameter(2,0.1);
@@ -265,7 +189,7 @@ TF1* readspec(int energy)
   f_Levy->SetLineWidth(2);
   g_spec->Fit(f_Levy,"N");
 
-  TF1 *f_spec = new TF1("f_spec",pTLevy,momentumRange.first,momentumRange.second,3);
+  TF1 *f_spec = new TF1("f_spec",pTLevy,vmsa::ptMin,vmsa::ptMax,3);
   f_spec->SetParameter(0,f_Levy->GetParameter(0));
   f_spec->SetParameter(1,f_Levy->GetParameter(1));
   f_spec->SetParameter(2,f_Levy->GetParameter(2));
@@ -305,13 +229,13 @@ TF1* readspec(int energy)
 void getKinematics(TLorentzVector& lPhi, double const mass)
 {
   f_flow->ReleaseParameter(0);
-  double const pt = f_spec->GetRandom(momentumRange.first, momentumRange.second);
-  double const y = gRandom->Uniform(-acceptanceRapidity, acceptanceRapidity);
+  double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
+  double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
   f_flow->SetParameter(0,f_v2->Eval(pt));
   double const phi = f_flow->GetRandom();
 
-  // double const pt = gRandom->Uniform(momentumRange.first, momentumRange.second);
-  // double const y = gRandom->Uniform(-acceptanceRapidity, acceptanceRapidity);
+  // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
+  // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
   // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   double const mT = sqrt(mass * mass + pt * pt);
@@ -321,9 +245,11 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   lPhi.SetPxPyPzE(pt * cos(phi), pt * sin(phi) , pz, E);
 }
 
-void setDecayChannels(int const mdme)
+void setDecayChannels(int const pid)
 {
-  for (int idc = decayChannels.first; idc < decayChannels.second + 1; idc++) TPythia6::Instance()->SetMDME(idc, 1, 0); // close all decay channel
+  int const mdme = vmsa::decayChannels[pid];
+  cout << "mdme = " << mdme << endl;
+  for (int idc = vmsa::decayChannelsFirst[pid]; idc < vmsa::decayChannelsSecond[pid] + 1; idc++) TPythia6::Instance()->SetMDME(idc, 1, 0); // close all decay channel
   TPythia6::Instance()->SetMDME(mdme, 1, 1); // open the one we need
   int *PYSeed = new int;
   TPythia6::Instance()->SetMRPY(1,(int)PYSeed); // Random seed
@@ -412,7 +338,7 @@ bool Sampling(TF1 *f_rhoPhy,float CosThetaStar)
 
 void write(int energy,int Nrho)
 {
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2_%d.root",mBeamEnergy[energy].c_str(),Nrho);
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2_%d.root",vmsa::mBeamEnergy[energy].c_str(),Nrho);
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
   h_Tracks->Write();

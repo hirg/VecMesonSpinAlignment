@@ -9,3 +9,9 @@ McPhiResCorr/*_C.*
 McPhiResCorr/*.pdf
 McPhiResCorr/*.eps
 !McPhiResCorr/McPhiResCorr.C
+
+CalSpinAlignment/figures/*.eps
+CalSpinAlignment/figures/*.pdf
+CalSpinAlignment/*_C.*
+
+Utility/compareHistograms/*.root*
