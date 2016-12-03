@@ -31,6 +31,7 @@ void plotMcPhiResCorr(int energy = 6)
   TGaxis::SetMaxDigits(4);
   gRandom->SetSeed();
   int const BinRho = floor(60 * gRandom->Rndm());
+  // int const BinRho = 40; 
   float const rhoInPut = 0.01*BinRho;
 
   string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",vmsa::mBeamEnergy[energy].c_str());
@@ -47,8 +48,8 @@ void plotMcPhiResCorr(int energy = 6)
   f_v2->SetLineStyle(2);
   g_v2->Fit(f_v2,"N");
 
-  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
   string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
+  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2_40.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Hist = TFile::Open(InPutHist.c_str());
   string HistTracks = Form("h_Tracks_%d",BinRho);
   TH3F *h_Tracks = (TH3F*)File_Hist->Get(HistTracks.c_str());

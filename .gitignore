@@ -15,3 +15,20 @@ CalSpinAlignment/figures/*.pdf
 CalSpinAlignment/*_C.*
 
 Utility/compareHistograms/*.root*
+Utility/compareHistograms/compareHistograms.o
+Utility/compareHistograms/compareHistograms
+
+RcPhiEffCorr/.sl*
+RcPhiEffCorr/# ignore .consign, *.d, *.so, *.eps, *.swp, all the log file and script in StRoot
+RcPhiEffCorr/StRoot/**/.consign
+RcPhiEffCorr/StRoot/**/*.d
+RcPhiEffCorr/StRoot/**/*.so
+RcPhiEffCorr/StRoot/**/*.eps
+RcPhiEffCorr/StRoot/**/*.err
+RcPhiEffCorr/StRoot/**/*.log
+RcPhiEffCorr/StRoot/**/*.csh
+RcPhiEffCorr/StRoot/**/*.swp
+RcPhiEffCorr/*.swp
+RcPhiEffCorr/temp_gccflags.c
+RcPhiEffCorr/*_C.*
+RcPhiEffCorr/macro/*_C.*

@@ -19,7 +19,7 @@ then
     for((rho=0;rho<10;rho=rho+1))
     do
       let Nrho=10*$counter+$rho
-      echo "root4star -b -q -x McPhiResCorr.C++'('6','0','0','$Nrho','1000000')'" >> ./run$Name${counter}.csh
+      echo "root4star -b -q -x McPhiResCorr.C++'('6','0','0','$Nrho','5000000')'" >> ./run$Name${counter}.csh
     done
     echo "cd .." >> ./run$Name${counter}.csh
     echo "rm -rf $Name$counter" >> ./run$Name${counter}.csh

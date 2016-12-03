@@ -46,7 +46,7 @@ TF1 *f_v2, *f_spec, *f_flow, *f_rhoPhy, *f_gaus;
 
 TPythia6Decayer* pydecay;
 
-void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 1000000)
+void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 10000)
 {
   int   const BinPt    = vmsa::BinPt;
   int   const BinY     = vmsa::BinY;
@@ -107,8 +107,8 @@ void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int 
     if (floor(10.0*i_ran/ static_cast<float>(NMax)) > floor(10.0*(i_ran-1)/ static_cast<float>(NMax)))
     cout << "=> processing data: " << 100.0*i_ran/ static_cast<float>(NMax) << "%" << endl;
 
-    getKinematics(*lPhi,vmsa::mMassPhi);
-    decayAndFill(333,lPhi,ptl);
+    getKinematics(*lPhi,vmsa::InvMass[pid]);
+    decayAndFill(vmsa::decayMother[pid],lPhi,ptl);
   }
   cout << "=> processing data: 100%" << endl;
   cout << "work done!" << endl;
