@@ -3,9 +3,8 @@
 
 ClassImp(StEffCut)
 
-StEffCut::StEffCut(int energy)
+StEffCut::StEffCut()
 {
-  mEnergy = energy;
 }
 
 StEffCut::~StEffCut()

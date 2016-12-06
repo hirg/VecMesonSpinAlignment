@@ -30,8 +30,8 @@ StEffMcPhi::StEffMcPhi(int Energy, long StartEvent, long StopEvent, int PID)
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   SetOutPutFile(OutPutFile); // set output file
 
-  mEffCut = new StEffCut(energy);
-  mEffHistManger = new StEffHistManger();
+  mEffCut = new StEffCut();
+  mEffHistManger = new StEffHistManger(energy);
 }
 
 StEffMcPhi::~StEffMcPhi()
@@ -224,7 +224,7 @@ void StEffMcPhi::Make()
   cout << "work done!" << endl;
 
   mEffHistManger->CalEfficiency();
-  mEffHistManger->CalEffPtEtaPhi();
+  // mEffHistManger->CalEffPtEtaPhi();
   mEffHistManger->CalEffCosThetaStar();
 }
 

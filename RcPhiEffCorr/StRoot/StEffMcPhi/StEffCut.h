@@ -8,7 +8,7 @@
 class StEffCut
 {
   public:
-    StEffCut(int energy);
+    StEffCut();
     virtual ~StEffCut();
 
     bool passTrackCutPhi(McVecMeson);

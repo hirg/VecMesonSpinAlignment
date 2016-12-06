@@ -9,9 +9,9 @@
 
 ClassImp(StEffHistManger)
 //
-StEffHistManger::StEffHistManger()
+StEffHistManger::StEffHistManger(int energy)
 {
-  /* */
+  mEnergy = energy;
 }
 
 StEffHistManger::~StEffHistManger()
@@ -27,7 +27,7 @@ void StEffHistManger::InitHist()
     h_mMcTracks[i_cent] = new TH3D(HistName.c_str(),HistName.c_str(),vmsa::BinPt,0.0,vmsa::ptEffMax,vmsa::BinEta,-1.0,1.0,vmsa::BinPhi,-1.0*TMath::Pi(),TMath::Pi());
     HistName = Form("h_mRcTracks_%d",i_cent);
     h_mRcTracks[i_cent] = new TH3D(HistName.c_str(),HistName.c_str(),vmsa::BinPt,0.0,vmsa::ptEffMax,vmsa::BinEta,-1.0,1.0,vmsa::BinPhi,-1.0*TMath::Pi(),TMath::Pi());
-    for(int i_pt = 0; i_pt < vmsa::BinPt; ++i_pt)
+    for(int i_pt = vmsa::pt_rebin_first[mEnergy]; i_pt < vmsa::pt_rebin_last[mEnergy]; ++i_pt) // use rebinned pt
     {
       HistName = Form("h_mMcEffCos_Cent_%d_Pt_%d",i_cent,i_pt);
       h_mMcEffCos[i_cent][i_pt] = new TH1D(HistName.c_str(),HistName.c_str(),vmsa::BinCos,0.0,1.0);
@@ -44,12 +44,14 @@ void StEffHistManger::FillHistMc(int cent, float pt, float eta, float phi, float
 {
   h_mMcTracks[cent]->Fill(pt,eta,phi);
   h_mMcTracks[9]->Fill(pt,eta,phi,vmsa::weight[cent]);
-  float delta_pt = vmsa::ptEffMax/((float)vmsa::BinPt);
-  for(int i_pt = 0; i_pt < vmsa::BinPt; ++i_pt)
+  for(int i_pt = vmsa::pt_rebin_first[mEnergy]; i_pt < vmsa::pt_rebin_last[mEnergy]; ++i_pt) // use rebinned pt
   {
-    if(!(pt > i_pt*delta_pt && pt < (i_pt+1)*delta_pt)) continue;
-    h_mMcEffCos[cent][i_pt]->Fill(cos);
-    h_mMcEffCos[9][i_pt]->Fill(cos,vmsa::weight[cent]);
+    if(pt > vmsa::pt_low[mEnergy][i_pt] && pt <= vmsa::pt_up[mEnergy][i_pt])
+    {
+      h_mMcEffCos[cent][i_pt]->Fill(cos);
+      if(cent >= vmsa::cent_low[0] && cent <= vmsa::cent_up[0])
+	h_mMcEffCos[9][i_pt]->Fill(cos,vmsa::weight[cent]);
+    }
   }
 }
 
@@ -57,12 +59,14 @@ void StEffHistManger::FillHistRc(int cent, float pt, float eta, float phi, float
 {
   h_mRcTracks[cent]->Fill(pt,eta,phi);
   h_mRcTracks[9]->Fill(pt,eta,phi,vmsa::weight[cent]);
-  float delta_pt = vmsa::ptEffMax/((float)vmsa::BinPt);
-  for(int i_pt = 0; i_pt < vmsa::BinPt; ++i_pt)
+  for(int i_pt = vmsa::pt_rebin_first[mEnergy]; i_pt < vmsa::pt_rebin_last[mEnergy]; ++i_pt) // use rebinned pt
   {
-    if(!(pt > i_pt*delta_pt && pt < (i_pt+1)*delta_pt)) continue;
-    h_mRcEffCos[cent][i_pt]->Fill(cos);
-    h_mRcEffCos[9][i_pt]->Fill(cos,vmsa::weight[cent]);
+    if(pt > vmsa::pt_low[mEnergy][i_pt] && pt <= vmsa::pt_up[mEnergy][i_pt])
+    {
+      h_mRcEffCos[cent][i_pt]->Fill(cos);
+      if(cent >= vmsa::cent_low[0] && cent <= vmsa::cent_up[0])
+	h_mRcEffCos[9][i_pt]->Fill(cos,vmsa::weight[cent]);
+    }
   }
 }
 
@@ -138,7 +142,7 @@ void StEffHistManger::CalEffCosThetaStar()
 {
   for(int i_cent = 0; i_cent < 10; ++i_cent)
   {
-    for(int i_pt = 0; i_pt < vmsa::BinPt; ++i_pt)
+    for(int i_pt = vmsa::pt_rebin_first[mEnergy]; i_pt < vmsa::pt_rebin_last[mEnergy]; ++i_pt)
     {
       std::string HistName = Form("h_mEffCos_Cent_%d_Pt_%d",i_cent,i_pt);
       h_mEffCos[i_cent][i_pt] = CalEffError(h_mMcEffCos[i_cent][i_pt],h_mRcEffCos[i_cent][i_pt],HistName.c_str());
@@ -153,27 +157,34 @@ void StEffHistManger::WriteHist()
   {
     h_mMcTracks[i_cent]->Write();
     h_mRcTracks[i_cent]->Write();
-    if(flag_eff < 1) continue;
-    h_mEffPt[i_cent]->Write();
-    h_mEffEta[i_cent]->Write();
-    h_mEffPhi[i_cent]->Write();
 
-    if(flag_eff_PtEtaPhi < 1) continue;
-    for(int i_eta = 0; i_eta < vmsa::BinEta; ++i_eta)
+    if(flag_eff > 0.5)
     {
-      for(int i_phi = 0; i_phi < vmsa::BinPhi; ++i_phi)
+      h_mEffPt[i_cent]->Write();
+      h_mEffEta[i_cent]->Write();
+      h_mEffPhi[i_cent]->Write();
+    }
+
+    if(flag_eff_PtEtaPhi > 0.5)
+    {
+      for(int i_eta = 0; i_eta < vmsa::BinEta; ++i_eta)
       {
-	std::string HistNameEff = Form("h_mEff_Cent_%d_Eta_%d_Phi_%d",i_cent,i_eta,i_phi);
-	h_mEffPEP[HistNameEff]->Write();
+	for(int i_phi = 0; i_phi < vmsa::BinPhi; ++i_phi)
+	{
+	  std::string HistNameEff = Form("h_mEff_Cent_%d_Eta_%d_Phi_%d",i_cent,i_eta,i_phi);
+	  h_mEffPEP[HistNameEff]->Write();
+	}
       }
     }
 
-    if(flag_eff_Cos < 1) continue;
-    for(int i_pt = 0; i_pt < vmsa::BinPt; ++i_pt)
+    if(flag_eff_Cos > 0.5)
     {
-      // h_mMcEffCos[i_cent][i_pt]->Write();
-      // h_mRcEffCos[i_cent][i_pt]->Write();
-      h_mEffCos[i_cent][i_pt]->Write();
+      for(int i_pt = vmsa::pt_rebin_first[mEnergy]; i_pt < vmsa::pt_rebin_last[mEnergy]; ++i_pt)
+      {
+	// h_mMcEffCos[i_cent][i_pt]->Write();
+	// h_mRcEffCos[i_cent][i_pt]->Write();
+	h_mEffCos[i_cent][i_pt]->Write();
+      }
     }
   }
 }

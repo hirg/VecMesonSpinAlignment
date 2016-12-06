@@ -2,6 +2,7 @@
 #define StEffHistManger_h
 #include "TObject.h"
 #include "../../../Utility/StSpinAlignmentCons.h"
+#include "../../../Utility/type.h"
 #include <map>
 #include <string>
 
@@ -9,7 +10,7 @@ class TH1D;
 class TH2D;
 class TH3D;
 
-typedef std::map<std::string,TH1D*> TH1DMap;
+// typedef std::map<std::string,TH1D*> TH1DMap;
 
 class StEffHistManger : public TObject
 {

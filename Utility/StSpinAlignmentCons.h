@@ -5,13 +5,14 @@
 
 namespace vmsa
 {
+  int const NumBeamEnergy = 7;
   // event cut
-  float const mVzMaxMap[7] = {70.0,50.0,70.0,70.0,40.0,40.0,30.0};
+  float const mVzMaxMap[NumBeamEnergy] = {70.0,50.0,70.0,70.0,40.0,40.0,30.0}; // 7.7 -- 200 GeV
   float const mVrMax = 2.0;
   float const mVzVpdDiffMax = 3.0;
 
   // track cut
-  float const mDcaEPMax[7] = {1.0,1.0,1.0,1.0,1.0,1.0,3.0}; // for event plane reconstruction: 3.0 for 200GeV, 1.0 for BES
+  float const mDcaEPMax[NumBeamEnergy] = {1.0,1.0,1.0,1.0,1.0,1.0,3.0}; // for event plane reconstruction: 3.0 for 200GeV, 1.0 for BES
   float const mDcaTrMax = 1.0; // for pion, kaon, proton mDcaTrMax = 1.0 for flow
   float const mDcaTrMax_phi = 2.0; // for phi meson mDcaTrMax = 2.0 to fill a tree and apply an additional cut
   int const mHitsDedxMin = 5;
@@ -19,7 +20,7 @@ namespace vmsa
   int const mHitsMaxTPCMin = 0;
   float const mHitsRatioTPCMin = 0.51;
   float const mEtaMax = 1.0;
-  float const mPrimPtMin[7] = {0.2,0.2,0.2,0.2,0.2,0.2,0.15}; // for event plane reconstruction and for pion, kaon, proton: 0.15 for 200 GeV, 0.2 for BES
+  float const mPrimPtMin[NumBeamEnergy] = {0.2,0.2,0.2,0.2,0.2,0.2,0.15}; // for event plane reconstruction and for pion, kaon, proton: 0.15 for 200 GeV, 0.2 for BES
   float const mGlobPtMin = 0.1; // for phi, Lambda, K0s
   float const mPrimPtMax = 2.0;
   float const mPrimPtWeight = 2.0;
@@ -38,6 +39,48 @@ namespace vmsa
   float const ptRawStart[pt_total] = {0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2};
   float const ptRawStop[pt_total]  = {0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
   float const pt_bin[pt_total+1] = {0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
+
+  int const pt_rebin = 9; // maximum pt binning
+  float const pt_low[NumBeamEnergy][pt_rebin] = {
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
+    {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2}
+  };
+  float const pt_up[NumBeamEnergy][pt_rebin]  = { 
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0},
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0},
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0},
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0},
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0},
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0},
+    {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2,8.0}
+  };
+  int const pt_rebin_start[NumBeamEnergy][pt_rebin] = {
+    {1,3,5, 8,11,14,17,20,24},
+    {1,3,5, 8,11,14,17,20,24},
+    {1,3,5, 8,11,14,17,20,24},
+    {1,3,5, 8,11,14,17,20,24},
+    {1,3,5, 8,11,14,17,20,24},
+    {1,3,5, 8,11,14,17,20,24},
+    {1,3,5, 8,11,14,17,20,24}
+  };
+  int const pt_rebin_stop[NumBeamEnergy][pt_rebin]  = {
+    {2,4,7,10,13,16,19,23,24},
+    {2,4,7,10,13,16,19,23,24},
+    {2,4,7,10,13,16,19,23,24},
+    {2,4,7,10,13,16,19,23,24},
+    {2,4,7,10,13,16,19,23,24},
+    {2,4,7,10,13,16,19,23,24},
+    {2,4,7,10,13,16,19,23,24}
+  };
+  int const pt_rebin_first[NumBeamEnergy] = {0,0,0,0,0,0,0};
+  int const pt_rebin_last[NumBeamEnergy]  = {1,2,3,4,5,6,8};
+  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,2};
+  int const pt_RawQA[NumBeamEnergy]    = {2,4,6,8,10,12,14};
 
   std::string const Centrality[9] = {"70%-80%","60%-70%","50%-60%","40%-50%","30%-40%","20%-30%","10%-20%","5%-10%","0%-5%"}; // Centrality bin
   int const Cent_Total = 5;
@@ -96,6 +139,10 @@ namespace vmsa
   std::string const mCuts[2] = {"pr","gl"};
   int const NCentMax = 9; 
   float const weight[NCentMax] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,0.5};
+
+  // plotting
+  int const Color[pt_rebin] = {kGray+2,kBlack,kRed,kCyan,kMagenta,kAzure,kViolet,kBlue,kRed};
+  int const Style[pt_rebin] = {20,21,22,23,24,25,26,28,29};
 }
 
 #endif

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <string>
 #include "TFile.h"
 #include "TH1F.h"
 #include "TCanvas.h"
@@ -16,15 +17,9 @@
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/type.h"
 
-int const pt_RawQA    = 14;
-int const pt_rebin = 8;
-float const pt_low[pt_rebin] = {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4};
-float const pt_up[pt_rebin]  = {0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2};
-int const pt_rebin_start[pt_rebin] = {1,3,5, 8,11,14,17,20};
-int const pt_rebin_stop[pt_rebin]  = {2,4,7,10,13,16,19,23};
-int const pt_rebin_first = 0;
-int const pt_rebin_last  = 8;
-int const pt_QA    = 4;
+#ifndef _PlotQA_
+#define _PlotQA_  0
+#endif
 
 void calSpinAlignment(int energy = 6, int pid = 0)
 {
@@ -66,18 +61,18 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if _PlotQA_
   // QA Plots for SE vs. ME
-  string KEY_SE_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SE",pt_RawQA,vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
+  string KEY_SE_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SE",vmsa::pt_RawQA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
   h_mMass_SE[KEY_SE_QA]->DrawCopy("PE");
 
-  string KEY_ME_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_ME",pt_RawQA,vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
+  string KEY_ME_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_ME",vmsa::pt_RawQA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
   h_mMass_ME[KEY_ME_QA]->SetLineColor(2);
   h_mMass_ME[KEY_ME_QA]->SetFillColor(2);
   h_mMass_ME[KEY_ME_QA]->SetFillStyle(3002);
   h_mMass_ME[KEY_ME_QA]->DrawCopy("h same");
 
-  string KEY_SM_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",pt_RawQA,vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
+  string KEY_SM_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",vmsa::pt_RawQA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
   h_mMass_SM[KEY_SM_QA]->SetLineColor(4);
   h_mMass_SM[KEY_SM_QA]->SetFillColor(4);
   h_mMass_SM[KEY_SM_QA]->SetFillStyle(3004);
@@ -111,7 +106,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     string pT_range = Form("[%.2f,%.2f]",vmsa::ptRawStart[i_pt],vmsa::ptRawStop[i_pt]);
     plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.08,1,0.0,42,1);
   }
-  */
+#endif
 
   // pT rebin
   TH1FMap h_mMass; // rebinned InvMass distribution, SE-ME
@@ -122,14 +117,14 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     {
       for(int i_theta = vmsa::CTS_start; i_theta < vmsa::CTS_stop; i_theta++) // cos(theta*) loop
       {
-	for(int pt_bin = pt_rebin_first; pt_bin < pt_rebin_last; pt_bin++) // pt loop
+	for(int pt_bin = vmsa::pt_rebin_first[energy]; pt_bin < vmsa::pt_rebin_last[energy]; pt_bin++) // pt loop
 	{
 	  string KEY = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",pt_bin,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
-	  for(int i_pt = pt_rebin_start[pt_bin]; i_pt <= pt_rebin_stop[pt_bin]; i_pt++)
+	  for(int i_pt = vmsa::pt_rebin_start[energy][pt_bin]; i_pt <= vmsa::pt_rebin_stop[energy][pt_bin]; i_pt++)
 	  {
 	    string KEY_SM = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
 	    //	      cout << "KEY= " << KEY.c_str() << ", KEY_SM = " << KEY_SM.c_str() << endl;
-	    if(i_pt == pt_rebin_start[pt_bin])
+	    if(i_pt == vmsa::pt_rebin_start[energy][pt_bin])
 	    {
 	      h_mMass[KEY] = (TH1F*)h_mMass_SM[KEY_SM]->Clone();
 	    }
@@ -143,17 +138,17 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if _PlotQA_
   // QA Plots for pT rebins
   TCanvas *c_pT_rebin = new TCanvas("c_pT_rebin","c_pT_rebin",10,10,1400,1400);
   c_pT_rebin->Divide(5,5);
-  for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+  for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
   {
-    c_pT_rebin->cd(pt_rebin_start[i_pt]+1);
-    c_pT_rebin->cd(pt_rebin_start[i_pt]+1)->SetLeftMargin(0.15);
-    c_pT_rebin->cd(pt_rebin_start[i_pt]+1)->SetBottomMargin(0.15);
-    c_pT_rebin->cd(pt_rebin_start[i_pt]+1)->SetTicks(1,1);
-    c_pT_rebin->cd(pt_rebin_start[i_pt]+1)->SetGrid(0,0);
+    c_pT_rebin->cd(vmsa::pt_rebin_start[energy][i_pt]+1);
+    c_pT_rebin->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetLeftMargin(0.15);
+    c_pT_rebin->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetBottomMargin(0.15);
+    c_pT_rebin->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetTicks(1,1);
+    c_pT_rebin->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetGrid(0,0);
     string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",i_pt,vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
     h_mMass[KEY_QA]->SetMarkerStyle(20);
     h_mMass[KEY_QA]->SetMarkerSize(0.4);
@@ -161,10 +156,10 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     h_mMass[KEY_QA]->DrawCopy("pE");
     cout << "KEY_QA = " << KEY_QA.c_str() << endl;
 
-    string pT_range = Form("[%.2f,%.2f]",pt_low[i_pt],pt_up[i_pt]);
+    string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
     plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.08,1,0.0,42,1);
   }
-  */
+#endif
 
   if(pid == 0) // Polynomial fit subtraction is only needed for phi meson
   {
@@ -172,7 +167,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     TH1FMap h_mMass_theta;
     vecFMap ParFit_theta;
 
-    for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+    for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
     {
       for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // Centrality loop
       {
@@ -207,17 +202,17 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       }
     }
 
-    /*
+#if _PlotQA_
     // QA plots for Poly+Breit_Wignar fits for phi integrated InvMass
     TCanvas *c_mMass_theta = new TCanvas("c_mMass_theta","c_mMass_theta",10,10,1400,1400);
     c_mMass_theta->Divide(5,5);
-    for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+    for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
     {
-      c_mMass_theta->cd(pt_rebin_start[i_pt]+1);
-      c_mMass_theta->cd(pt_rebin_start[i_pt]+1)->SetLeftMargin(0.15);
-      c_mMass_theta->cd(pt_rebin_start[i_pt]+1)->SetBottomMargin(0.15);
-      c_mMass_theta->cd(pt_rebin_start[i_pt]+1)->SetTicks(1,1);
-      c_mMass_theta->cd(pt_rebin_start[i_pt]+1)->SetGrid(0,0);
+      c_mMass_theta->cd(vmsa::pt_rebin_start[energy][i_pt]+1);
+      c_mMass_theta->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetLeftMargin(0.15);
+      c_mMass_theta->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetBottomMargin(0.15);
+      c_mMass_theta->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetTicks(1,1);
+      c_mMass_theta->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetGrid(0,0);
       string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
       h_mMass_theta[KEY_theta_QA]->SetMarkerColor(1);
       h_mMass_theta[KEY_theta_QA]->SetMarkerStyle(24);
@@ -242,14 +237,14 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       f_poly->SetLineWidth(4);
       f_poly->DrawCopy("l same");
 
-      string pT_range = Form("[%.2f,%.2f]",pt_low[i_pt],pt_up[i_pt]);
+      string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
       plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.08,1,0.0,42,1);
       PlotLine(0.98,1.05,0.0,0.0,1,2,2);
     }
-    */
+#endif
 
     // Poly+bw fits for phi differential InvMass
-    for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+    for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
     {
       for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // Centrality loop
       {
@@ -282,34 +277,34 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       }
     }
 
-    /*
+#if _PlotQA_
     // QA plots for phi differential InvMass after linear background subtraction
     TCanvas *c_mMass_phi_diff = new TCanvas("c_mMass_phi_diff","c_mMass_phi_diff",10,10,1400,1400);
     c_mMass_phi_diff->Divide(5,5);
-    for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+    for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
     {
-      c_mMass_phi_diff->cd(pt_rebin_start[i_pt]+1);
-      c_mMass_phi_diff->cd(pt_rebin_start[i_pt]+1)->SetLeftMargin(0.15);
-      c_mMass_phi_diff->cd(pt_rebin_start[i_pt]+1)->SetBottomMargin(0.15);
-      c_mMass_phi_diff->cd(pt_rebin_start[i_pt]+1)->SetTicks(1,1);
-      c_mMass_phi_diff->cd(pt_rebin_start[i_pt]+1)->SetGrid(0,0);
+      c_mMass_phi_diff->cd(vmsa::pt_rebin_start[energy][i_pt]+1);
+      c_mMass_phi_diff->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetLeftMargin(0.15);
+      c_mMass_phi_diff->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetBottomMargin(0.15);
+      c_mMass_phi_diff->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetTicks(1,1);
+      c_mMass_phi_diff->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetGrid(0,0);
       string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",i_pt,vmsa::Cent_start,vmsa::Eta_start,vmsa::CTS_start,vmsa::mPID[pid].c_str());
       h_mMass[KEY_QA]->SetMarkerColor(1);
       h_mMass[KEY_QA]->SetMarkerStyle(24);
       h_mMass[KEY_QA]->SetMarkerSize(0.8);
       h_mMass[KEY_QA]->DrawCopy("PE");
 
-      string pT_range = Form("[%.2f,%.2f]",pt_low[i_pt],pt_up[i_pt]);
+      string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
       plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.08,1,0.0,42,1);
       PlotLine(0.98,1.05,0.0,0.0,1,2,2);
     }
-    */
+#endif
   }
 
   TH1FMap h_mMass_total; // cos(theta*) integrated InvMass after linear background subtraction for bw fits to extract yields 
   vecFMap ParBW;
 
-  for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+  for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
   {
     for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // Centrality loop
     {
@@ -337,17 +332,17 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if _PlotQA_
   // QA: bw fits to phi integrated InvMass
   TCanvas *c_mMass_bw = new TCanvas("c_mMass_bw","c_mMass_bw",10,10,1400,1400);
   c_mMass_bw->Divide(5,5);
-  for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+  for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
   {
-    c_mMass_bw->cd(pt_rebin_start[i_pt]+1);
-    c_mMass_bw->cd(pt_rebin_start[i_pt]+1)->SetLeftMargin(0.15);
-    c_mMass_bw->cd(pt_rebin_start[i_pt]+1)->SetBottomMargin(0.15);
-    c_mMass_bw->cd(pt_rebin_start[i_pt]+1)->SetTicks(1,1);
-    c_mMass_bw->cd(pt_rebin_start[i_pt]+1)->SetGrid(0,0);
+    c_mMass_bw->cd(vmsa::pt_rebin_start[energy][i_pt]+1);
+    c_mMass_bw->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetLeftMargin(0.15);
+    c_mMass_bw->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetBottomMargin(0.15);
+    c_mMass_bw->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetTicks(1,1);
+    c_mMass_bw->cd(vmsa::pt_rebin_start[energy][i_pt]+1)->SetGrid(0,0);
     string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
     h_mMass_total[KEY_theta_QA]->SetMarkerColor(1);
     h_mMass_total[KEY_theta_QA]->SetMarkerStyle(24);
@@ -361,11 +356,11 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     f_bw->SetLineColor(2);
     f_bw->DrawCopy("l same");
 
-    string pT_range = Form("[%.2f,%.2f]",pt_low[i_pt],pt_up[i_pt]);
+    string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
     plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.08,1,0.0,42,1);
     PlotLine(0.98,1.05,0.0,0.0,1,2,2);
   }
-  */
+#endif
 
   // calculate counts and errors for cos(theta*) bin with bin counting and integrating
   TH1FMap h_mCounts, h_mRho00;
@@ -378,7 +373,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       h_mRho00[KEY_Rho00_Count] = new TH1F(KEY_Rho00_Count.c_str(),KEY_Rho00_Count.c_str(),100,-0.05,9.95);
       string KEY_Rho00_BW = Form("Rho00_BW_Centrality_%d_EtaGap_%d_%s",i_cent,i_eta,vmsa::mPID[pid].c_str()); // breit wigner fits
       h_mRho00[KEY_Rho00_BW] = new TH1F(KEY_Rho00_BW.c_str(),KEY_Rho00_BW.c_str(),100,-0.05,9.95);
-      for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++) // pt loop
+      for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
       {
 	string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,i_cent,i_eta,vmsa::mPID[pid].c_str());
 	h_mCounts[KEY_Count] = new TH1F(KEY_Count.c_str(),KEY_Count.c_str(),7,0.0,1.0);
@@ -417,7 +412,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
 	  h_mCounts[KEY_BW]->SetBinContent(h_mCounts[KEY_BW]->FindBin(bin_center),counts_bw);
 	  h_mCounts[KEY_BW]->SetBinError(h_mCounts[KEY_BW]->FindBin(bin_center),errors_bw);
 	}
-	float pt_mean = (pt_low[i_pt]+pt_up[i_pt])/2.0;
+	float pt_mean = (vmsa::pt_low[energy][i_pt]+vmsa::pt_up[energy][i_pt])/2.0;
 
 	TF1 *f_cos_count = new TF1("f_cos_count",SpinDensity,0.0,1.0,2);
 	f_cos_count->SetParameter(0,0.33);
@@ -442,9 +437,9 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if 0
   // QA InvMass vs. phi for gaussian and breit wigner fits
-  string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
+  string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   TCanvas *c_mMass_psi = new TCanvas("c_mMass_psi","c_mMass_psi",10,10,800,800);
   string Title_CosThetaStar[3] = {"2/7 < cos(#theta*) < 3/7","3/7 < cos(#theta*) < 4/7","4/7 < cos(#theta*) < 5/7"};
   c_mMass_psi->Divide(2,2);
@@ -455,7 +450,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     c_mMass_psi->cd(i_theta-1)->SetTicks(1,1);
     c_mMass_psi->cd(i_theta-1)->SetGrid(0,0);
     c_mMass_psi->cd(i_theta-1);
-    string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,i_theta,vmsa::mPID[pid].c_str());
+    string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,i_theta,vmsa::mPID[pid].c_str());
     h_mMass[KEY_QA]->SetTitle(Title_CosThetaStar[i_theta-2].c_str());
     h_mMass[KEY_QA]->SetStats(0);
     h_mMass[KEY_QA]->GetXaxis()->SetRangeUser(0.0,5.0);
@@ -495,7 +490,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   }
 
   c_mMass_psi->cd(4);
-  string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
+  string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   h_mCounts[KEY_Count]->SetStats(0);
   h_mCounts[KEY_Count]->SetTitle("20-60%");
   h_mCounts[KEY_Count]->SetTitleSize(0.08);
@@ -514,7 +509,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   f_cos_count_QA->SetLineColor(4);
   f_cos_count_QA->DrawCopy("l same");
 
-  string KEY_BW = Form("BW_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
+  string KEY_BW = Form("BW_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   h_mCounts[KEY_BW]->SetLineColor(2);
   h_mCounts[KEY_BW]->SetMarkerColor(2);
   h_mCounts[KEY_BW]->SetMarkerStyle(24);
@@ -534,11 +529,11 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   leg_temp->AddEntry(h_mCounts[KEY_BW],"breit wigner","p");
   leg_temp->Draw("same");
   // c_mMass_psi->SaveAs("./figures/phi_SpinAlighment.eps");
-  */
+#endif
 
-    /*
+#if _PlotQA_
   // QA InvMass vs. phi for gaussian and breit wigner fits
-  string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
+  string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   TCanvas *c_mMass_psi = new TCanvas("c_mMass_psi","c_mMass_psi",10,10,900,900);
   c_mMass_psi->Divide(3,3);
   for(int i_theta = vmsa::CTS_start; i_theta < vmsa::CTS_stop; i_theta++) // cos(theta*) loop
@@ -548,11 +543,11 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     c_mMass_psi->cd(i_theta+1)->SetTicks(1,1);
     c_mMass_psi->cd(i_theta+1)->SetGrid(0,0);
     c_mMass_psi->cd(i_theta+1);
-    string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,i_theta,vmsa::mPID[pid].c_str());
+    string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,i_theta,vmsa::mPID[pid].c_str());
     h_mMass[KEY_QA]->SetMarkerColor(1);
     h_mMass[KEY_QA]->SetMarkerStyle(24);
     h_mMass[KEY_QA]->SetMarkerSize(0.8);
-    h_mMass[KEY_QA]->DrawCopy("hE");
+    h_mMass[KEY_QA]->DrawCopy("pE");
 
     TF1 *f_bw = new TF1("f_bw",BreitWigner,vmsa::BW_Start[pid],vmsa::BW_Stop[pid],3);;
     f_bw->FixParameter(0,ParBW[KEY_theta_QA][0]);
@@ -583,13 +578,13 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   f_bw_QA->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
   f_bw_QA->SetLineColor(2);
   f_bw_QA->Draw("l same");
-  string pT_range = Form("[%.2f,%.2f]",pt_low[pt_QA],pt_up[pt_QA]);
+  string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][vmsa::pt_QA[energy]],vmsa::pt_up[energy][vmsa::pt_QA[energy]]);
   plotTopLegend((char*)pT_range.c_str(),0.15,0.7,0.08,1,0.0,42,1);
   PlotLine(0.98,1.05,0.0,0.0,1,2,2);
 
 
   c_mMass_psi->cd(9);
-  string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
+  string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   h_mCounts[KEY_Count]->SetStats(0);
   h_mCounts[KEY_Count]->SetTitle("20-60%");
   h_mCounts[KEY_Count]->SetTitleSize(0.08);
@@ -608,7 +603,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   f_cos_count_QA->SetLineColor(4);
   f_cos_count_QA->DrawCopy("l same");
 
-  string KEY_BW = Form("BW_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",pt_QA,vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
+  string KEY_BW = Form("BW_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   h_mCounts[KEY_BW]->SetLineColor(2);
   h_mCounts[KEY_BW]->SetMarkerColor(2);
   h_mCounts[KEY_BW]->SetMarkerStyle(24);
@@ -628,7 +623,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   leg_temp->AddEntry(h_mCounts[KEY_BW],"breit wigner","p");
   leg_temp->Draw("same");
   // c_mMass_psi->SaveAs("./figures/phi_SpinAlighment.eps");
-  */
+#endif
 
   // set final pt and rho00 to one TGraphAsymmErrors
   TGraMap g_mRho00;
@@ -640,9 +635,9 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       g_mRho00[KEY_Rho00_Count] = new TGraphAsymmErrors();
       string KEY_Rho00_BW = Form("Rho00_BW_Centrality_%d_EtaGap_%d_%s",i_cent,i_eta,vmsa::mPID[pid].c_str()); // breit wigner fits
       g_mRho00[KEY_Rho00_BW] = new TGraphAsymmErrors();
-      for(int i_pt = pt_rebin_first; i_pt < pt_rebin_last; i_pt++)
+      for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++)
       {
-	float pt_mean = (pt_low[i_pt]+pt_up[i_pt])/2.0;
+	float pt_mean = (vmsa::pt_low[energy][i_pt]+vmsa::pt_up[energy][i_pt])/2.0;
 
 	float count_content = h_mRho00[KEY_Rho00_Count]->GetBinContent(h_mRho00[KEY_Rho00_Count]->FindBin(pt_mean)); // bin counting
 	float count_error   = h_mRho00[KEY_Rho00_Count]->GetBinError(h_mRho00[KEY_Rho00_Count]->FindBin(pt_mean));
@@ -722,7 +717,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   // c_Rho00_pT->SaveAs(figure_name.c_str());
 
   
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/rho00_pT.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/RawRhoPt.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
   h_play->Write();
@@ -734,6 +729,13 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       g_mRho00[KEY_Rho00_Count]->Write();
       string KEY_Rho00_BW = Form("Rho00_BW_Centrality_%d_EtaGap_%d_%s",i_cent,i_eta,vmsa::mPID[pid].c_str()); // breit wigner fits
       g_mRho00[KEY_Rho00_BW]->Write();
+      for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
+      {
+	string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,i_cent,i_eta,vmsa::mPID[pid].c_str());
+	h_mCounts[KEY_Count]->Write();
+	string KEY_BW = Form("BW_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,i_cent,i_eta,vmsa::mPID[pid].c_str());
+	h_mCounts[KEY_BW]->Write();
+      }
     }
   }
   File_OutPut->Close();

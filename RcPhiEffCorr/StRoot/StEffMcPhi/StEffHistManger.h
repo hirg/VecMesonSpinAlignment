@@ -2,6 +2,7 @@
 #define StEffHistManger_h
 #include "TObject.h"
 #include "../../../Utility/StSpinAlignmentCons.h"
+#include "../../../Utility/type.h"
 #include <map>
 #include <string>
 
@@ -9,12 +10,10 @@ class TH1D;
 class TH2D;
 class TH3D;
 
-typedef std::map<std::string,TH1D*> TH1DMap;
-
 class StEffHistManger : public TObject
 {
   public:
-    StEffHistManger();
+    StEffHistManger(int energy);
     virtual ~StEffHistManger();
     void InitHist();
     void FillHistMc(int,float,float,float,float);
@@ -49,6 +48,7 @@ class StEffHistManger : public TObject
     TH1D *h_mRcEffCos[10][vmsa::BinPt];
     TH1D *h_mEffCos[10][vmsa::BinPt];
 
+    int mEnergy;
     int flag_eff;
     int flag_eff_PtEtaPhi;
     int flag_eff_Cos;
