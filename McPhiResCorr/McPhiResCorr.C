@@ -328,7 +328,7 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
   return vMcDauStar;
 }
 
-bool Sampling(TF1 *f_rhoPhy,float CosThetaStar)
+bool Sampling(TF1 *f_rhoPhy, float CosThetaStar)
 {
   float wMax;
   if(f_rhoPhy->GetParameter(0) <= 1.0/3.0) wMax = f_rhoPhy->Eval(0.0);
@@ -336,9 +336,9 @@ bool Sampling(TF1 *f_rhoPhy,float CosThetaStar)
   return !(gRandom->Rndm() > f_rhoPhy->Eval(CosThetaStar)/wMax);
 }
 
-void write(int energy,int Nrho)
+void write(int energy, int Nrho)
 {
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2_%d.root",vmsa::mBeamEnergy[energy].c_str(),Nrho);
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr_%d.root",vmsa::mBeamEnergy[energy].c_str(),Nrho);
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
   h_Tracks->Write();

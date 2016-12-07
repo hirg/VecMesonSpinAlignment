@@ -48,7 +48,7 @@ void plotMcPhiResCorr(int energy = 6)
   f_v2->SetLineStyle(2);
   g_v2->Fit(f_v2,"N");
 
-  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
+  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
   // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2_40.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Hist = TFile::Open(InPutHist.c_str());
   string HistTracks = Form("h_Tracks_%d",BinRho);
