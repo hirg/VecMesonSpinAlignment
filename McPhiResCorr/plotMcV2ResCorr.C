@@ -47,7 +47,7 @@ void plotMcV2ResCorr(int energy = 6)
   TFile *File_Hist = TFile::Open(InPutHist.c_str());
 
   TF1 *f_gaus = new TF1("f_gaus","gaus",-TMath::TwoPi(),TMath::TwoPi());
-  TH1F *h_Psi2 = (TH1F*)File_Hist->Get("h_Psi2");
+  TH1F *h_Psi2 = (TH1F*)File_Hist->Get("h_Psi2Gaus");
   TCanvas *c_Psi2 = new TCanvas("c_Psi2","c_Psi2",100,10,800,800);
   c_Psi2->cd()->SetLeftMargin(0.15);
   c_Psi2->cd()->SetBottomMargin(0.15);
@@ -153,10 +153,9 @@ void plotMcV2ResCorr(int energy = 6)
     c_v2fitEP->cd(i_pad+1)->SetTicks(1,1);
     c_v2fitEP->cd(i_pad+1)->SetGrid(0,0);
   }
-  TH2F *h_phiEP = (TH2F*)File_Hist->Get("h_phiEP");
+  TH2F *h_phiEP = (TH2F*)File_Hist->Get("h_phiEPGaus");
   TH1F *h_phiEPproj[20];
   TGraphAsymmErrors *g_v2EP = new TGraphAsymmErrors();
-  float delta_pt = (momentumRange.second-momentumRange.first)/20.0;
   for(int i_pt = 0; i_pt < 20; ++i_pt)
   {
     float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
@@ -204,6 +203,66 @@ void plotMcV2ResCorr(int energy = 6)
     } 
   }
 
+  TCanvas *c_v2fitTest = new TCanvas("c_v2fitTest","c_v2fitTest",10,10,1200,600);
+  c_v2fitTest->Divide(2,1);
+  for(int i_pad = 0; i_pad < 2; ++i_pad)
+  {
+    c_v2fitTest->cd(i_pad+1)->SetLeftMargin(0.15);
+    c_v2fitTest->cd(i_pad+1)->SetBottomMargin(0.15);
+    c_v2fitTest->cd(i_pad+1)->SetTicks(1,1);
+    c_v2fitTest->cd(i_pad+1)->SetGrid(0,0);
+  }
+  TH2F *h_phiTest = (TH2F*)File_Hist->Get("h_phiEPCom");
+  TH1F *h_phiTestproj[20];
+  TGraphAsymmErrors *g_v2Test = new TGraphAsymmErrors();
+  for(int i_pt = 0; i_pt < 20; ++i_pt)
+  {
+    float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
+    string phiTestproj = Form("h_phiTestproj_%d",i_pt);
+    h_phiTestproj[i_pt] = (TH1F*)h_phiTest->ProjectionY(phiTestproj.c_str(),i_pt+1,i_pt+1);
+    TF1 *f_flow = new TF1("f_flow",flow,-1.0*TMath::Pi(),1.0*TMath::Pi(),2);
+    f_flow->SetParameter(0,0.1);
+    f_flow->SetParameter(1,100);
+    h_phiTestproj[i_pt]->Fit(f_flow,"N");
+    float v2 = f_flow->GetParameter(0);
+    float err_v2 = f_flow->GetParError(0);
+    g_v2Test->SetPoint(i_pt,pt+0.05,v2/resolution);
+    g_v2Test->SetPointError(i_pt,0.0,0.0,err_v2/resolution,err_v2/resolution);
+    if(i_pt == pT_low) c_v2fitTest->cd(1);
+    if(i_pt == pT_high) c_v2fitTest->cd(2);
+    if(i_pt == pT_low || i_pt == pT_high)
+    {
+      h_phiTestproj[i_pt]->SetTitle("");
+      h_phiTestproj[i_pt]->SetStats(0);
+      h_phiTestproj[i_pt]->GetXaxis()->SetTitle("#phi-#Psi_{EP}");
+      h_phiTestproj[i_pt]->GetXaxis()->CenterTitle();
+      h_phiTestproj[i_pt]->GetXaxis()->SetLabelSize(0.04);
+      h_phiTestproj[i_pt]->GetXaxis()->SetNdivisions(505);
+
+      h_phiTestproj[i_pt]->GetYaxis()->SetTitle("Counts");
+      h_phiTestproj[i_pt]->GetYaxis()->SetTitleSize(0.04);
+      h_phiTestproj[i_pt]->GetYaxis()->CenterTitle();
+      h_phiTestproj[i_pt]->GetYaxis()->SetLabelSize(0.04);
+      h_phiTestproj[i_pt]->GetYaxis()->SetNdivisions(505);
+      h_phiTestproj[i_pt]->GetYaxis()->SetRangeUser(0.7*h_phiTestproj[i_pt]->GetMinimum(),1.2*h_phiTestproj[i_pt]->GetMaximum());
+
+      h_phiTestproj[i_pt]->SetMarkerStyle(MarkerStyleQA);
+      h_phiTestproj[i_pt]->SetMarkerSize(1.1);
+      h_phiTestproj[i_pt]->SetMarkerColor(MarkerColorQA);
+      h_phiTestproj[i_pt]->SetLineColor(MarkerColorQA);
+      h_phiTestproj[i_pt]->DrawCopy("pE");
+      f_flow->SetLineStyle(2);
+      f_flow->SetLineWidth(2);
+      f_flow->SetLineColor(2);
+      f_flow->Draw("l same");
+      string legPt = Form("p_{T} = %2.2f GeV/c",pt);
+      string legV2 = Form("v_{2} = %2.3f #pm %0.3f",v2,err_v2);
+      plotTopLegend(legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
+      plotTopLegend(legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
+    } 
+  }
+
+
   TCanvas *c_v2 = new TCanvas("c_v2","c_v2",10,10,800,800);
   c_v2->cd()->SetLeftMargin(0.15);
   c_v2->cd()->SetBottomMargin(0.15);
@@ -241,6 +300,12 @@ void plotMcV2ResCorr(int energy = 6)
   g_v2EP->SetMarkerSize(1.4);
   g_v2EP->Draw("pE same");
 
+  g_v2Test->SetMarkerStyle(MarkerStyleQA);
+  g_v2Test->SetMarkerColor(MarkerColorQA);
+  g_v2Test->SetLineColor(MarkerColorQA);
+  g_v2Test->SetMarkerSize(1.4);
+  g_v2Test->Draw("pE same");
+
   g_v2->SetMarkerStyle(30);
   g_v2->SetMarkerColor(2);
   g_v2->SetLineColor(2);
@@ -256,68 +321,4 @@ void plotMcV2ResCorr(int energy = 6)
   legv2->AddEntry(g_v2RP,"v_{2}^{RP}","p");
   legv2->AddEntry(g_v2EP,"v_{2}^{EP}","p");
   legv2->Draw("same");
-
-
-  TProfile *p_cosRP = (TProfile*)File_Hist->Get("p_cosRP");
-  TProfile *p_sinRP = (TProfile*)File_Hist->Get("p_sinRP");
-  TProfile *p_cosEP = (TProfile*)File_Hist->Get("p_cosEP");
-  TProfile *p_sinEP = (TProfile*)File_Hist->Get("p_sinEP");
-
-  TCanvas *c_cos = new TCanvas("c_cos","c_cos",10,10,800,800);
-  c_cos->cd()->SetLeftMargin(0.15);
-  c_cos->cd()->SetBottomMargin(0.15);
-  c_cos->cd()->SetTicks(1,1);
-  c_cos->cd()->SetGrid(0,0);
-  p_cosRP->SetTitle("");
-  p_cosRP->SetStats(0);
-  p_cosRP->GetXaxis()->SetTitle("p_{T} (GeV/c)");
-  p_cosRP->GetXaxis()->CenterTitle();
-  p_cosRP->GetXaxis()->SetRangeUser(momentumRange.first,momentumRange.second);
-  p_cosRP->GetXaxis()->SetNdivisions(505);
-
-  p_cosRP->GetYaxis()->SetTitle("<cos(2#phi)cos(2#Delta#Psi)>");
-  p_cosRP->GetYaxis()->CenterTitle();
-  p_cosRP->GetYaxis()->SetRangeUser(0.0,0.2);
-  p_cosRP->GetYaxis()->SetNdivisions(505);
-  p_cosRP->SetMarkerStyle(MarkerStyleRP);
-  p_cosRP->SetMarkerColor(MarkerColorRP);
-  p_cosRP->SetLineColor(MarkerColorRP);
-  p_cosRP->SetMarkerSize(1.4);
-  p_cosRP->Draw("pE");
-
-  p_cosEP->SetMarkerStyle(MarkerStyleEP);
-  p_cosEP->SetMarkerColor(MarkerColorEP);
-  p_cosEP->SetLineColor(MarkerColorEP);
-  p_cosEP->SetMarkerSize(1.4);
-  p_cosEP->Draw("pE same");
-
-  TCanvas *c_sin = new TCanvas("c_sin","c_sin",10,10,800,800);
-  c_sin->cd()->SetLeftMargin(0.15);
-  c_sin->cd()->SetBottomMargin(0.15);
-  c_sin->cd()->SetTicks(1,1);
-  c_sin->cd()->SetGrid(0,0);
-  p_sinRP->SetTitle("");
-  p_sinRP->SetStats(0);
-  p_sinRP->GetXaxis()->SetTitle("p_{T} (GeV/c)");
-  p_sinRP->GetXaxis()->CenterTitle();
-  p_sinRP->GetXaxis()->SetRangeUser(momentumRange.first,momentumRange.second);
-  p_sinRP->GetXaxis()->SetNdivisions(505);
-
-  p_sinRP->GetYaxis()->SetTitle("<sin(2#phi)sin(2#Delta#Psi)>");
-  p_sinRP->GetYaxis()->CenterTitle();
-  p_sinRP->GetYaxis()->SetRangeUser(-0.1,0.1);
-  p_sinRP->GetYaxis()->SetNdivisions(505);
-  p_sinRP->SetMarkerStyle(MarkerStyleRP);
-  p_sinRP->SetMarkerColor(MarkerColorRP);
-  p_sinRP->SetLineColor(MarkerColorRP);
-  p_sinRP->SetMarkerSize(1.4);
-  p_sinRP->Draw("pE");
-
-  p_sinEP->SetMarkerStyle(MarkerStyleEP);
-  p_sinEP->SetMarkerColor(MarkerColorEP);
-  p_sinEP->SetLineColor(MarkerColorEP);
-  p_sinEP->SetMarkerSize(1.4);
-  p_sinEP->Draw("pE same");
-  PlotLine(momentumRange.first,momentumRange.second,0.0,0.0,1,2,2);
-
 }

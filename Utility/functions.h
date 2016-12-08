@@ -42,7 +42,7 @@ double flow(double *x_val, double *par)
   return y;
 }
 
-double GausSmearing(double *var, double *par)
+double EventPlaneGaus(double *var, double *par)
 {
   double Psi2 = var[0];
   double res = par[0]; // res = <cos(2*(Psi2-Psi_RP))>
@@ -53,6 +53,33 @@ double GausSmearing(double *var, double *par)
   double power = -1.0*Psi2*Psi2/(2.0*sigmaSquare);
 
   double y = norm*exp(power);
+
+  return y;
+}
+
+double EventPlaneResolution(double *var, double *par)
+{
+  double chi = var[0];
+  double arg = chi*chi/4.0;
+  double norm = TMath::Sqrt(TMath::Pi()/2.0)/2.0;
+
+  double y = norm*chi*TMath::Exp(-1.0*arg)*(TMath::BesselI0(arg)+TMath::BesselI1(arg));
+
+  return y;
+}
+
+double EventPlaneDist(double *var, double *par)
+{
+  double DeltaPsi = var[0];
+  double chi = par[0];
+  double arg = chi/TMath::Sqrt(2.0);
+  double arg2 = -0.5*chi*chi;
+  double pi = TMath::Pi();
+  double norm = 0.5/pi;
+
+  double cos = TMath::Cos(2.0*DeltaPsi);
+  double sin2 = TMath::Sin(2.0*DeltaPsi)*TMath::Sin(2.0*DeltaPsi);
+  double y = norm*(TMath::Exp(arg2)+TMath::Sqrt(pi)*arg*cos*TMath::Exp(arg2*sin2)*(1.0+TMath::Erf(arg*cos)));
 
   return y;
 }

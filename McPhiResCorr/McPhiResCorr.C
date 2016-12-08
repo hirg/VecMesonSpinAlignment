@@ -33,20 +33,22 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 void write(int energy,int Nrho);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool Sampling(TF1 *f_rhoPhy,float CosThetaStar);
+float GausSmearing(TF1 *f_gaus);
+float getChi(float Resolution);
 float EventPlaneSmearing(TF1 *f_gaus);
 
 // histograms
 TH3F *h_Tracks;
-TH2F *h_phiQA, *h_phiRP, *h_phiEP;
-TH2F *h_cosQA, *h_cosRP, *h_cosEP;
-TH1F *h_Psi2;
+TH2F *h_phiQA, *h_phiRP, *h_phiGaus, *h_phiEP;
+TH2F *h_cosQA, *h_cosRP, *h_cosGaus, *h_cosEP;
+TH1F *h_PsiGaus, *h_PsiEP;
 
 // sampling functions
-TF1 *f_v2, *f_spec, *f_flow, *f_rhoPhy, *f_gaus;
+TF1 *f_v2, *f_spec, *f_flow, *f_rhoPhy, *f_gaus, *f_EP;
 
 TPythia6Decayer* pydecay;
 
-void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 10000)
+void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 100000)
 {
   int   const BinPt    = vmsa::BinPt;
   int   const BinY     = vmsa::BinY;
@@ -59,20 +61,29 @@ void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int 
   string HistName;
   HistName = Form("h_Tracks_%d",Nrho);
   h_Tracks = new TH3F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,BinPhi,-TMath::Pi(),TMath::Pi());
+
   HistName = Form("h_phiQA_%d",Nrho);
   h_phiQA = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   HistName = Form("h_phiRP_%d",Nrho);
   h_phiRP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
+  HistName = Form("h_phiGaus_%d",Nrho);
+  h_phiGaus = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   HistName = Form("h_phiEP_%d",Nrho);
   h_phiEP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
+
   HistName = Form("h_cosQA_%d",Nrho);
   h_cosQA = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
   HistName = Form("h_cosRP_%d",Nrho);
   h_cosRP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+  HistName = Form("h_cosGaus_%d",Nrho);
+  h_cosGaus = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
   HistName = Form("h_cosEP_%d",Nrho);
   h_cosEP = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
-  HistName = Form("h_Psi2_%d",Nrho);
-  h_Psi2 = new TH1F(HistName.c_str(),HistName.c_str(),BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
+
+  HistName = Form("h_PsiGaus_%d",Nrho);
+  h_PsiGaus  = new TH1F(HistName.c_str(),HistName.c_str(),BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
+  HistName = Form("h_PsiEP_%d",Nrho);
+  h_PsiEP = new TH1F(HistName.c_str(),HistName.c_str(),BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
 
   f_v2   = readv2(energy,pid,cent);
   f_spec = readspec(energy,pid,cent);
@@ -84,11 +95,15 @@ void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int 
   f_rhoPhy->FixParameter(0,rhoPhy);
   f_rhoPhy->FixParameter(1,0.75);
 
-  // float const Resolution = 0.81; // xin's resolution
-  float const Resolution = readRes(energy,pid,cent);
+  float const Resolution = 0.81; // xin's resolution
+  // float const Resolution = readRes(energy,pid,cent);
   cout << "InPut Resolution = " << Resolution << endl;
-  f_gaus = new TF1("f_gaus",GausSmearing,-TMath::PiOver2(),TMath::PiOver2(),1);
+  f_gaus = new TF1("f_gaus",EventPlaneGaus,-TMath::PiOver2(),TMath::PiOver2(),1);
   f_gaus->FixParameter(0,Resolution);
+
+  float const chi = getChi(Resolution);
+  f_EP = new TF1("f_EP",EventPlaneDist,-TMath::PiOver2(),TMath::PiOver2(),1);
+  f_EP->FixParameter(0,chi);
 
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
@@ -299,21 +314,44 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   h_phiRP->Fill(lPhi->Pt(),lPhi->Phi());
   h_cosRP->Fill(lPhi->Pt(),CosThetaStarRP);
 
-  float Psi2 = EventPlaneSmearing(f_gaus);
-  h_Psi2->Fill(Psi2);
+  float PsiGaus = GausSmearing(f_gaus);
+  TVector3 nQGausSmear(sin(PsiGaus),-cos(PsiGaus),0.0); // direction of angular momentum with Gaussian Smearing
+  float CosThetaStarGaus = vMcKpBoosted.Dot(nQGausSmear);
+  float phiGausSmear = lPhi->Phi()-PsiGaus;
+  if(phiGausSmear > TMath::Pi())  phiGausSmear -= TMath::TwoPi();
+  if(phiGausSmear < -TMath::Pi()) phiGausSmear += TMath::TwoPi();
+  h_phiGaus->Fill(lPhi->Pt(),phiGausSmear);
+  h_cosGaus->Fill(lPhi->Pt(),CosThetaStarGaus);
+  h_PsiGaus->Fill(PsiGaus);
 
-  TVector3 nQSmear(sin(Psi2),-cos(Psi2),0.0); // direction of angular momentum, Psi2 = 0
+  float PsiEP = EventPlaneSmearing(f_EP);
+  TVector3 nQSmear(sin(PsiEP),-cos(PsiEP),0.0); // direction of angular momentum with EP Smearing
   float CosThetaStarEP = vMcKpBoosted.Dot(nQSmear);
-  float phiSmear = lPhi->Phi()-Psi2;
-  if(phiSmear > TMath::Pi()) phiSmear -= TMath::TwoPi();
+  float phiSmear = lPhi->Phi()-PsiEP;
+  if(phiSmear > TMath::Pi())  phiSmear -= TMath::TwoPi();
   if(phiSmear < -TMath::Pi()) phiSmear += TMath::TwoPi();
   h_phiEP->Fill(lPhi->Pt(),phiSmear);
   h_cosEP->Fill(lPhi->Pt(),CosThetaStarEP);
+  h_PsiEP->Fill(PsiEP);
 }
 
-float EventPlaneSmearing(TF1 *f_gaus)
+float GausSmearing(TF1 *f_gaus)
 {
   float Psi2 = f_gaus->GetRandom(-TMath::PiOver2(),TMath::PiOver2());
+  return Psi2;
+}
+
+float getChi(float Resolution)
+{
+  TF1 *f_res = new TF1("f_res",EventPlaneResolution,0,10,0);
+  double chi = f_res->GetX(Resolution);
+
+  return chi;
+}
+
+float EventPlaneSmearing(TF1 *f_EP)
+{
+  float Psi2 = f_EP->GetRandom(-TMath::PiOver2(),TMath::PiOver2());
   return Psi2;
 }
 
@@ -344,11 +382,14 @@ void write(int energy, int Nrho)
   h_Tracks->Write();
   h_phiQA->Write();
   h_phiRP->Write();
+  h_phiGaus->Write();
   h_phiEP->Write();
   h_cosQA->Write();
   h_cosRP->Write();
+  h_cosGaus->Write();
   h_cosEP->Write();
-  h_Psi2->Write();
+  h_PsiGaus->Write();
+  h_PsiEP->Write();
   File_OutPut->Close();
 }
 

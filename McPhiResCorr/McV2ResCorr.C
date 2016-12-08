@@ -10,6 +10,7 @@
 #include "TCanvas.h"
 #include "TRandom3.h"
 #include "TProfile.h"
+#include "TMath.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/functions.h"
 
@@ -18,45 +19,16 @@
 #endif
 
 using namespace std;
-float const Resolution = 0.20;
-
-double getChi(double *var, double *par)
-{
-  double chi = var[0];
-  double arg = chi*chi/4.0;
-  double norm = TMath::Sqrt(TMath::Pi()/2.0)/2.0;
-
-  double y = norm*chi*TMath::Exp(-1.0*arg)*(TMath::BesselI0(arg)+TMath::BesselI1(arg));
-
-  return y;
-}
-
-double EventPlane(double *var, double *par)
-{
-  double DeltaPsi = var[0];
-  double chi = par[0];
-  double arg = chi/TMath::Sqrt(2.0);
-  double arg2 = -0.5*chi*chi;
-  double pi = TMath::Pi();
-  double norm = 0.5/pi;
-
-  double cos = TMath::Cos(2.0*DeltaPsi);
-  double sin2 = TMath::Sin(2.0*DeltaPsi)*TMath::Sin(2.0*DeltaPsi);
-  double y = norm*(TMath::Exp(arg2)+TMath::Sqrt(pi)*arg*cos*TMath::Exp(arg2*sin2)*(1.0+TMath::Erf(arg*cos)));
-
-  return y;
-}
+float const Resolution = 0.50;
 
 // histograms
 TH3F *h_Tracks;
-TH2F *h_phiRP, *h_phiEP;
-TH1F *h_Psi2;
-TProfile *p_cosRP, *p_sinRP;
-TProfile *p_cosEP, *p_sinEP;
+TH2F *h_phiRP, *h_phiEPGaus, *h_phiEPCom;
+TH1F *h_Psi2Gaus, *h_Psi2Com;
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_gaus;
-TF1 *f_com, f_res;
+TF1 *f_com;
 
 TF1* readv2(int energy, int pid, int centrality)
 {
@@ -168,6 +140,21 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   lPhi.SetPxPyPzE(pt * cos(phi), pt * sin(phi) , pz, E);
 }
 
+float GetChi(float Resolution)
+{
+  TF1 *f_res = new TF1("f_res",ResDist,0,10,0);
+  double chi = f_res->GetX(Resolution);
+
+  return chi;
+}
+
+float ComSmearing(TF1 *f_com)
+{
+  float Psi2 = f_com->GetRandom();
+  return Psi2;
+}
+
+
 float GausSmearing(TF1 *f_gaus)
 {
   // float Psi2 = f_gaus->GetRandom(-TMath::TwoPi(),TMath::TwoPi());
@@ -179,22 +166,19 @@ void fill(TLorentzVector* lPhi)
 {
   h_phiRP->Fill(lPhi->Pt(),lPhi->Phi());
 
-  float cosRP = cos(2.0*lPhi->Phi());
-  p_cosRP->Fill(lPhi->Pt(),cosRP);
-  float sinRP = sin(2.0*lPhi->Phi());
-  p_sinRP->Fill(lPhi->Pt(),sinRP);
+  float Psi2Gaus = GausSmearing(f_gaus);
+  h_Psi2Gaus->Fill(Psi2Gaus);
+  float phiGaus = lPhi->Phi()-Psi2Gaus;
+  if(phiGaus > TMath::Pi())  phiGaus -= TMath::TwoPi();
+  if(phiGaus < -TMath::Pi()) phiGaus += TMath::TwoPi();
+  h_phiEPGaus->Fill(lPhi->Pt(),phiGaus);
 
-  float Psi2 = GausSmearing(f_gaus);
-  h_Psi2->Fill(Psi2);
-
-  float phiSmear = lPhi->Phi()-Psi2;
-  if(phiSmear > TMath::Pi()) phiSmear -= TMath::TwoPi();
-  if(phiSmear < -TMath::Pi()) phiSmear += TMath::TwoPi();
-  h_phiEP->Fill(lPhi->Pt(),phiSmear);
-  float cosEP = cos(2.0*lPhi->Phi())*cos(2.0*Psi2);
-  p_cosEP->Fill(lPhi->Pt(),cosEP);
-  float sinEP = sin(2.0*lPhi->Phi())*sin(2.0*Psi2);
-  p_sinEP->Fill(lPhi->Pt(),sinEP);
+  float Psi2Com = ComSmearing(f_com);
+  h_Psi2Com->Fill(Psi2Com);
+  float phiCom = lPhi->Phi()-Psi2Com;
+  if(phiCom > TMath::Pi())  phiCom -= TMath::TwoPi();
+  if(phiCom < -TMath::Pi()) phiCom += TMath::TwoPi();
+  h_phiEPCom->Fill(lPhi->Pt(),phiCom);
 }
 
 void write(int energy)
@@ -204,16 +188,14 @@ void write(int energy)
   File_OutPut->cd();
   h_Tracks->Write();
   h_phiRP->Write();
-  h_phiEP->Write();
-  h_Psi2->Write();
-  p_cosRP->Write();
-  p_cosEP->Write();
-  p_sinRP->Write();
-  p_sinEP->Write();
+  h_phiEPGaus->Write();
+  h_phiEPCom->Write();
+  h_Psi2Gaus->Write();
+  h_Psi2Com->Write();
   File_OutPut->Close();
 }
 
-void McV2ResCorr(int energy = 6, int pid = 0, int cent = 0, int NMax = 100000)
+void McV2ResCorr(int energy = 6, int pid = 0, int cent = 0, int NMax = 10000)
 {
   int   const BinPt    = vmsa::BinPt;
   int   const BinY     = vmsa::BinY;
@@ -222,19 +204,19 @@ void McV2ResCorr(int energy = 6, int pid = 0, int cent = 0, int NMax = 100000)
   f_v2 = readv2(energy,pid,cent);
   f_spec = readspec(energy,pid,cent);
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
-  f_gaus = new TF1("f_gaus",GausSmearing,-TMath::TwoPi(),TMath::TwoPi(),1);
+  f_gaus = new TF1("f_gaus",EventPlaneGaus,-TMath::PiOver2(),TMath::PiOver2(),1);
   f_gaus->FixParameter(0,Resolution);
+  float chi = GetChi(Resolution);
+  f_com = new TF1("f_com",EventPlane,-TMath::PiOver2(),TMath::PiOver2(),1);
+  f_com->FixParameter(0,chi);
 
   string HistName;
   h_Tracks = new TH3F("h_Tracks","h_Tracks",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,BinPhi,-TMath::Pi(),TMath::Pi());
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
-  h_phiEP = new TH2F("h_phiEP","h_phiEP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
-  h_Psi2 = new TH1F("h_Psi2","h_Psi2",BinPhi*10,-TMath::TwoPi(),TMath::TwoPi());
-  
-  p_cosRP = new TProfile("p_cosRP","p_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax);
-  p_sinRP = new TProfile("p_sinRP","p_sinRP",BinPt,vmsa::ptMin,vmsa::ptMax);
-  p_cosEP = new TProfile("p_cosEP","p_cosEP",BinPt,vmsa::ptMin,vmsa::ptMax);
-  p_sinEP = new TProfile("p_sinEP","p_sinEP",BinPt,vmsa::ptMin,vmsa::ptMax);
+  h_phiEPGaus = new TH2F("h_phiEPGaus","h_phiEPGaus",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_phiEPCom = new TH2F("h_phiEPCom","h_phiEPCom",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_Psi2Gaus = new TH1F("h_Psi2Gaus","h_Psi2Gaus",BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
+  h_Psi2Com  = new TH1F("h_Psi2Com","h_Psi2Com",BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
 
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
