@@ -48,7 +48,7 @@ TF1 *f_v2, *f_spec, *f_flow, *f_rhoPhy, *f_gaus, *f_EP;
 
 TPythia6Decayer* pydecay;
 
-void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 100000)
+void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int const NMax = 1000000)
 {
   int   const BinPt    = vmsa::BinPt;
   int   const BinY     = vmsa::BinY;
@@ -95,15 +95,16 @@ void McPhiResCorr(int energy = 6, int pid = 0, int cent = 0, int Nrho = 40, int 
   f_rhoPhy->FixParameter(0,rhoPhy);
   f_rhoPhy->FixParameter(1,0.75);
 
-  float const Resolution = 0.81; // xin's resolution
-  // float const Resolution = readRes(energy,pid,cent);
+  // float const Resolution = 0.81; // xin's resolution
+  float const Resolution = readRes(energy,pid,cent);
   cout << "InPut Resolution = " << Resolution << endl;
   f_gaus = new TF1("f_gaus",EventPlaneGaus,-TMath::PiOver2(),TMath::PiOver2(),1);
   f_gaus->FixParameter(0,Resolution);
 
   float const chi = getChi(Resolution);
-  f_EP = new TF1("f_EP",EventPlaneDist,-TMath::PiOver2(),TMath::PiOver2(),1);
+  f_EP = new TF1("f_EP",EventPlaneDist,-TMath::PiOver2(),TMath::PiOver2(),2);
   f_EP->FixParameter(0,chi);
+  f_EP->FixParameter(1,0.5/TMath::Pi());
 
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();

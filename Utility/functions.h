@@ -75,7 +75,7 @@ double EventPlaneDist(double *var, double *par)
   double arg = chi/TMath::Sqrt(2.0);
   double arg2 = -0.5*chi*chi;
   double pi = TMath::Pi();
-  double norm = 0.5/pi;
+  double norm = par[1];
 
   double cos = TMath::Cos(2.0*DeltaPsi);
   double sin2 = TMath::Sin(2.0*DeltaPsi)*TMath::Sin(2.0*DeltaPsi);

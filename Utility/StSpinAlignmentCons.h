@@ -79,7 +79,7 @@ namespace vmsa
   };
   int const pt_rebin_first[NumBeamEnergy] = {0,0,0,0,0,0,0};
   int const pt_rebin_last[NumBeamEnergy]  = {1,2,3,4,5,6,8};
-  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,2};
+  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,1};
   int const pt_RawQA[NumBeamEnergy]    = {2,4,6,8,10,12,14};
 
   std::string const Centrality[9] = {"70%-80%","60%-70%","50%-60%","40%-50%","30%-40%","20%-30%","10%-20%","5%-10%","0%-5%"}; // Centrality bin
@@ -88,6 +88,7 @@ namespace vmsa
   int const Cent_stop  = 1;
   int const cent_low[5] = {2,0,7,4,0}; // 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
   int const cent_up[5]  = {5,8,8,6,3}; // 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
+  int const Cent_QA    = 0;
 
   int const CTS_total = 7; // cos(theta*) bin
   int const CTS_start = 0;

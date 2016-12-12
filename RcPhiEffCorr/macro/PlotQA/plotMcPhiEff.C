@@ -10,7 +10,7 @@ using namespace std;
 float pos_x[8] = {0.10,0.55,0.10,0.55,0.10,0.55,0.10,0.55};
 float pos_y[8] = {0.95,0.95,0.90,0.90,0.85,0.85,0.80,0.80};
 
-void plotMcPhiEff(int energy = 6, int cent = 0)
+void plotMcPhiEff(int energy = 6, int cent = 9)
 {
   string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/Phi/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());

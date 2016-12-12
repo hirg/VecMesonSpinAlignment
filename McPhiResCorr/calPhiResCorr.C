@@ -14,36 +14,42 @@
 
 using namespace std;
 
-pair<double, double> const momentumRange(0.2,5.0);
-
-void calPhiResCorr(int energy = 6)
+void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
 {
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiV2.root",vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
-  TH2F *h_cosRP[60], *h_cosEP[60];
-  TGraphAsymmErrors *g_rhoRP[60], *g_rhoEP[60];
-  TF1 *f_polRP[60], *f_polEP[60]; 
-  TGraphAsymmErrors *g_Res = new TGraphAsymmErrors();
-  float delta_pt = (momentumRange.second-momentumRange.first)/20.0;
+  TH2F *h_cosRP[60], *h_cosGaus[60], *h_cosEP[60];
+  TGraphAsymmErrors *g_rhoRP[60], *g_rhoGaus[60], *g_rhoEP[60];
+  TF1 *f_polRP[60], *f_polGaus[60], *f_polEP[60]; 
+  TGraphAsymmErrors *g_ResGaus = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_ResEP = new TGraphAsymmErrors();
+  float delta_pt = (vmsa::ptMax-vmsa::ptMin)/(float)vmsa::BinPt;
   for(int i_rho = 0; i_rho < 60; ++i_rho)
   {
     string HistCosRP = Form("h_cosRP_%d",i_rho);
     h_cosRP[i_rho] = (TH2F*)File_InPut->Get(HistCosRP.c_str());
     g_rhoRP[i_rho] = new TGraphAsymmErrors();
     string FuncCosRP = Form("f_cosRP_%d",i_rho);
-    f_polRP[i_rho] = new TF1(FuncCosRP.c_str(),"pol0",momentumRange.first,momentumRange.second);
+    f_polRP[i_rho] = new TF1(FuncCosRP.c_str(),"pol0",vmsa::ptMin,vmsa::ptMax);
     f_polRP[i_rho]->SetParameter(0,0.01*(i_rho));
+
+    string HistCosGaus = Form("h_cosGaus_%d",i_rho);
+    h_cosGaus[i_rho] = (TH2F*)File_InPut->Get(HistCosGaus.c_str());
+    g_rhoGaus[i_rho] = new TGraphAsymmErrors();
+    string FuncCosGaus = Form("f_cosGaus_%d",i_rho);
+    f_polGaus[i_rho] = new TF1(FuncCosGaus.c_str(),"pol0",vmsa::ptMin,vmsa::ptMax);
+    f_polGaus[i_rho]->SetParameter(0,0.01*(i_rho));
 
     string HistCosEP = Form("h_cosEP_%d",i_rho);
     h_cosEP[i_rho] = (TH2F*)File_InPut->Get(HistCosEP.c_str());
     g_rhoEP[i_rho] = new TGraphAsymmErrors();
     string FuncCosEP = Form("f_cosEP_%d",i_rho);
-    f_polEP[i_rho] = new TF1(FuncCosEP.c_str(),"pol0",momentumRange.first,momentumRange.second);
+    f_polEP[i_rho] = new TF1(FuncCosEP.c_str(),"pol0",vmsa::ptMin,vmsa::ptMax);
     f_polEP[i_rho]->SetParameter(0,0.01*(i_rho));
 
-    for(int i_pt = 0; i_pt < 20; ++i_pt)
+    for(int i_pt = 0; i_pt < vmsa::BinPt; ++i_pt)
     {
-      float pt = momentumRange.first+(i_pt+0.5)*delta_pt;
+      float pt = vmsa::ptMin+(i_pt+0.5)*delta_pt;
       string HistCosProjRP = Form("h_rhoRP_%d_proj_%d",i_rho,i_pt);
       TH1F *h_cosRPproj = (TH1F*)h_cosRP[i_rho]->ProjectionY(HistCosProjRP.c_str(),i_pt+1,i_pt+1);
       TF1 *f_rhoRP = new TF1("f_rhoRP",SpinDensity,-1.0,1.0,2);
@@ -54,6 +60,17 @@ void calPhiResCorr(int energy = 6)
       float err_rhoRP = f_rhoRP->GetParError(0);
       g_rhoRP[i_rho]->SetPoint(i_pt,pt,rhoRP);
       g_rhoRP[i_rho]->SetPointError(i_pt,0.0,0.0,err_rhoRP,err_rhoRP);
+
+      string HistCosProjGaus = Form("h_rhoGaus_%d_proj_%d",i_rho,i_pt);
+      TH1F *h_cosGausproj = (TH1F*)h_cosGaus[i_rho]->ProjectionY(HistCosProjGaus.c_str(),i_pt+1,i_pt+1);
+      TF1 *f_rhoGaus = new TF1("f_rhoGaus",SpinDensity,-1.0,1.0,2);
+      f_rhoGaus->SetParameter(0,0.01*(i_rho));
+      f_rhoGaus->SetParameter(1,100);
+      h_cosGausproj->Fit(f_rhoGaus,"NQ");
+      float rhoGaus = f_rhoGaus->GetParameter(0);
+      float err_rhoGaus = f_rhoGaus->GetParError(0);
+      g_rhoGaus[i_rho]->SetPoint(i_pt,pt,rhoGaus);
+      g_rhoGaus[i_rho]->SetPointError(i_pt,0.0,0.0,err_rhoGaus,err_rhoGaus);
 
       string HistCosProjEP = Form("h_rhoEP_%d_proj_%d",i_rho,i_pt);
       TH1F *h_cosEPproj = (TH1F*)h_cosEP[i_rho]->ProjectionY(HistCosProjEP.c_str(),i_pt+1,i_pt+1);
@@ -67,9 +84,12 @@ void calPhiResCorr(int energy = 6)
       g_rhoEP[i_rho]->SetPointError(i_pt,0.0,0.0,err_rhoEP,err_rhoEP);
     }
     g_rhoRP[i_rho]->Fit(f_polRP[i_rho],"N");
+    g_rhoGaus[i_rho]->Fit(f_polGaus[i_rho],"N");
     g_rhoEP[i_rho]->Fit(f_polEP[i_rho],"N");
-    g_Res->SetPoint(i_rho,f_polRP[i_rho]->GetParameter(0),f_polEP[i_rho]->GetParameter(0));
-    g_Res->SetPointError(i_rho,f_polRP[i_rho]->GetParError(0),f_polRP[i_rho]->GetParError(0),f_polEP[i_rho]->GetParError(0),f_polEP[i_rho]->GetParError(0));
+    g_ResGaus->SetPoint(i_rho,f_polRP[i_rho]->GetParameter(0),f_polGaus[i_rho]->GetParameter(0));
+    g_ResGaus->SetPointError(i_rho,f_polRP[i_rho]->GetParError(0),f_polRP[i_rho]->GetParError(0),f_polGaus[i_rho]->GetParError(0),f_polGaus[i_rho]->GetParError(0));
+    g_ResEP->SetPoint(i_rho,f_polRP[i_rho]->GetParameter(0),f_polEP[i_rho]->GetParameter(0));
+    g_ResEP->SetPointError(i_rho,f_polRP[i_rho]->GetParError(0),f_polRP[i_rho]->GetParError(0),f_polEP[i_rho]->GetParError(0),f_polEP[i_rho]->GetParError(0));
   }
 
   TCanvas *c_res = new TCanvas("c_res","c_res",10,10,800,800);
@@ -92,26 +112,56 @@ void calPhiResCorr(int energy = 6)
   h_res->Draw("pE");
   PlotLine(1.0/3.0,1.0/3.0,0.0,0.6,1,2,2);
   PlotLine(0.0,0.6,1.0/3.0,1.0/3.0,1,2,2);
-  g_Res->SetMarkerStyle(24);
-  g_Res->SetMarkerColor(kGray+2);
-  g_Res->SetMarkerSize(1.2);
-  g_Res->Draw("PE same");
-  
-  TF1 *f_Res = new TF1("f_Res",PolyRes,0.0,0.6,2);
-  f_Res->SetParameter(0,0.01);
-  f_Res->SetParameter(1,0.8);
-  g_Res->Fit(f_Res,"N");
-  f_Res->SetLineColor(2);
-  f_Res->SetLineWidth(2);
-  f_Res->SetLineStyle(2);
-  f_Res->Draw("l same");
-  string leg_p0 = Form("p_{0} = %2.4f #pm %2.4f",f_Res->GetParameter(0),f_Res->GetParError(0));
-  string leg_p1 = Form("p_{1} = %2.4f #pm %2.4f",f_Res->GetParameter(1),f_Res->GetParError(1));
-  string leg_chi2 = Form("#chi^{2}/NDF = %2.2f/%d",f_Res->GetChisquare(),f_Res->GetNDF());
-  plotTopLegend(leg_p0.c_str(),0.2,0.80,0.04,1,0.0,42,1);
-  plotTopLegend(leg_p1.c_str(),0.2,0.74,0.04,1,0.0,42,1);
-  plotTopLegend(leg_chi2.c_str(),0.2,0.68,0.04,1,0.0,42,1);
+
+  g_ResGaus->SetMarkerStyle(20);
+  g_ResGaus->SetMarkerColor(kGray+2);
+  g_ResGaus->SetMarkerSize(1.2);
+  g_ResGaus->Draw("PE same");
+  TF1 *f_ResGaus = new TF1("f_ResGaus",PolyRes,0.0,0.6,2);
+  f_ResGaus->SetParameter(0,0.01);
+  f_ResGaus->SetParameter(1,0.8);
+  g_ResGaus->Fit(f_ResGaus,"N");
+  f_ResGaus->SetLineColor(kGray+2);
+  f_ResGaus->SetLineWidth(2);
+  f_ResGaus->SetLineStyle(2);
+  f_ResGaus->Draw("l same");
+  string leg_p0Gaus   = Form("p_{0}^{Gaussian} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(0),f_ResGaus->GetParError(0));
+  string leg_p1Gaus   = Form("p_{1}^{Gaussian} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(1),f_ResGaus->GetParError(1));
+  string leg_chi2Gaus = Form("#chi^{2}/NDF = %2.2f/%d",f_ResGaus->GetChisquare(),f_ResGaus->GetNDF());
+  plotTopLegend(leg_p0Gaus.c_str(),0.2,0.80,0.03,kGray+2,0.0,42,1);
+  plotTopLegend(leg_p1Gaus.c_str(),0.2,0.74,0.03,kGray+2,0.0,42,1);
+  plotTopLegend(leg_chi2Gaus.c_str(),0.2,0.68,0.03,kGray+2,0.0,42,1);
+
+  g_ResEP->SetMarkerStyle(24);
+  g_ResEP->SetMarkerColor(kRed);
+  g_ResEP->SetMarkerSize(1.2);
+  g_ResEP->Draw("PE same");
+  TF1 *f_ResEP = new TF1("f_ResEP",PolyRes,0.0,0.6,2);
+  f_ResEP->SetParameter(0,0.01);
+  f_ResEP->SetParameter(1,0.8);
+  g_ResEP->Fit(f_ResEP,"N");
+  f_ResEP->SetLineColor(2);
+  f_ResEP->SetLineWidth(2);
+  f_ResEP->SetLineStyle(2);
+  f_ResEP->Draw("l same");
+  string leg_p0EP   = Form("p_{0}^{Sergei} = %2.4f #pm %2.4f",f_ResEP->GetParameter(0),f_ResEP->GetParError(0));
+  string leg_p1EP   = Form("p_{1}^{Sergei} = %2.4f #pm %2.4f",f_ResEP->GetParameter(1),f_ResEP->GetParError(1));
+  string leg_chi2EP = Form("#chi^{2}/NDF = %2.2f/%d",f_ResEP->GetChisquare(),f_ResEP->GetNDF());
+  plotTopLegend(leg_p0EP.c_str(),0.58,0.40,0.03,kRed,0.0,42,1);
+  plotTopLegend(leg_p1EP.c_str(),0.58,0.34,0.03,kRed,0.0,42,1);
+  plotTopLegend(leg_chi2EP.c_str(),0.58,0.28,0.03,kRed,0.0,42,1);
 
   // c_res->SaveAs("c_res.eps");
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/McResCorr/Mc%sResCorrFactor.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str());
+  TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
+  File_OutPut->cd();
+  h_res->Write();
+  string KEY_ResGaus = Form("ResGaus_Centrality_%d_%s",centrality,vmsa::mPID[pid].c_str());
+  g_ResGaus->SetName(KEY_ResGaus.c_str());
+  g_ResGaus->Write();
+  string KEY_ResEP = Form("ResEP_Centrality_%d_%s",centrality,vmsa::mPID[pid].c_str());
+  g_ResEP->SetName(KEY_ResEP.c_str());
+  g_ResEP->Write();
+  File_OutPut->Close();
 }
 

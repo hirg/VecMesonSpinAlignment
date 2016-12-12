@@ -23,7 +23,7 @@ then
     done
     echo "cd .." >> ./run$Name${counter}.csh
     echo "rm -rf $Name$counter" >> ./run$Name${counter}.csh
-    qsub -hard -l scratchfree=500,h_cpu=16:00:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/SpinAlignment/$PID/ResCorr/PYTHIA/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/SpinAlignment/$PID/ResCorr/PYTHIA/job$Name$counter.err ./run$Name$counter.csh
+    qsub -hard -l scratchfree=500,h_cpu=10:00:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/SpinAlignment/$PID/ResCorr/PYTHIA/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/SpinAlignment/$PID/ResCorr/PYTHIA/job$Name$counter.err ./run$Name$counter.csh
     mv ./run$Name${counter}.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Script/SpinAlignment/$PID/ResCorr/PYTHIA/
   done
 else
