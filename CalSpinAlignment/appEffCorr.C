@@ -5,6 +5,7 @@
 #include "TH1D.h"
 #include "TLegend.h"
 #include "TF1.h"
+#include "TStyle.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/type.h"
 #include "../Utility/draw.h"
@@ -21,6 +22,7 @@ int const Color_BW     = kAzure-4;
 
 TH1F* CalEffCorr(TH1F *h_counts, TH1D *h_eff, std::string HistName)
 {
+  gStyle->SetOptDate(0);
   TH1F* h_effCorr = (TH1F*)h_counts->Clone();
   h_effCorr->Divide(h_eff);
   for(int i_bin = 1; i_bin < h_effCorr->GetNbinsX()+1; ++i_bin)
@@ -114,7 +116,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   h_mCounts[QA_Count]->GetXaxis()->CenterTitle();
   h_mCounts[QA_Count]->GetXaxis()->SetNdivisions(505);
   h_mCounts[QA_Count]->GetXaxis()->SetLabelSize(0.03);
-  h_mCounts[QA_Count]->GetYaxis()->SetTitle("Counts");
+  h_mCounts[QA_Count]->GetYaxis()->SetTitle("counts");
   h_mCounts[QA_Count]->GetYaxis()->SetTitleSize(0.05);
   h_mCounts[QA_Count]->GetYaxis()->CenterTitle();
   h_mCounts[QA_Count]->GetYaxis()->SetNdivisions(505);
@@ -134,7 +136,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   float chi2C = f_CountsQA->GetChisquare();
   float NDFC = f_CountsQA->GetNDF();
   string leg_rhoC = Form("#rho_{00} = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",rhoC,err_rhoC,chi2C,NDFC);
-  plotTopLegend((char*)leg_rhoC.c_str(),0.2,0.8,0.04,Color_Counts,0.0,42,1);
+  plotTopLegend((char*)leg_rhoC.c_str(),0.2,0.82,0.04,Color_Counts,0.0,42,1);
 
   string QA_BW = Form("BW_pt_%d_Centrality_0_EtaGap_0_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::mPID[pid].c_str());
   h_mCounts[QA_BW]->SetLineColor(Color_BW);
@@ -155,7 +157,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   float chi2B = f_BWQA->GetChisquare();
   float NDFB = f_BWQA->GetNDF();
   string leg_rhoB = Form("#rho_{00} = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",rhoB,err_rhoB,chi2B,NDFB);
-  plotTopLegend((char*)leg_rhoB.c_str(),0.2,0.75,0.04,Color_BW,0.0,42,1);
+  plotTopLegend((char*)leg_rhoB.c_str(),0.2,0.77,0.04,Color_BW,0.0,42,1);
 
   TLegend *leg_rhoQA = new TLegend(0.20,0.2,0.45,0.4);
   leg_rhoQA->SetFillColor(10);
@@ -163,20 +165,29 @@ void appEffCorr(int energy = 6, int pid = 0)
   leg_rhoQA->AddEntry(h_mCounts[QA_Count],"bin counting","p");
   leg_rhoQA->AddEntry(h_mCounts[QA_BW],"breit wigner","p");
   leg_rhoQA->Draw("same");
+  string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][vmsa::pt_QA[energy]],vmsa::pt_up[energy][vmsa::pt_QA[energy]]);
+  plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.04,1,0.0,42,1);
 
   c_raw->cd(2);
   string QA_Eff = Form("h_mEffCos_Cent_9_Pt_%d",vmsa::pt_QA[energy]); // 20%-60%
   h_mEff[QA_Eff]->SetStats(0);
   h_mEff[QA_Eff]->SetTitle("TPC efficiency 20-60%");
   h_mEff[QA_Eff]->SetTitleSize(0.08);
-  h_mEff[QA_Eff]->SetLineColor(kGray+2);
-  h_mEff[QA_Eff]->SetMarkerColor(kGray+2);
+  h_mEff[QA_Eff]->SetLineColor(1);
+  h_mEff[QA_Eff]->SetMarkerColor(1);
   h_mEff[QA_Eff]->SetMarkerStyle(24);
   h_mEff[QA_Eff]->SetMarkerSize(0.8);
   h_mEff[QA_Eff]->GetXaxis()->SetTitle("cos(#theta^{*})");
   h_mEff[QA_Eff]->GetXaxis()->SetTitleSize(0.05);
   h_mEff[QA_Eff]->GetXaxis()->CenterTitle();
+  h_mEff[QA_Eff]->GetXaxis()->SetNdivisions(505);
+  h_mEff[QA_Eff]->GetXaxis()->SetLabelSize(0.03);
+  h_mEff[QA_Eff]->GetYaxis()->SetTitle("efficiency");
+  h_mEff[QA_Eff]->GetYaxis()->SetTitleSize(0.05);
+  h_mEff[QA_Eff]->GetYaxis()->CenterTitle();
   h_mEff[QA_Eff]->GetYaxis()->SetRangeUser(0.9*h_mEff[QA_Eff]->GetMinimum(),1.1*h_mEff[QA_Eff]->GetMaximum());
+  h_mEff[QA_Eff]->GetYaxis()->SetNdivisions(505);
+  h_mEff[QA_Eff]->GetYaxis()->SetLabelSize(0.03);
   h_mEff[QA_Eff]->DrawCopy("pE");
   TF1 *f_polQA = new TF1("f_polQA","pol0",0,1);
   h_mEff[QA_Eff]->Fit(f_polQA,"N");
@@ -190,8 +201,54 @@ void appEffCorr(int energy = 6, int pid = 0)
   float NDFQA = f_polQA->GetNDF();
   string leg_effQA = Form("eff = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",effQA,err_effQA,chi2QA,NDFQA);
   plotTopLegend((char*)leg_effQA.c_str(),0.2,0.8,0.04,1,0.0,42,1);
-  string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][vmsa::pt_QA[energy]],vmsa::pt_up[energy][vmsa::pt_QA[energy]]);
   plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.04,1,0.0,42,1);
+
+  TCanvas *c_efffit = new TCanvas("c_efffit","c_efffit",10,10,800,800);
+  c_efffit->cd();
+  c_efffit->cd()->SetLeftMargin(0.15);
+  c_efffit->cd()->SetBottomMargin(0.15);
+  c_efffit->cd()->SetGrid(0,0);
+  c_efffit->cd()->SetTicks(1,1);
+  h_mEff[QA_Eff]->SetMarkerSize(1.2);
+  h_mEff[QA_Eff]->DrawCopy("pE");
+  plotTopLegend((char*)pT_range.c_str(),0.6,0.3,0.04,1,0.0,42,1);
+  TF1 *f_pol0 = new TF1("f_pol0","pol0",0.0,1.0);
+  h_mEff[QA_Eff]->Fit(f_pol0,"N");
+  f_pol0->SetLineColor(kGray+2);
+  f_pol0->SetLineWidth(2);
+  f_pol0->SetLineStyle(2);
+  f_pol0->Draw("l same");
+  float chi2p0 = f_pol0->GetChisquare();
+  float NDFp0 = f_pol0->GetNDF();
+  string leg_p0 = Form("pol0 fit: #chi^{2}/NDF = %2.2f/%2.2f",chi2p0,NDFp0);
+
+  TF1 *f_pol1 = new TF1("f_pol1","pol1",0.0,1.0);
+  h_mEff[QA_Eff]->Fit(f_pol1,"N");
+  f_pol1->SetLineColor(kRed);
+  f_pol1->SetLineWidth(2);
+  f_pol1->SetLineStyle(6);
+  f_pol1->Draw("l same");
+  float chi2p1 = f_pol1->GetChisquare();
+  float NDFp1 = f_pol1->GetNDF();
+  string leg_p1 = Form("pol1 fit: #chi^{2}/NDF = %2.2f/%2.2f",chi2p1,NDFp1);
+
+  TF1 *f_pol2 = new TF1("f_pol2","[0]+[1]*x*x",0.0,1.0);
+  h_mEff[QA_Eff]->Fit(f_pol2,"N");
+  f_pol2->Draw("l same");
+  f_pol2->SetLineColor(kAzure);
+  f_pol2->SetLineWidth(2);
+  f_pol2->SetLineStyle(9);
+  f_pol2->Draw("l same");
+  float chi2p2 = f_pol2->GetChisquare();
+  float NDFp2 = f_pol2->GetNDF();
+  string leg_p2 = Form("pol2 fit: #chi^{2}/NDF = %2.2f/%2.2f",chi2p2,NDFp2);
+  TLegend *leg_fit = new TLegend(0.2,0.7,0.7,0.85);
+  leg_fit->SetBorderSize(0);
+  leg_fit->SetFillColor(10);
+  leg_fit->AddEntry(f_pol0,leg_p0.c_str(),"l");
+  leg_fit->AddEntry(f_pol1,leg_p1.c_str(),"l");
+  leg_fit->AddEntry(f_pol2,leg_p2.c_str(),"l");
+  leg_fit->Draw("same");
 #endif
 
 #if _PlotQA_
@@ -208,23 +265,24 @@ void appEffCorr(int energy = 6, int pid = 0)
   c_Eff->cd(1);
   string QA_CPoint = Form("CPoint_pt_%d_Centrality_0_EtaGap_0_%s",vmsa::pt_QA[energy],vmsa::mPID[pid].c_str());
   h_mCountEff[QA_CPoint]->SetStats(0);
-  h_mCountEff[QA_CPoint]->SetTitle("20-60%");
+  h_mCountEff[QA_CPoint]->SetTitle("point to point efficiency correction (20-60%)");
   h_mCountEff[QA_CPoint]->SetTitleSize(0.08);
   h_mCountEff[QA_CPoint]->SetLineColor(Color_Counts);
   h_mCountEff[QA_CPoint]->SetMarkerColor(Color_Counts);
   h_mCountEff[QA_CPoint]->SetMarkerStyle(24);
   h_mCountEff[QA_CPoint]->SetMarkerSize(0.8);
   h_mCountEff[QA_CPoint]->GetXaxis()->SetTitle("cos(#theta^{*}) (w.r.t. 2^{nd} event plane)");
-  h_mCountEff[QA_CPoint]->GetXaxis()->SetTitleSize(0.05);
+  h_mCountEff[QA_CPoint]->GetXaxis()->SetTitleSize(0.04);
   h_mCountEff[QA_CPoint]->GetXaxis()->CenterTitle();
   h_mCountEff[QA_CPoint]->GetXaxis()->SetNdivisions(505);
   h_mCountEff[QA_CPoint]->GetXaxis()->SetLabelSize(0.03);
-  h_mCountEff[QA_CPoint]->GetYaxis()->SetTitle("Counts");
-  h_mCountEff[QA_CPoint]->GetYaxis()->SetTitleSize(0.05);
+  h_mCountEff[QA_CPoint]->GetYaxis()->SetTitle("counts/efficiency");
+  h_mCountEff[QA_CPoint]->GetYaxis()->SetTitleSize(0.04);
+  h_mCountEff[QA_CPoint]->GetYaxis()->SetTitleOffset(1.4);
   h_mCountEff[QA_CPoint]->GetYaxis()->CenterTitle();
   h_mCountEff[QA_CPoint]->GetYaxis()->SetNdivisions(505);
   h_mCountEff[QA_CPoint]->GetYaxis()->SetLabelSize(0.03);
-  h_mCountEff[QA_CPoint]->GetYaxis()->SetRangeUser(0.9*h_mCountEff[QA_CPoint]->GetMinimum(),1.1*h_mCountEff[QA_CPoint]->GetMaximum());
+  h_mCountEff[QA_CPoint]->GetYaxis()->SetRangeUser(0.8*h_mCountEff[QA_CPoint]->GetMinimum(),1.2*h_mCountEff[QA_CPoint]->GetMaximum());
   h_mCountEff[QA_CPoint]->DrawCopy("pE");
   TF1 *f_CPointQA = new TF1("f_CPointQA",SpinDensity,0,1.0,2);
   f_CPointQA->SetParameter(0,0.33);
@@ -239,7 +297,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   float chi2CPoint = f_CPointQA->GetChisquare();
   float NDFCPoint = f_CPointQA->GetNDF();
   string leg_rhoCPoint = Form("#rho_{00} = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",rhoCPoint,err_rhoCPoint,chi2CPoint,NDFCPoint);
-  plotTopLegend((char*)leg_rhoCPoint.c_str(),0.2,0.8,0.04,Color_Counts,0.0,42,1);
+  plotTopLegend((char*)leg_rhoCPoint.c_str(),0.2,0.82,0.04,Color_Counts,0.0,42,1);
 
   string QA_BPoint = Form("BPoint_pt_%d_Centrality_0_EtaGap_0_%s",vmsa::pt_QA[energy],vmsa::mPID[pid].c_str());
   h_mCountEff[QA_BPoint]->SetLineColor(Color_BW);
@@ -260,7 +318,8 @@ void appEffCorr(int energy = 6, int pid = 0)
   float chi2BPoint = f_BPointQA->GetChisquare();
   float NDFBPoint = f_BPointQA->GetNDF();
   string leg_rhoBPoint = Form("#rho_{00} = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",rhoBPoint,err_rhoBPoint,chi2BPoint,NDFBPoint);
-  plotTopLegend((char*)leg_rhoBPoint.c_str(),0.2,0.75,0.04,Color_BW,0.0,42,1);
+  plotTopLegend((char*)leg_rhoBPoint.c_str(),0.2,0.77,0.04,Color_BW,0.0,42,1);
+  plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.04,1,0.0,42,1);
 
   TLegend *leg_Point = new TLegend(0.20,0.2,0.45,0.4);
   leg_Point->SetFillColor(10);
@@ -272,23 +331,24 @@ void appEffCorr(int energy = 6, int pid = 0)
   c_Eff->cd(2);
   string QA_CPoly = Form("CPoly_pt_%d_Centrality_0_EtaGap_0_%s",vmsa::pt_QA[energy],vmsa::mPID[pid].c_str());
   h_mCountEff[QA_CPoly]->SetStats(0);
-  h_mCountEff[QA_CPoly]->SetTitle("20-60%");
+  h_mCountEff[QA_CPoly]->SetTitle("pol0 efficiency correction (20-60%)");
   h_mCountEff[QA_CPoly]->SetTitleSize(0.08);
   h_mCountEff[QA_CPoly]->SetLineColor(Color_Counts);
   h_mCountEff[QA_CPoly]->SetMarkerColor(Color_Counts);
   h_mCountEff[QA_CPoly]->SetMarkerStyle(24);
   h_mCountEff[QA_CPoly]->SetMarkerSize(0.8);
   h_mCountEff[QA_CPoly]->GetXaxis()->SetTitle("cos(#theta^{*}) (w.r.t. 2^{nd} event plane)");
-  h_mCountEff[QA_CPoly]->GetXaxis()->SetTitleSize(0.05);
+  h_mCountEff[QA_CPoly]->GetXaxis()->SetTitleSize(0.04);
   h_mCountEff[QA_CPoly]->GetXaxis()->CenterTitle();
   h_mCountEff[QA_CPoly]->GetXaxis()->SetNdivisions(505);
   h_mCountEff[QA_CPoly]->GetXaxis()->SetLabelSize(0.03);
-  h_mCountEff[QA_CPoly]->GetYaxis()->SetTitle("Counts");
-  h_mCountEff[QA_CPoly]->GetYaxis()->SetTitleSize(0.05);
+  h_mCountEff[QA_CPoly]->GetYaxis()->SetTitle("counts/efficiency");
+  h_mCountEff[QA_CPoly]->GetYaxis()->SetTitleSize(0.04);
+  h_mCountEff[QA_CPoly]->GetYaxis()->SetTitleOffset(1.4);
   h_mCountEff[QA_CPoly]->GetYaxis()->CenterTitle();
   h_mCountEff[QA_CPoly]->GetYaxis()->SetNdivisions(505);
   h_mCountEff[QA_CPoly]->GetYaxis()->SetLabelSize(0.03);
-  h_mCountEff[QA_CPoly]->GetYaxis()->SetRangeUser(0.9*h_mCountEff[QA_CPoly]->GetMinimum(),1.1*h_mCountEff[QA_CPoly]->GetMaximum());
+  h_mCountEff[QA_CPoly]->GetYaxis()->SetRangeUser(0.8*h_mCountEff[QA_CPoly]->GetMinimum(),1.2*h_mCountEff[QA_CPoly]->GetMaximum());
   h_mCountEff[QA_CPoly]->DrawCopy("pE");
   TF1 *f_CPolyQA = new TF1("f_CPolyQA",SpinDensity,0,1.0,2);
   f_CPolyQA->SetParameter(0,0.33);
@@ -303,7 +363,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   float chi2CPoly = f_CPolyQA->GetChisquare();
   float NDFCPoly = f_CPolyQA->GetNDF();
   string leg_rhoCPoly = Form("#rho_{00} = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",rhoCPoly,err_rhoCPoly,chi2CPoly,NDFCPoly);
-  plotTopLegend((char*)leg_rhoCPoly.c_str(),0.2,0.8,0.04,Color_Counts,0.0,42,1);
+  plotTopLegend((char*)leg_rhoCPoly.c_str(),0.2,0.82,0.04,Color_Counts,0.0,42,1);
 
   string QA_BPoly = Form("BPoly_pt_%d_Centrality_0_EtaGap_0_%s",vmsa::pt_QA[energy],vmsa::mPID[pid].c_str());
   h_mCountEff[QA_BPoly]->SetLineColor(Color_BW);
@@ -324,7 +384,8 @@ void appEffCorr(int energy = 6, int pid = 0)
   float chi2BPoly = f_BPolyQA->GetChisquare();
   float NDFBPoly = f_BPolyQA->GetNDF();
   string leg_rhoBPoly = Form("#rho_{00} = %2.4f #pm %2.4f, #chi^{2}/NDF = %2.2f/%2.2f",rhoBPoly,err_rhoBPoly,chi2BPoly,NDFBPoly);
-  plotTopLegend((char*)leg_rhoBPoly.c_str(),0.2,0.75,0.04,Color_BW,0.0,42,1);
+  plotTopLegend((char*)leg_rhoBPoly.c_str(),0.2,0.77,0.04,Color_BW,0.0,42,1);
+  plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.04,1,0.0,42,1);
 
   TLegend *leg_Poly = new TLegend(0.20,0.2,0.45,0.4);
   leg_Poly->SetFillColor(10);
@@ -417,6 +478,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   h_play->GetYaxis()->SetLabelSize(0.03);
   h_play->GetYaxis()->CenterTitle();
 
+#if _PlotQA_
   TCanvas *c_rho = new TCanvas("c_rho","c_rho",10,10,1000,500);
   c_rho->Divide(2,1);
   for(int i_pad = 0; i_pad < 2; ++i_pad)
@@ -442,8 +504,6 @@ void appEffCorr(int energy = 6, int pid = 0)
   Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,20,Color_Counts,1.3);
   plotTopLegend((char*)"#rho_{00} with pol0 efficiency correction",0.7,0.427,0.04,1,0.0,42,0);
 
-
-
   c_rho->cd(2);
   h_play->DrawCopy("pE");
   PlotLine(0,vmsa::ptMax,1.0/3.0,1.0/3.0,1,2,2);
@@ -459,6 +519,7 @@ void appEffCorr(int energy = 6, int pid = 0)
   Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00[KEY_Rho00_BPolyQA] ,20,Color_BW,1.1);
   Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,20,Color_BW,1.3);
   plotTopLegend((char*)"#rho_{00} with pol0 efficiency correction",0.7,0.427,0.04,1,0.0,42,0);
+#endif
 
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/EffRhoPt.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
@@ -491,4 +552,11 @@ void appEffCorr(int energy = 6, int pid = 0)
     }
   }
   File_OutPut->Close();
+
+#if _PlotQA_
+  c_raw->SaveAs("../figures/rawCountsEff.eps");
+  c_Eff->SaveAs("../figures/effCorrCounts.eps");
+  c_rho->SaveAs("../figures/effRho00Pt.eps");
+  c_efffit->SaveAs("../figures/effPolyFit.eps");
+#endif
 }

@@ -10,6 +10,7 @@
 #include "TGaxis.h"
 #include "TLegend.h"
 #include "TRandom3.h"
+#include "TStyle.h"
 #include "../Utility/functions.h"
 #include "../Utility/draw.h"
 #include "../Utility/StSpinAlignmentCons.h"
@@ -30,6 +31,7 @@ int const MarkerStyleEP   = 29;
 
 void plotMcPhiResCorr(int energy = 6)
 {
+  gStyle->SetOptDate(0);
   TGaxis::SetMaxDigits(4);
   gRandom->SetSeed();
   int const BinRho = floor(60 * gRandom->Rndm());
@@ -137,7 +139,8 @@ void plotMcPhiResCorr(int energy = 6)
   h_PsiEP->GetXaxis()->SetNdivisions(505);
 
   h_PsiEP->GetYaxis()->CenterTitle();
-  h_PsiEP->GetYaxis()->SetRangeUser(0,1.2*h_PsiEP->GetMaximum());
+  if(h_PsiEP->GetMaximum() > h_PsiGaus->GetMaximum()) h_PsiEP->GetYaxis()->SetRangeUser(0,1.2*h_PsiEP->GetMaximum());
+  else h_PsiEP->GetYaxis()->SetRangeUser(0,1.2*h_PsiGaus->GetMaximum());
   h_PsiEP->GetYaxis()->SetNdivisions(505);
   h_PsiEP->SetMarkerStyle(24);
   h_PsiEP->SetMarkerColor(2);
@@ -435,11 +438,15 @@ void plotMcPhiResCorr(int energy = 6)
   h_play->GetXaxis()->CenterTitle();
   h_play->GetXaxis()->SetRangeUser(vmsa::ptMin,vmsa::ptMax);
   h_play->GetXaxis()->SetNdivisions(505);
+  h_play->GetXaxis()->SetLabelSize(0.03);
 
   h_play->GetYaxis()->SetTitle("v_{2}");
   h_play->GetYaxis()->CenterTitle();
-  h_play->GetYaxis()->SetRangeUser(0.0,0.2);
+  // h_play->GetYaxis()->SetRangeUser(0.0,0.2);
+  float v2Max = g_v2Gaus->GetHistogram()->GetMaximum();
+  h_play->GetYaxis()->SetRangeUser(0.0,v2Max);
   h_play->GetYaxis()->SetNdivisions(505);
+  h_play->GetYaxis()->SetLabelSize(0.03);
   h_play->Draw("pE");
   f_v2->Draw("l same");
 
@@ -835,14 +842,14 @@ void plotMcPhiResCorr(int energy = 6)
   if(rhoInPut > 1.0/3.0) leg_rhoL->Draw("same");
   else leg_rhoH->Draw("same");
 
-  // c_Track->SaveAs("c_Track.eps");
+  c_Track->SaveAs("../figures/TrackSampling.eps");
+  c_Psi2->SaveAs("../figures/EventPlaneSmearing.eps");
+  c_v2->SaveAs("../figures/McV2.eps");
   // c_v2fitQA->SaveAs("c_v2fitQA.eps");
   // c_v2fitRP->SaveAs("c_v2fitRP.eps");
   // c_v2fitEP->SaveAs("c_v2fitEP.eps");
-  // c_v2->SaveAs("c_v2.eps");
   // c_rhofitQA->SaveAs("c_rhofitQA.eps");
   // c_rhofitRP->SaveAs("c_rhofitRP.eps");
   // c_rhofitEP->SaveAs("c_rhofitEP.eps");
   // c_rho->SaveAs("c_rho.eps");
-  // c_Psi2->SaveAs("c_Psi2.eps");
 }

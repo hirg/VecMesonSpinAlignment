@@ -38,7 +38,7 @@ TH1D *h_FramePhi[2];
 
 TFile *File_OutPut;
 
-void toyMcPhiDecay(const int energy = 6, const int pid = 0, const int year = 0, const int cut = 0, const int NMax = 1000000)
+void toyMcPhiDecay(const int energy = 6, const int pid = 0, const int year = 0, const int cut = 0, const int NMax = 500000)
 {
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
@@ -179,7 +179,7 @@ void fill(int const kf, TLorentzVector* lPhi, TLorentzVector const& lKplus, TLor
    arr[iArr++] = lRcPhi.M();
 
    McPhiMeson->Fill(arr);
-   if(lRcPhi.Pt() < 10e-4) cout << "lPhi->Pt = " << lPhi->Pt() << ", lRcPhi.Pt = " << lRcPhi.Pt() << endl;
+   // if(lRcPhi.Pt() < 10e-4) cout << "lPhi->Pt = " << lPhi->Pt() << ", lRcPhi.Pt = " << lRcPhi.Pt() << endl;
 }
 
 bool tpcReconstructed(int iParticleIndex, int cent, TLorentzVector const& lKaon)

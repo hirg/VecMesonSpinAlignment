@@ -4,6 +4,19 @@
 # ignore .consign, *.d, *.so, *.eps, *.swp, all the log file and script in StRoot
 *.swp
 temp_gccflags.c
+*/StRoot/**/.consign
+*/StRoot/**/*.d
+*/StRoot/**/*.so
+*/StRoot/**/*.eps
+*/StRoot/**/*.err
+*/StRoot/**/*.log
+*/StRoot/**/*.csh
+*/StRoot/**/*.swp
+*/*.swp
+*/temp_gccflags.c
+*/*_C.*
+*/macro/*_C.*
+
 McPhiResCorr/McPhi*
 McPhiResCorr/*_C.*
 McPhiResCorr/*.pdf
@@ -18,17 +31,6 @@ Utility/compareHistograms/*.root*
 Utility/compareHistograms/compareHistograms.o
 Utility/compareHistograms/compareHistograms
 
-RcPhiEffCorr/.sl*
-RcPhiEffCorr/# ignore .consign, *.d, *.so, *.eps, *.swp, all the log file and script in StRoot
-RcPhiEffCorr/StRoot/**/.consign
-RcPhiEffCorr/StRoot/**/*.d
-RcPhiEffCorr/StRoot/**/*.so
-RcPhiEffCorr/StRoot/**/*.eps
-RcPhiEffCorr/StRoot/**/*.err
-RcPhiEffCorr/StRoot/**/*.log
-RcPhiEffCorr/StRoot/**/*.csh
-RcPhiEffCorr/StRoot/**/*.swp
-RcPhiEffCorr/*.swp
-RcPhiEffCorr/temp_gccflags.c
-RcPhiEffCorr/*_C.*
-RcPhiEffCorr/macro/*_C.*
+figures/*
+
+Embedding/*.root

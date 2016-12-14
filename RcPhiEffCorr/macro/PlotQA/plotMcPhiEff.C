@@ -2,6 +2,7 @@
 #include "TFile.h"
 #include "TH1D.h"
 #include "TCanvas.h"
+#include "TStyle.h"
 #include "../../../Utility/StSpinAlignmentCons.h"
 #include "../../../Utility/draw.h"
 
@@ -12,6 +13,7 @@ float pos_y[8] = {0.95,0.95,0.90,0.90,0.85,0.85,0.80,0.80};
 
 void plotMcPhiEff(int energy = 6, int cent = 9)
 {
+  gStyle->SetOptDate(0);
   string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/Phi/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
   TH1D *h_mEff[vmsa::pt_rebin];
@@ -53,7 +55,9 @@ void plotMcPhiEff(int energy = 6, int cent = 9)
     h_mEff[i_pt]->SetMarkerSize(1.1);
     h_mEff[i_pt]->Draw("pEX0 same");
     string pt_range = Form("p_{T} = %1.1f-%1.1f GeV/c",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
-    Draw_TGAE_Point_new_Symbol(pos_x[i_pt],pos_y[i_pt]-0.1,0.0,0.0,0.0,0.0,vmsa::Style[i_pt],vmsa::Color[i_pt],1.0);
-    plotTopLegend(pt_range.c_str(),pos_x[i_pt]+0.03,pos_y[i_pt]-0.105,0.03,1,0.0,42,0,1);
+    Draw_TGAE_Point_new_Symbol(pos_x[i_pt],pos_y[i_pt]-0.05,0.0,0.0,0.0,0.0,vmsa::Style[i_pt],vmsa::Color[i_pt],1.0);
+    plotTopLegend(pt_range.c_str(),pos_x[i_pt]+0.03,pos_y[i_pt]-0.055,0.03,1,0.0,42,0,1);
   }
+
+  c_eff->SaveAs("../../../figures/effPt.eps");
 }

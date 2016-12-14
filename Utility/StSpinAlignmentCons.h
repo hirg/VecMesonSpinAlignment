@@ -79,7 +79,7 @@ namespace vmsa
   };
   int const pt_rebin_first[NumBeamEnergy] = {0,0,0,0,0,0,0};
   int const pt_rebin_last[NumBeamEnergy]  = {1,2,3,4,5,6,8};
-  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,1};
+  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,2};
   int const pt_RawQA[NumBeamEnergy]    = {2,4,6,8,10,12,14};
 
   std::string const Centrality[9] = {"70%-80%","60%-70%","50%-60%","40%-50%","30%-40%","20%-30%","10%-20%","5%-10%","0%-5%"}; // Centrality bin

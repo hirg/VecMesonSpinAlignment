@@ -8,6 +8,7 @@
 #include "TLegend.h"
 #include "TLine.h"
 #include "TLatex.h"
+#include "TStyle.h"
 #include "../Utility/functions.h"
 #include "../Utility/draw.h"
 #include "../Utility/StSpinAlignmentCons.h"
@@ -16,6 +17,7 @@ using namespace std;
 
 void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
 {
+  gStyle->SetOptDate(0);
   string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
   TH2F *h_cosRP[60], *h_cosGaus[60], *h_cosEP[60];
@@ -151,7 +153,6 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   plotTopLegend(leg_p1EP.c_str(),0.58,0.34,0.03,kRed,0.0,42,1);
   plotTopLegend(leg_chi2EP.c_str(),0.58,0.28,0.03,kRed,0.0,42,1);
 
-  // c_res->SaveAs("c_res.eps");
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/McResCorr/Mc%sResCorrFactor.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
@@ -163,5 +164,7 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   g_ResEP->SetName(KEY_ResEP.c_str());
   g_ResEP->Write();
   File_OutPut->Close();
+
+  c_res->SaveAs("../figures/resCorrFactor.eps");
 }
 

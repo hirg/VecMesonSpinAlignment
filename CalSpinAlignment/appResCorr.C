@@ -6,6 +6,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TLegend.h"
 #include "TF1.h"
+#include "TStyle.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/type.h"
 #include "../Utility/draw.h"
@@ -42,6 +43,7 @@ TGraphAsymmErrors* calResCorr(TGraphAsymmErrors *g_rho, TF1 *f_res, std::string 
 
 void appResCorr(int energy = 6, int pid = 0)
 {
+  gStyle->SetOptDate(0);
   string InPutRes  = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/McResCorr/Mc%sResCorrFactor.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_Res = TFile::Open(InPutRes.c_str());
   TGraMap g_Res;
@@ -109,9 +111,9 @@ void appResCorr(int energy = 6, int pid = 0)
 
 #if _PlotQA_
   TH1F *h_play = (TH1F*)File_InPut->Get("h_play");
-  TCanvas *c_resCorr =  new TCanvas("c_resCorr","c_resCorr",10,10,1000,1000);
-  c_resCorr->Divide(2,2);
-  for(int i_pad = 0; i_pad < 4; ++i_pad)
+  TCanvas *c_resCorr =  new TCanvas("c_resCorr","c_resCorr",10,10,1000,500);
+  c_resCorr->Divide(2,1);
+  for(int i_pad = 0; i_pad < 2; ++i_pad)
   {
     c_resCorr->cd(i_pad+1);
     c_resCorr->cd(i_pad+1)->SetLeftMargin(0.15);
@@ -123,6 +125,7 @@ void appResCorr(int energy = 6, int pid = 0)
   }
 
   c_resCorr->cd(1);
+  plotTopLegend((char*)"bin counting",0.7,0.47,0.04,1,0.0,42,0);
   string KEY_Rho00_CPointQA = Form("Rho00_CPoint_Centrality_%d_EtaGap_%d_%s",vmsa::Cent_QA,vmsa::Eta_QA,vmsa::mPID[pid].c_str());
   Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00Eff[KEY_Rho00_CPointQA],24,Color_Counts,1.1);
   Draw_TGAE_Point_new_Symbol(0.5,0.45,0.0,0.0,0.0,0.0,24,Color_Counts,1.3);
@@ -131,16 +134,17 @@ void appResCorr(int energy = 6, int pid = 0)
   Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,29,kRed,1.3);
   plotTopLegend((char*)"#rho_{00} with resolution correction",0.7,0.427,0.04,1,0.0,42,0);
 
-  c_resCorr->cd(2);
-  string KEY_Rho00_CPolyQA = Form("Rho00_CPoly_Centrality_%d_EtaGap_%d_%s",vmsa::Cent_QA,vmsa::Eta_QA,vmsa::mPID[pid].c_str());
-  Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00Eff[KEY_Rho00_CPolyQA],20,Color_Counts,1.1);
-  Draw_TGAE_Point_new_Symbol(0.5,0.45,0.0,0.0,0.0,0.0,20,Color_Counts,1.3);
-  plotTopLegend((char*)"#rho_{00} with pol0 efficiency correction",0.7,0.447,0.04,1,0.0,42,0);
-  Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00[KEY_Rho00_CPolyQA],29,kRed,1.1);
-  Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,29,kRed,1.3);
-  plotTopLegend((char*)"#rho_{00} with resolution correction",0.7,0.427,0.04,1,0.0,42,0);
+  // c_resCorr->cd(2);
+  // string KEY_Rho00_CPolyQA = Form("Rho00_CPoly_Centrality_%d_EtaGap_%d_%s",vmsa::Cent_QA,vmsa::Eta_QA,vmsa::mPID[pid].c_str());
+  // Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00Eff[KEY_Rho00_CPolyQA],20,Color_Counts,1.1);
+  // Draw_TGAE_Point_new_Symbol(0.5,0.45,0.0,0.0,0.0,0.0,20,Color_Counts,1.3);
+  // plotTopLegend((char*)"#rho_{00} with pol0 efficiency correction",0.7,0.447,0.04,1,0.0,42,0);
+  // Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00[KEY_Rho00_CPolyQA],29,kRed,1.1);
+  // Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,29,kRed,1.3);
+  // plotTopLegend((char*)"#rho_{00} with resolution correction",0.7,0.427,0.04,1,0.0,42,0);
 
-  c_resCorr->cd(3);
+  c_resCorr->cd(2);
+  plotTopLegend((char*)"breit wigner fitting",0.7,0.47,0.04,1,0.0,42,0);
   string KEY_Rho00_BPointQA = Form("Rho00_BPoint_Centrality_%d_EtaGap_%d_%s",vmsa::Cent_QA,vmsa::Eta_QA,vmsa::mPID[pid].c_str());
   Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00Eff[KEY_Rho00_BPointQA],24,Color_BW,1.1);
   Draw_TGAE_Point_new_Symbol(0.5,0.45,0.0,0.0,0.0,0.0,24,Color_BW,1.3);
@@ -149,31 +153,31 @@ void appResCorr(int energy = 6, int pid = 0)
   Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,29,kRed,1.3);
   plotTopLegend((char*)"#rho_{00} with resolution correction",0.7,0.427,0.04,1,0.0,42,0);
 
-  c_resCorr->cd(4);
-  string KEY_Rho00_BPolyQA = Form("Rho00_BPoly_Centrality_%d_EtaGap_%d_%s",vmsa::Cent_QA,vmsa::Eta_QA,vmsa::mPID[pid].c_str());
-  Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00Eff[KEY_Rho00_BPolyQA],20,Color_BW,1.1);
-  Draw_TGAE_Point_new_Symbol(0.5,0.45,0.0,0.0,0.0,0.0,20,Color_BW,1.3);
-  plotTopLegend((char*)"#rho_{00} with pol0 efficiency correction",0.7,0.447,0.04,1,0.0,42,0);
-  Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00[KEY_Rho00_BPolyQA],29,kRed,1.1);
-  Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,29,kRed,1.3);
-  plotTopLegend((char*)"#rho_{00} with resolution correction",0.7,0.427,0.04,1,0.0,42,0);
+  // c_resCorr->cd(4);
+  // string KEY_Rho00_BPolyQA = Form("Rho00_BPoly_Centrality_%d_EtaGap_%d_%s",vmsa::Cent_QA,vmsa::Eta_QA,vmsa::mPID[pid].c_str());
+  // Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00Eff[KEY_Rho00_BPolyQA],20,Color_BW,1.1);
+  // Draw_TGAE_Point_new_Symbol(0.5,0.45,0.0,0.0,0.0,0.0,20,Color_BW,1.3);
+  // plotTopLegend((char*)"#rho_{00} with pol0 efficiency correction",0.7,0.447,0.04,1,0.0,42,0);
+  // Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_mRho00[KEY_Rho00_BPolyQA],29,kRed,1.1);
+  // Draw_TGAE_Point_new_Symbol(0.5,0.43,0.0,0.0,0.0,0.0,29,kRed,1.3);
+  // plotTopLegend((char*)"#rho_{00} with resolution correction",0.7,0.427,0.04,1,0.0,42,0);
 
-  // TCanvas *c_resPlot = new TCanvas("c_resPlot","c_resPlot",10,10,800,800);
-  // c_resPlot->cd();
-  // c_resPlot->cd()->SetLeftMargin(0.15);
-  // c_resPlot->cd()->SetBottomMargin(0.15);
-  // c_resPlot->cd()->SetGrid(0,0);
-  // c_resPlot->cd()->SetTicks(1,1);
-  // h_play->Draw("PE");
-  // PlotLine(0.0,vmsa::ptMax,1.0/3.0,1.0/3.0,1,2,2);
-  // g_mRho00[KEY_Rho00_CPointQA]->SetMarkerStyle(30);
-  // g_mRho00[KEY_Rho00_CPointQA]->SetMarkerColor(2);
-  // g_mRho00[KEY_Rho00_CPointQA]->SetMarkerSize(1.5);
-  // g_mRho00[KEY_Rho00_CPointQA]->SetLineColor(2);
-  // g_mRho00[KEY_Rho00_CPointQA]->Draw("pE same");
-  // plotTopLegend((char*)"AuAu 200 GeV, 20%-60%",0.7,0.45,0.04,1,0.0,42,0);
-  // Draw_TGAE_Point_new_Symbol(0.4,0.43,0.0,0.0,0.0,0.0,30,2,1.5);
-  // plotTopLegend((char*)"#phi-meson #rho_{00} with efficiency and resolution correction",0.6,0.427,0.03,1,0.0,42,0);
+  TCanvas *c_resPlot = new TCanvas("c_resPlot","c_resPlot",10,10,800,800);
+  c_resPlot->cd();
+  c_resPlot->cd()->SetLeftMargin(0.15);
+  c_resPlot->cd()->SetBottomMargin(0.15);
+  c_resPlot->cd()->SetGrid(0,0);
+  c_resPlot->cd()->SetTicks(1,1);
+  h_play->Draw("PE");
+  PlotLine(0.0,vmsa::ptMax,1.0/3.0,1.0/3.0,1,2,2);
+  g_mRho00[KEY_Rho00_CPointQA]->SetMarkerStyle(30);
+  g_mRho00[KEY_Rho00_CPointQA]->SetMarkerColor(2);
+  g_mRho00[KEY_Rho00_CPointQA]->SetMarkerSize(1.5);
+  g_mRho00[KEY_Rho00_CPointQA]->SetLineColor(2);
+  g_mRho00[KEY_Rho00_CPointQA]->Draw("pE same");
+  plotTopLegend((char*)"AuAu 200 GeV, 20%-60%",0.7,0.45,0.04,1,0.0,42,0);
+  Draw_TGAE_Point_new_Symbol(0.4,0.43,0.0,0.0,0.0,0.0,30,2,1.5);
+  plotTopLegend((char*)"#phi-meson #rho_{00} with efficiency and resolution correction",0.6,0.427,0.03,1,0.0,42,0);
 #endif
 
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/ResRhoPt.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
@@ -196,4 +200,6 @@ void appResCorr(int energy = 6, int pid = 0)
     }
   }
   File_OutPut->Close();
+
+  c_resCorr->SaveAs("../figures/resRhoPt.eps");
 }
