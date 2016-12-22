@@ -5,7 +5,7 @@ date
 
 if [ $# -eq 0 ]
 then
-  PID=Kplus
+  PID=Kminus
   Energy=39GeV
   # InPutList="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/List/Kaon_list/run11/${PID}.list"
   InPutList="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/List/Kaon_list/${PID}.list"

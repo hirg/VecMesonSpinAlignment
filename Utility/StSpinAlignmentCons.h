@@ -2,6 +2,7 @@
 #define StSpinAlignmentCons_h
 
 #include <string>
+#include "TString.h"
 #include "StarClassLibrary/SystemOfUnits.h"
 
 namespace vmsa
@@ -61,7 +62,7 @@ namespace vmsa
   int const Bin_VertexZ = 10;
   int const Bin_Phi_Psi = 5;
   int const Buffer_depth = 3;
-  string const MixEvent[2] = {"SE","ME"};
+  TString const MixEvent[2] = {"SE","ME"};
   //--------------------------------------------------
 
   // used in CalSpinAlginment
@@ -119,6 +120,7 @@ namespace vmsa
   int const CTS_start = 0;
   int const CTS_stop  = 7;
 
+  int const EtaGap_total = 4; // EtaGap bin
   int const Eta_start = 0; // EtaGap bin
   int const Eta_stop  = 1;
   int const Eta_QA    = 0;

@@ -19,8 +19,8 @@ class StVecMesonCorrection : public TObject
 
 
     // ReCenter Correction
-    bool passTrackEtaEast(StPicoTrack*,Int_t,Int_t);
-    bool passTrackEtaWest(StPicoTrack*,Int_t,Int_t);
+    bool passTrackEtaEast(StPicoTrack*,Int_t);
+    bool passTrackEtaWest(StPicoTrack*,Int_t);
     bool passTrackFull(StPicoTrack*);
 
     TVector2 calq2Vector(StPicoTrack*);
@@ -39,9 +39,9 @@ class StVecMesonCorrection : public TObject
     void addTrack_B(StPicoTrack* track, Int_t Cent9, Int_t RunIndex, Int_t i); // i = vz_sign, j = eta_gap || random sub B
     void Randomization();
 
-    TVector2 getReCenterPar_East(Int_t order, Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t eta_gap, Int_t method); // order: 0 = 2nd, 1 = 3rd || method: 0 = EP, 1 = SP
-    TVector2 getReCenterPar_West(Int_t order, Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t eta_gap, Int_t method); // order: 0 = 2nd, 1 = 3rd || method: 0 = EP, 1 = SP
-    TVector2 getReCenterPar_Full(Int_t order, Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t method); // order: 0 = 2nd, 1 = 3rd || method: 0 = EP, 1 = SP
+    TVector2 getReCenterPar_East(Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t eta_gap);
+    TVector2 getReCenterPar_West(Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t eta_gap);
+    TVector2 getReCenterPar_Full(Int_t Cent9, Int_t RunIndex, Int_t vz_sign);
 
     void print(TVector2);
     void clear();
@@ -94,8 +94,8 @@ class StVecMesonCorrection : public TObject
     TFile *mInPutFile_Res;
 
     static TString mVStr[2];
-    static TString mOrder[2];
-    static TString mMethod[2];
+    static TString mOrder;
+    static TString mMethod;
 
   ClassDef(StVecMesonCorrection,1)
 };

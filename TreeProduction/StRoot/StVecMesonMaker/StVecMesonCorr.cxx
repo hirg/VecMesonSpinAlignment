@@ -1,4 +1,4 @@
-#include "StVecMesonCorrection.h"
+#include "StVecMesonCorr.h"
 #include "../../../Utility/StSpinAlignmentCons.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
 #include "StRoot/StPicoDstMaker/StPicoEvent.h"
@@ -50,7 +50,7 @@ StVecMesonCorrection::~StVecMesonCorrection()
 
 void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 {
-  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/RecenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mBeamEnergy[mEnergy].Data());
+  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/RecenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
 
   mInPutFile = TFile::Open(InPutFile.Data());
 
@@ -79,10 +79,10 @@ void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 
 void StVecMesonCorrection::InitShiftCorrection(Int_t mEnergy)
 {
-  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Correction/Shift/file_%s_Corr_Shift.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mBeamEnergy[mEnergy].Data());
+  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Correction/Shift/file_%s_Corr_Shift.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Shift = TFile::Open(InPutFile_Shift.Data());
 
-  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mBeamEnergy[mEnergy].Data());
+  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Res = TFile::Open(InPutFile_Res.Data());
 }
 
@@ -494,8 +494,8 @@ TVector2 StVecMesonCorrection::calPsi2_East_EP(Int_t j, Int_t k) // j = eta_gap,
   Float_t Qx = mQ2Vector_East_EP[j].X();
   Float_t Qy = mQ2Vector_East_EP[j].Y();
   Float_t Psi = TMath::ATan2(Qy,Qx)/2.0;
-  Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder2[k]*Psi);
-  Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder2[k]*Psi);
+  Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder[k]*Psi);
+  Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder[k]*Psi);
 
   PsiVector.Set(Psi_Cos,Psi_Sin);
 
@@ -509,8 +509,8 @@ TVector2 StVecMesonCorrection::calPsi2_West_EP(Int_t j, Int_t k) // j = eta_gap,
   Float_t Qx = mQ2Vector_West_EP[j].X();
   Float_t Qy = mQ2Vector_West_EP[j].Y();
   Float_t Psi = TMath::ATan2(Qy,Qx)/2.0;
-  Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder2[k]*Psi);
-  Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder2[k]*Psi);
+  Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder[k]*Psi);
+  Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder[k]*Psi);
 
   PsiVector.Set(Psi_Cos,Psi_Sin);
 
@@ -524,8 +524,8 @@ TVector2 StVecMesonCorrection::calPsi2_Full_EP(Int_t k) // k = ShiftOrder
   Float_t Qx = mQ2Vector_Full_EP.X();
   Float_t Qy = mQ2Vector_Full_EP.Y();
   Float_t Psi = TMath::ATan2(Qy,Qx)/2.0;
-  Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder2[k]*Psi);
-  Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder2[k]*Psi);
+  Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder[k]*Psi);
+  Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder[k]*Psi);
 
   PsiVector.Set(Psi_Cos,Psi_Sin);
 
@@ -572,7 +572,7 @@ Float_t StVecMesonCorrection::calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9,
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    delta_Psi += (1.0/2.0)*(2.0/(Float_t)(k+1))*(-1.0*mean_sin[k]*TMath::Cos(vmsa::mShiftOrder2[k]*Psi_ReCenter)+mean_cos[k]*TMath::Sin(vmsa::mShiftOrder2[k]*Psi_ReCenter));
+    delta_Psi += (1.0/2.0)*(2.0/(Float_t)(k+1))*(-1.0*mean_sin[k]*TMath::Cos(vmsa::mShiftOrder[k]*Psi_ReCenter)+mean_cos[k]*TMath::Sin(vmsa::mShiftOrder[k]*Psi_ReCenter));
   }
 
   Float_t Psi_Shift_raw = Psi_ReCenter + delta_Psi;
@@ -601,7 +601,7 @@ Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9,
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    delta_Psi += (1.0/2.0)*(2.0/(Float_t)(k+1))*(-1.0*mean_sin[k]*TMath::Cos(vmsa::mShiftOrder2[k]*Psi_ReCenter)+mean_cos[k]*TMath::Sin(vmsa::mShiftOrder2[k]*Psi_ReCenter));
+    delta_Psi += (1.0/2.0)*(2.0/(Float_t)(k+1))*(-1.0*mean_sin[k]*TMath::Cos(vmsa::mShiftOrder[k]*Psi_ReCenter)+mean_cos[k]*TMath::Sin(vmsa::mShiftOrder[k]*Psi_ReCenter));
   }
 
   Float_t Psi_Shift_raw = Psi_ReCenter + delta_Psi;
@@ -616,7 +616,7 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
   if(passTrackFull(track))
   {
     Float_t w = getWeight(track);
-    QVector_sub = mQ2Vector_Full_EP - w*(calq2Vector(track) - getReCenterPar_Full(0,Cent9,runIndex,vz_sign,0));
+    QVector_sub = mQ2Vector_Full_EP - w*(calq2Vector(track) - getReCenterPar_Full(Cent9,runIndex,vz_sign));
 //    QVector_sub = mQ2Vector_Full_EP; 
   }
   else
@@ -641,7 +641,7 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    delta_Psi += (1.0/2.0)*(2.0/(Float_t)(k+1))*(-1.0*mean_sin[k]*TMath::Cos(vmsa::mShiftOrder2[k]*Psi_ReCenter)+mean_cos[k]*TMath::Sin(vmsa::mShiftOrder2[k]*Psi_ReCenter));
+    delta_Psi += (1.0/2.0)*(2.0/(Float_t)(k+1))*(-1.0*mean_sin[k]*TMath::Cos(vmsa::mShiftOrder[k]*Psi_ReCenter)+mean_cos[k]*TMath::Sin(vmsa::mShiftOrder[k]*Psi_ReCenter));
   }
 
   Float_t Psi_Shift_raw = Psi_ReCenter + delta_Psi;

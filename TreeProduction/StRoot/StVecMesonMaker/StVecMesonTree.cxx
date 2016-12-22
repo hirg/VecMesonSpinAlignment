@@ -470,8 +470,6 @@ void StVecMesonTree::clearEvent()
   {
     mQVector2East[j].Set(-999.9,-999.9);
     mQVector2West[j].Set(-999.9,-999.9);
-    mQVector3East[j].Set(-999.9,-999.9);
-    mQVector3West[j].Set(-999.9,-999.9);
   }
 }
 

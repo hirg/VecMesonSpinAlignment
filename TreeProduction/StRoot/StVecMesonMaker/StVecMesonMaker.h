@@ -14,7 +14,7 @@ class StVecMesonCut;
 class StVecMesonProManger;
 class StVecMesonCorrection;
 class StVecMesonHistoManger;
-class StVecMesonV0;
+class StVecMesonTree;
 
 class StVecMesonMaker : public StMaker {
   public:
@@ -36,7 +36,7 @@ class StVecMesonMaker : public StMaker {
     StVecMesonProManger *mVecMesonProManger;
     StVecMesonCorrection *mVecMesonCorrection;
     StVecMesonHistoManger *mVecMesonHistoManger;
-    StVecMesonV0 *mVecMesonV0;
+    StVecMesonTree *mVecMesonTree;
     
     Int_t mMode;
     Int_t mEnergy;

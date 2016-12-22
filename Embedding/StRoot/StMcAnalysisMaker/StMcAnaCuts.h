@@ -48,8 +48,8 @@ namespace McAnaCuts
   std::vector<unsigned int> const interesting_triggers = getAllTriggers();
 
   float const mcTrackStartVtxR = 1.0; // maximum
-  int const geantId = 11; // K+
-  // int const geantId = 12; // K-
+  // int const geantId = 11; // K+
+  int const geantId = 12; // K-
 
   StDedxMethod dedxMethod = kLikelihoodFitId;
 

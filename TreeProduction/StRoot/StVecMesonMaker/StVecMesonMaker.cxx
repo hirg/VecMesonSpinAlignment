@@ -2,7 +2,7 @@
 #include "../../../Utility/StSpinAlignmentCons.h"
 #include "StVecMesonCut.h"
 #include "StVecMesonProManger.h"
-#include "StVecMesonCorrection.h"
+#include "StVecMesonCorr.h"
 #include "StVecMesonHistoManger.h"
 #include "StVecMesonTree.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
@@ -37,25 +37,17 @@ StVecMesonMaker::StVecMesonMaker(const char* name, StPicoDstMaker *picoMaker, co
 
   if(mMode == 0)
   {
-    mOutPut_ReCenterPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/RecenterParameter/file_%s_ReCenterPar_",vmsa::mBeamEnergy[energy].Data(),vmsa::mBeamEnergy[energy].Data());
-    mOutPut_ReCenterPar += jobCounter;
-    mOutPut_ReCenterPar += ".root";
+    mOutPut_ReCenterPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/RecenterParameter/file_%s_ReCenterPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
   if(mMode == 1)
   {
-    mOutPut_Corr_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Correction/Shift/file_%s_Corr_Shift_",vmsa::mBeamEnergy[energy].Data(),vmsa::mBeamEnergy[energy].Data()); 
-    mOutPut_Corr_Shift += jobCounter;
-    mOutPut_Corr_Shift += ".root";
+    mOutPut_Corr_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Correction/Shift/file_%s_Corr_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
 
-    mOutPut_Corr_ReCenter = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Correction/ReCenter/file_%s_Corr_ReCenter_",vmsa::mBeamEnergy[energy].Data(),vmsa::mBeamEnergy[energy].Data()); 
-    mOutPut_Corr_ReCenter += jobCounter;
-    mOutPut_Corr_ReCenter += ".root";
+    mOutPut_Corr_ReCenter = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Correction/ReCenter/file_%s_Corr_ReCenter_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
   }
   if(mMode == 3)
   {
-    mOutPut_Phi = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/file_%s_Phi_%s_",vmsa::mBeamEnergy[energy].Data(),vmsa::mBeamEnergy[energy].Data(),vmsa::MixEvent[mFlag_ME].Data()); 
-    mOutPut_Phi += jobCounter;
-    mOutPut_Phi += ".root";
+    mOutPut_Phi = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/file_%s_Phi_%s_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::MixEvent[mFlag_ME].Data(),jobCounter); 
   }
 }
 
@@ -73,7 +65,7 @@ Int_t StVecMesonMaker::Init()
   mVecMesonCut = new StVecMesonCut(mEnergy);
   mVecMesonProManger = new StVecMesonProManger();
   mVecMesonCorrection = new StVecMesonCorrection(mEnergy);
-  mVecMesonHistoManger = new StVecMesonHistoManger(mEnergy);
+  mVecMesonHistoManger = new StVecMesonHistoManger();
 
   if(mMode == 0)
   {
@@ -95,10 +87,10 @@ Int_t StVecMesonMaker::Init()
   }
   if(mMode == 3)
   {
-    mVecMesonV0 = new StVecMesonV0(mEnergy);
+    mVecMesonTree = new StVecMesonTree(mEnergy);
     mFile_Phi = new TFile(mOutPut_Phi.Data(),"RECREATE");
     mFile_Phi->cd();
-    mVecMesonV0->InitPhi();
+    mVecMesonTree->InitPhi();
     mVecMesonCorrection->InitReCenterCorrection(mEnergy);
     mVecMesonCorrection->InitShiftCorrection(mEnergy);
   }
@@ -139,7 +131,7 @@ Int_t StVecMesonMaker::Finish()
     if(mOutPut_Phi != "")
     {
       mFile_Phi->cd();
-      mVecMesonV0->WritePhiMass2();
+      mVecMesonTree->WritePhiMass2();
       mFile_Phi->Close();
     }
   }
@@ -277,13 +269,16 @@ Int_t StVecMesonMaker::Make()
     }
     if(mMode == 0) // fill raw EP
     {
-      if(mVecMesonCorrection->passTrackEtaNumCut(j))
+      for(Int_t j = 0; j < 4; j++) // eta_gap loop
       {
-	TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(j,0); // 0 = eta_gap, 1 = east/west
-	Float_t Psi2_East = TMath::ATan2(Q2East.Y(),Q2East.X())/2.0;
-	TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(j,1); // 0 = eta_gap, 1 = east/west
-	Float_t Psi2_West = TMath::ATan2(Q2West.Y(),Q2West.X())/2.0;
-	mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West,j);
+	if(mVecMesonCorrection->passTrackEtaNumCut(j))
+	{
+	  TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(j,0); // 0 = eta_gap, 1 = east/west
+	  Float_t Psi2_East = TMath::ATan2(Q2East.Y(),Q2East.X())/2.0;
+	  TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(j,1); // 0 = eta_gap, 1 = east/west
+	  Float_t Psi2_West = TMath::ATan2(Q2West.Y(),Q2West.X())/2.0;
+	  mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West,j);
+	}
       }
       TVector2 Q2Full = mVecMesonCorrection->getQVectorRaw(-1,2);
       Float_t Psi2_Full = TMath::ATan2(Q2Full.Y(),Q2Full.X())/2.0;
@@ -383,19 +378,19 @@ Int_t StVecMesonMaker::Make()
 	Int_t N_non_prim = mVecMesonCut->getNnonprim();
 	Int_t N_Tof_match = mVecMesonCut->getMatchedToF();
 
-	// pass the event information to StVecMesonV0
-	mVecMesonV0->clearEvent();
-	mVecMesonV0->passEvent(N_prim, N_non_prim, N_Tof_match);
+	// pass the event information to StVecMesonTree
+	mVecMesonTree->clearEvent();
+	mVecMesonTree->passEvent(N_prim, N_non_prim, N_Tof_match);
 
 	// 2nd sub event plane
-	mVecMesonV0->passEventPlane2East(Q2East[0],Q2East[1],Q2East[2],Q2East[3]);
-	mVecMesonV0->passEventPlane2West(Q2West[0],Q2West[1],Q2West[2],Q2West[3]);
+	mVecMesonTree->passEventPlane2East(Q2East[0],Q2East[1],Q2East[2],Q2East[3]);
+	mVecMesonTree->passEventPlane2West(Q2West[0],Q2West[1],Q2West[2],Q2West[3]);
 
 	// Number of Track in East and West part of TPC
-	mVecMesonV0->passNumTrackEast(NumTrackEast[0],NumTrackEast[1],NumTrackEast[2],NumTrackEast[3]);
-	mVecMesonV0->passNumTrackWest(NumTrackWest[0],NumTrackWest[1],NumTrackWest[2],NumTrackWest[3]);
+	mVecMesonTree->passNumTrackEast(NumTrackEast[0],NumTrackEast[1],NumTrackEast[2],NumTrackEast[3]);
+	mVecMesonTree->passNumTrackWest(NumTrackWest[0],NumTrackWest[1],NumTrackWest[2],NumTrackWest[3]);
 
-	mVecMesonV0->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2_East);
+	mVecMesonTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2_East);
       }
       mVecMesonCorrection->clear();
     }

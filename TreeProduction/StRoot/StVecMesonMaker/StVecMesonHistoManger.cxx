@@ -49,7 +49,7 @@ void StVecMesonHistoManger::FillEP_Eta(Float_t Psi2_East, Float_t Psi2_West, Int
 
 void StVecMesonHistoManger::FillEP_Full(Float_t Psi2_Full)
 {
-  h_Full->Fill(Psi2);
+  h_Full->Fill(Psi2_Full);
 }
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
