@@ -50,7 +50,7 @@ StVecMesonCorrection::~StVecMesonCorrection()
 
 void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 {
-  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/RecenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/RecenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
 
   mInPutFile = TFile::Open(InPutFile.Data());
 
