@@ -1,5 +1,5 @@
-#ifndef StTriFlowMEKey_h
-#define StTriFlowMEKey_h
+#ifndef StVecMesonMEKey_h
+#define StVecMesonMEKey_h
 #include "StPhysicalHelixD.hh"
 #include "Rtypes.h"
 #include <map>

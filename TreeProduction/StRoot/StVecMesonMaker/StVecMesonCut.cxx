@@ -1,5 +1,5 @@
-#include "StTriFlowCut.h"
-#include "StTriFlowConstants.h"
+#include "StVecMesonCut.h"
+#include "../../../Utility/StSpinAlignmentCons.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
 #include "StRoot/StPicoDstMaker/StPicoEvent.h"
 #include "StRoot/StPicoDstMaker/StPicoTrack.h"
@@ -7,12 +7,12 @@
 #include "StRoot/StRefMultCorr/CentralityMaker.h"
 #include "StMessMgr.h"
 
-ClassImp(StTriFlowCut)
+ClassImp(StVecMesonCut)
 
-StRefMultCorr* StTriFlowCut::mRefMultCorr = NULL;
+StRefMultCorr* StVecMesonCut::mRefMultCorr = NULL;
 //---------------------------------------------------------------------------------
 
-StTriFlowCut::StTriFlowCut(Int_t energy)
+StVecMesonCut::StVecMesonCut(Int_t energy)
 {
   mEnergy = energy;
   if(!mRefMultCorr)
@@ -23,14 +23,14 @@ StTriFlowCut::StTriFlowCut(Int_t energy)
 
 //---------------------------------------------------------------------------------
 
-StTriFlowCut::~StTriFlowCut()
+StVecMesonCut::~StVecMesonCut()
 {
   /* */
 }
 
 //---------------------------------------------------------------------------------
 
-bool StTriFlowCut::passEventCut(StPicoDst *pico)
+bool StVecMesonCut::passEventCut(StPicoDst *pico)
 {
   // initialize mMatchedToF
   mMatchedToF = 0;
@@ -53,9 +53,6 @@ bool StTriFlowCut::passEventCut(StPicoDst *pico)
   const Float_t vzVpd = event->vzVpd();
   const Bool_t isBES = (event->energy() < 200.);
   mRefMultCorr->init(runId);
-//  mRefMultCorr->print();
-//  cout << "StTriFLowV0:" << endl;
-//  cout << mRefMultCorr->getWeight() << endl;
 
   // StRefMultCorr bad run cut
   if(mRefMultCorr->isBadRun(runId))
@@ -71,19 +68,19 @@ bool StTriFlowCut::passEventCut(StPicoDst *pico)
 
   // event vertex cut
   // vz cut
-  if(fabs(vz) > TriFlow::mVzMaxMap[event->energy()])
+  if(fabs(vz) > vmsa::mVzMaxMap[mEnergy])
   {
     return kFALSE;
   }
   // vr cut
-  if(sqrt(vx*vx+vy*vy) > TriFlow::mVrMax)
+  if(sqrt(vx*vx+vy*vy) > vmsa::mVrMax)
   {
     return kFALSE;
   }
   // vz-vzVpd cut for 200 GeV
   if(!isBES)
   {
-    if(fabs(vz-vzVpd) > TriFlow::mVzVpdDiffMax)
+    if(fabs(vz-vzVpd) > vmsa::mVzVpdDiffMax)
     {
       return kFALSE;
     }
@@ -92,8 +89,6 @@ bool StTriFlowCut::passEventCut(StPicoDst *pico)
   // refMult (0-80%) cut
   if(!isBES) mRefMultCorr->initEvent(refMult,vz,zdcX); // 200GeV
   if(isBES) mRefMultCorr->initEvent(refMult,vz); // BES
-//  cout << "eventId from StTriFlowCut: " << event->eventId()  << endl;
-//  cout << "Centrality from StTriFlowCut: " << mRefMultCorr->getCentralityBin9() << endl;
   if(!mRefMultCorr->isRefMultOk())
   {
     return kFALSE;
@@ -112,7 +107,7 @@ bool StTriFlowCut::passEventCut(StPicoDst *pico)
       continue;
     }
     // stop loop if already have enough TOF matched points
-//    if(nMatchedToF >= TriFlow::mMatchedToFMin)
+//    if(nMatchedToF >= vmsa::mMatchedToFMin)
 //    {
 //      return kTRUE;
 //    }
@@ -135,7 +130,7 @@ bool StTriFlowCut::passEventCut(StPicoDst *pico)
   mN_non_prim = nN_non_prim;
 
 
-  if(nMatchedToF < TriFlow::mMatchedToFMin)
+  if(nMatchedToF < vmsa::mMatchedToFMin)
   {
     return kFALSE;
   }
@@ -145,23 +140,23 @@ bool StTriFlowCut::passEventCut(StPicoDst *pico)
 
 //---------------------------------------------------------------------------------
 
-Int_t StTriFlowCut::getMatchedToF()
+Int_t StVecMesonCut::getMatchedToF()
 {
   return mMatchedToF;
 }
 
-Int_t StTriFlowCut::getNpirm()
+Int_t StVecMesonCut::getNpirm()
 {
   return mN_prim;
 }
 
-Int_t StTriFlowCut::getNnonprim()
+Int_t StVecMesonCut::getNnonprim()
 {
   return mN_non_prim;
 }
 //---------------------------------------------------------------------------------
 
-Float_t StTriFlowCut::getMass2(StPicoTrack *track)
+Float_t StVecMesonCut::getMass2(StPicoTrack *track)
 {
   Float_t Mass2 = -100.0;
   Float_t Beta = track->btofBeta();
@@ -175,7 +170,7 @@ Float_t StTriFlowCut::getMass2(StPicoTrack *track)
   return Mass2;
 }
 
-Float_t StTriFlowCut::getV0Mass2(StPicoTrack *track)
+Float_t StVecMesonCut::getV0Mass2(StPicoTrack *track)
 {
   Float_t Mass2 = -100.0;
   Float_t Beta = track->btofBeta();
@@ -189,104 +184,59 @@ Float_t StTriFlowCut::getV0Mass2(StPicoTrack *track)
   return Mass2;
 }
 
-bool StTriFlowCut::passPIDCut(StPicoTrack *track)
-{
-  // mass2 cut
-  Float_t Mass2 = getMass2(track);
-  if(Mass2 < TriFlow::mMass2Min)
-  {
-    return kFALSE;
-  }
-
-  // nHitsDedx cut
-  Int_t nHitsDedx = track->nHitsDedx();
-  if(nHitsDedx < TriFlow::mHitsDedxMin)
-  {
-    return kFALSE;
-  }
-
-  // ToFYLocal cut
-  Float_t ToFYLocal = track->btofYLocal();
-  if(fabs(ToFYLocal) > TriFlow::mToFYLocalMax)
-  {
-    return kFALSE;
-  }
-
-  return kTRUE;
-}
-
-bool StTriFlowCut::passSigElectronCut(StPicoTrack* track, Float_t scale_nSigma_factor)
-{
-  Float_t nSigmaElectron = track->nSigmaElectron();
-  if(fabs(nSigmaElectron*scale_nSigma_factor) > TriFlow::mNSigmaElectronMax)
-  {
-    return kFALSE;
-  }
-  return kTRUE;
-}
-
-bool StTriFlowCut::passSigPionCut(StPicoTrack* track, Float_t scale_nSigma_factor)
+bool StVecMesonCut::passSigPionCut(StPicoTrack* track, Float_t scale_nSigma_factor)
 {
   Float_t nSigmaPion = track->nSigmaPion();
-  if(fabs(nSigmaPion*scale_nSigma_factor) > TriFlow::mNSigmaPionMax)
+  if(fabs(nSigmaPion*scale_nSigma_factor) > vmsa::mNSigmaPionMax)
   {
     return kFALSE;
   }
   return kTRUE;
 }
 
-bool StTriFlowCut::passSigKaonCut(StPicoTrack* track, Float_t scale_nSigma_factor)
+bool StVecMesonCut::passSigKaonCut(StPicoTrack* track, Float_t scale_nSigma_factor)
 {
   Float_t nSigmaKaon = track->nSigmaKaon();
-  if(fabs(nSigmaKaon*scale_nSigma_factor) > TriFlow::mNSigmaKaonMax)
+  if(fabs(nSigmaKaon*scale_nSigma_factor) > vmsa::mNSigmaKaonMax)
   {
     return kFALSE;
   }
   return kTRUE;
 }
 
-bool StTriFlowCut::passSigProntonCut(StPicoTrack* track, Float_t scale_nSigma_factor)
+bool StVecMesonCut::passSigProntonCut(StPicoTrack* track, Float_t scale_nSigma_factor)
 {
   Float_t nSigmaProton = track->nSigmaProton();
-  if(fabs(nSigmaProton*scale_nSigma_factor) > TriFlow::mNSigmaProtonMax)
+  if(fabs(nSigmaProton*scale_nSigma_factor) > vmsa::mNSigmaProtonMax)
   {
     return kFALSE;
   }
   return kTRUE;
 }
 
-bool StTriFlowCut::passSigProntonCutSys(StPicoTrack* track, Float_t scale_nSigma_factor, Int_t i_proton)
-{
-  Float_t nSigmaProton = track->nSigmaProton();
-  if(fabs(nSigmaProton*scale_nSigma_factor) > TriFlow::mNSigmaProtonMaxSys[i_proton])
-  {
-    return kFALSE;
-  }
-  return kTRUE;
-}
 //---------------------------------------------------------------------------------
 
-bool StTriFlowCut::passTrackBasic(StPicoTrack *track)
+bool StVecMesonCut::passTrackBasic(StPicoTrack *track)
 {
   // nHitsFit cut
-  if(track->nHitsFit() < TriFlow::mHitsFitTPCMin)
+  if(track->nHitsFit() < vmsa::mHitsFitTPCMin)
   {
     return kFALSE;
   }
 
   // nHitsRatio cut
-  if(track->nHitsMax() <= TriFlow::mHitsMaxTPCMin)
+  if(track->nHitsMax() <= vmsa::mHitsMaxTPCMin)
   {
     return kFALSE;
   }
-  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() < TriFlow::mHitsRatioTPCMin)
+  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() < vmsa::mHitsRatioTPCMin)
   {
     return kFALSE;
   }
 
   // eta cut
   Float_t eta = track->pMom().pseudoRapidity();
-  if(fabs(eta) > TriFlow::mEtaMax)
+  if(fabs(eta) > vmsa::mEtaMax)
   {
     return kFALSE;
   }
@@ -294,14 +244,14 @@ bool StTriFlowCut::passTrackBasic(StPicoTrack *track)
   return kTRUE;
 }
 
-bool StTriFlowCut::passTrackEP(StPicoTrack *track)
+bool StVecMesonCut::passTrackEP(StPicoTrack *track)
 {
   if(!track) return kFALSE;
 
   if(!passTrackBasic(track)) return kFALSE;
 
   // dca cut for event plane reconstruction: 200GeV = 3.0, BES = 1.0
-  if(track->dca() > TriFlow::mDcaEPMax[mEnergy])
+  if(track->dca() > vmsa::mDcaEPMax[mEnergy])
   {
     return kFALSE;
   }
@@ -309,7 +259,7 @@ bool StTriFlowCut::passTrackEP(StPicoTrack *track)
   // pt cut 0.2 - 2.0 GeV/c
   Float_t pt = track->pMom().perp();
   Float_t p  = track->pMom().mag();
-  if(!(pt > TriFlow::mPrimPtMin[mEnergy] && pt < TriFlow::mPrimPtMax && p < TriFlow::mPrimMomMax))
+  if(!(pt > vmsa::mPrimPtMin[mEnergy] && pt < vmsa::mPrimPtMax && p < vmsa::mPrimMomMax))
   {
     return kFALSE;
   }
@@ -317,47 +267,20 @@ bool StTriFlowCut::passTrackEP(StPicoTrack *track)
   return kTRUE;
 }
 
-bool StTriFlowCut::passTrackCut(StPicoTrack *track)
+bool StVecMesonCut::passTrackCut(StPicoTrack *track)
 {
   if(!track) return kFALSE;
 
   if(!passTrackBasic(track)) return kFALSE;
 
   // dca cut for flow analysis: 1.0, 1.5 and 2.0
-  if(track->dca() > TriFlow::mDcaTrMax)
+  if(track->dca() > vmsa::mDcaTrMax)
   {
     return kFALSE;
   }
 
   // primary pt and momentum cut: PtMin = 0.15 for 200 GeV, PtMin = 0.2 for BES
-  if(!(track->pMom().perp() > TriFlow::mPrimPtMin[mEnergy] && track->pMom().mag() < TriFlow::mPrimMomMax))
-  {
-    return kFALSE;
-  }
-
-  return kTRUE;
-}
-
-bool StTriFlowCut::passTrackCutSys(StPicoTrack *track, Int_t i_dca, Int_t i_nHitsFit)
-{
-  if(!track) return kFALSE;
-
-  if(!passTrackBasic(track)) return kFALSE;
-
-  // dca cut for flow analysis: 1.0, 1.5 and 2.0
-  if(track->dca() > TriFlow::mDcaTrMaxSys[i_dca])
-  {
-    return kFALSE;
-  }
-
-  // nHitsFit cut: 15, 20
-  if(track->nHitsFit() < TriFlow::mHitsFitTPCMinSys[i_nHitsFit])
-  {
-    return kFALSE;
-  }
-
-  // primary pt and momentum cut: PtMin = 0.15 for 200 GeV, PtMin = 0.2 for BES
-  if(!(track->pMom().perp() > TriFlow::mPrimPtMin[mEnergy] && track->pMom().mag() < TriFlow::mPrimMomMax))
+  if(!(track->pMom().perp() > vmsa::mPrimPtMin[mEnergy] && track->pMom().mag() < vmsa::mPrimMomMax))
   {
     return kFALSE;
   }
@@ -365,20 +288,20 @@ bool StTriFlowCut::passTrackCutSys(StPicoTrack *track, Int_t i_dca, Int_t i_nHit
   return kTRUE;
 }
 //---------------------------------------------------------------------------------
-bool StTriFlowCut::passTrackPhi(StPicoTrack *track)
+bool StVecMesonCut::passTrackPhi(StPicoTrack *track)
 {
   if(!track) return kFALSE;
 
   if(!passTrackBasic(track)) return kFALSE;
 
   // dca cut for flow analysis: 2.0
-  if(track->dca() > TriFlow::mDcaTrMax_phi)
+  if(track->dca() > vmsa::mDcaTrMax_phi)
   {
     return kFALSE;
   }
 
   // primary pt and momentum cut: PtMin = 0.1
-  if(!(track->pMom().perp() > TriFlow::mGlobPtMin && track->pMom().mag() < TriFlow::mPrimMomMax))
+  if(!(track->pMom().perp() > vmsa::mGlobPtMin && track->pMom().mag() < vmsa::mPrimMomMax))
   {
     return kFALSE;
   }
@@ -386,28 +309,28 @@ bool StTriFlowCut::passTrackPhi(StPicoTrack *track)
   return kTRUE;
 }
 
-bool StTriFlowCut::passTrackV0(StPicoTrack *track)
+bool StVecMesonCut::passTrackV0(StPicoTrack *track)
 {
   if(!track) return kFALSE;
 
   // nHitsFit cut
-  if(track->nHitsFit() < TriFlow::mHitsFitTPCMin)
+  if(track->nHitsFit() < vmsa::mHitsFitTPCMin)
   {
     return kFALSE;
   }
 
   // nHitsRatio cut
-  if(track->nHitsMax() <= TriFlow::mHitsMaxTPCMin)
+  if(track->nHitsMax() <= vmsa::mHitsMaxTPCMin)
   {
     return kFALSE;
   }
-  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() < TriFlow::mHitsRatioTPCMin)
+  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() < vmsa::mHitsRatioTPCMin)
   {
     return kFALSE;
   }
 
   // global pt and momentum cut: PtMin = 0.1
-  if(!(track->gMom().perp() > TriFlow::mGlobPtMin && track->gMom().mag() < TriFlow::mPrimMomMax))
+  if(!(track->gMom().perp() > vmsa::mGlobPtMin && track->gMom().mag() < vmsa::mPrimMomMax))
   {
     return kFALSE;
   }
@@ -415,7 +338,7 @@ bool StTriFlowCut::passTrackV0(StPicoTrack *track)
   /*
   // eta cut
   Float_t eta = track->gMom().pseudoRapidity();
-  if(fabs(eta) > TriFlow::mEtaMax)
+  if(fabs(eta) > vmsa::mEtaMax)
   {
     return kFALSE;
   }

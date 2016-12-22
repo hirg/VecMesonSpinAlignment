@@ -2,17 +2,22 @@
 #define StSpinAlignmentCons_h
 
 #include <string>
+#include "StarClassLibrary/SystemOfUnits.h"
 
 namespace vmsa
 {
+  //--------------------------------------------------
+  // used in TreeProduction and FillSpinAlginment
   int const NumBeamEnergy = 7;
   // event cut
   float const mVzMaxMap[NumBeamEnergy] = {70.0,50.0,70.0,70.0,40.0,40.0,30.0}; // 7.7 -- 200 GeV
   float const mVrMax = 2.0;
   float const mVzVpdDiffMax = 3.0;
+  int const mMatchedToFMin = 2;
 
   // track cut
-  float const mDcaEPMax[NumBeamEnergy] = {1.0,1.0,1.0,1.0,1.0,1.0,3.0}; // for event plane reconstruction: 3.0 for 200GeV, 1.0 for BES
+  float const mSigScaleMap[NumBeamEnergy] = {1.0,1.0,1.0,1.9,1.0,1.0,1.0}; // 7.7 -- 200 GeV
+  float const mDcaEPMax[NumBeamEnergy] = {1.0,1.0,1.0,1.0,1.0,1.0,3.0}; // for event plane reconstruction: 1.0 for BES, 3.0 for 200GeV
   float const mDcaTrMax = 1.0; // for pion, kaon, proton mDcaTrMax = 1.0 for flow
   float const mDcaTrMax_phi = 2.0; // for phi meson mDcaTrMax = 2.0 to fill a tree and apply an additional cut
   int const mHitsDedxMin = 5;
@@ -25,6 +30,16 @@ namespace vmsa
   float const mPrimPtMax = 2.0;
   float const mPrimPtWeight = 2.0;
   float const mPrimMomMax = 10.0; // also use for gMom
+  float const mMass2Min = -10.0;
+  double const MAGFIELDFACTOR = kilogauss;
+  int const mTrackMin = 2;
+  int const mTrackMin_Full = 4;
+  float const mToFYLocalMax = 1.8;
+  float const mToFZLocalMax = 1.8;
+  float const mNSigmaElectronMax = 2.5;
+  float const mNSigmaPionMax = 2.5;
+  float const mNSigmaKaonMax = 2.5;
+  float const mNSigmaProtonMax = 2.5;
   float const mMassPion = 0.13957;
   float const mMassKaon = 0.49368;
   float const mMassProton = 0.93827;
@@ -32,6 +47,7 @@ namespace vmsa
 
   // used constant
   float const mEta_Gap[4] = {0.05,0.10,0.20,0.50};
+  float const mShiftOrder[5] = {2.0, 4.0, 6.0, 8.0, 10.0};
 
   int const pt_total = 25; // pt bin
   int const pt_start = 0;
@@ -40,6 +56,15 @@ namespace vmsa
   float const ptRawStop[pt_total]  = {0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
   float const pt_bin[pt_total+1] = {0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
 
+  // mix event
+  int const Bin_Centrality = 9;
+  int const Bin_VertexZ = 10;
+  int const Bin_Phi_Psi = 5;
+  int const Buffer_depth = 3;
+  string const MixEvent[2] = {"SE","ME"};
+  //--------------------------------------------------
+
+  // used in CalSpinAlginment
   int const pt_rebin = 9; // maximum pt binning
   float const pt_low[NumBeamEnergy][pt_rebin] = {
     {0.4,0.8,1.2,1.8,2.4,3.0,4.2,5.4,7.2},
@@ -107,7 +132,7 @@ namespace vmsa
   int const Sys_QA    = 0;
 
   // shared constant
-  std::string const mBeamEnergy[7] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
+  std::string const mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
   std::string const mPID[3] = {"Phi","KStar","K0S"};
   float const Norm_Start[2] = {1.04,0.41};
   float const Norm_Stop[2]  = {1.05,0.46};

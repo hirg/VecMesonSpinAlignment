@@ -1,6 +1,6 @@
-#include "StTriFlowV0.h"
-#include "StTriFlowConstants.h"
-#include "StTriFlowCut.h"
+#include "StVecMesonTree.h"
+#include "../../../Utility/StSpinAlignmentCons.h"
+#include "StVecMesonCut.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
 #include "StRoot/StPicoDstMaker/StPicoEvent.h"
 #include "StRoot/StPicoDstMaker/StPicoTrack.h"
@@ -17,32 +17,32 @@
 #include "TObject.h"
 #include "TVector3.h"
 
-ClassImp(StTriFlowV0)
+ClassImp(StVecMesonTree)
 
 //------------------------------------------------------------------------------------------------------------------
-StTriFlowV0::StTriFlowV0(Int_t energy)
+StVecMesonTree::StVecMesonTree(Int_t energy)
 {
   mEnergy = energy;
 }
 
-StTriFlowV0::~StTriFlowV0()
+StVecMesonTree::~StVecMesonTree()
 {
   /* */
 }
 
 //------------------------------------------------------------------------------------------------------------------
 
-void StTriFlowV0::InitPhi()
+void StVecMesonTree::InitPhi()
 {
-  mTriFlowCut = new StTriFlowCut(mEnergy);
+  mVecMesonCut = new StVecMesonCut(mEnergy);
   TString HistName = "Mass2_pt";
   h_Mass2 = new TH2F(HistName.Data(),HistName.Data(),20,0.2,5.0,200,0.98,1.08);
 
-  for(Int_t cent = 0; cent < TriFlow::Bin_Centrality; cent++)
+  for(Int_t cent = 0; cent < vmsa::Bin_Centrality; cent++)
   {
-    for(Int_t vz = 0; vz < TriFlow::Bin_VertexZ; vz++)
+    for(Int_t vz = 0; vz < vmsa::Bin_VertexZ; vz++)
     {
-      for(Int_t phi_psi = 0; phi_psi < TriFlow::Bin_Phi_Psi; phi_psi++)
+      for(Int_t phi_psi = 0; phi_psi < vmsa::Bin_Phi_Psi; phi_psi++)
       {
         mEventCounter2[cent][vz][phi_psi] = 0;
 	clear_phi(cent,vz,phi_psi);
@@ -58,7 +58,7 @@ void StTriFlowV0::InitPhi()
 
 //------------------------------------------------------------------------------------------------------------------
 
-void StTriFlowV0::WritePhiMass2()
+void StVecMesonTree::WritePhiMass2()
 {
   h_Mass2->Write();
   mTree_Phi->Write("",TObject::kOverwrite);
@@ -66,7 +66,7 @@ void StTriFlowV0::WritePhiMass2()
 
 //------------------------------------------------------------------------------------------------------------------
 
-void StTriFlowV0::clear_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
+void StVecMesonTree::clear_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
 {
   mPrimaryvertex[cent9][Bin_vz][Bin_Psi2].clear();
   mRefMult[cent9][Bin_vz][Bin_Psi2].clear();
@@ -80,15 +80,13 @@ void StTriFlowV0::clear_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
   mBBCx[cent9][Bin_vz][Bin_Psi2].clear();
   mVzVpd[cent9][Bin_vz][Bin_Psi2].clear();
 
-  for(Int_t j = 0; j < TriFlow::EtaGap_total; j++)
+  for(Int_t j = 0; j < vmsa::EtaGap_total; j++)
   {
     mQ2East[cent9][Bin_vz][Bin_Psi2][j].clear();
     mQ2West[cent9][Bin_vz][Bin_Psi2][j].clear();
-    mQ3East[cent9][Bin_vz][Bin_Psi2][j].clear();
-    mQ3West[cent9][Bin_vz][Bin_Psi2][j].clear();
   }
 
-  for(Int_t Bin_Event = 0; Bin_Event < TriFlow::Buffer_depth; Bin_Event++)
+  for(Int_t Bin_Event = 0; Bin_Event < vmsa::Buffer_depth; Bin_Event++)
   {
     for(Int_t charge = 0; charge < 2; charge++)
     {
@@ -104,7 +102,7 @@ void StTriFlowV0::clear_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
   mEventCounter2[cent9][Bin_vz][Bin_Psi2] = 0;
 }
 
-void StTriFlowV0::size_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
+void StVecMesonTree::size_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
 {
   LOG_INFO << "Event Buffer: Centrality = " << cent9 << ", VertexZ = " << Bin_vz << ", Psi2 = " << Bin_Psi2 << endm;
   LOG_INFO << "Buffer_depth = " << mEventCounter2[cent9][Bin_vz][Bin_Psi2] << endm;
@@ -139,7 +137,7 @@ void StTriFlowV0::size_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
 
 //------------------------------------------------------------------------------------------------------------------
 
-void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2) // 0: Same Event, 1: Mix Event
+void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2) // 0: Same Event, 1: Mix Event
 {
   if(Flag_ME == 0) // same event
   {
@@ -156,13 +154,11 @@ void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2
       mXuPhiMesonEvent->setN_non_prim(mN_non_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
       mXuPhiMesonEvent->setN_Tof_match(mN_Tof_match[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
-      for(Int_t j = 0; j < TriFlow::EtaGap_total; j++)
+      for(Int_t j = 0; j < vmsa::EtaGap_total; j++)
       {
 	// QVector
 	mXuPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
 	mXuPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
-	mXuPhiMesonEvent->setQ3East(mQ3East[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
-	mXuPhiMesonEvent->setQ3West(mQ3West[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
 	// Number of Tracks
 	mXuPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
 	mXuPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
@@ -181,20 +177,20 @@ void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2
       {
 	StThreeVectorF p_vecA = mHelix_Kaon[key_plus][n_kplus].cat(mHelix_Kaon[key_plus][n_kplus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event]));  // primary momentum
 	p_vecA *= mMomentum[key_plus][n_kplus];
-	ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),TriFlow::mMassKaon);
+	ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),vmsa::mMassKaon);
 
 	for(Int_t n_kminus = 0; n_kminus < mHelix_Kaon[key_minus].size(); n_kminus++) // second track loop over K- candidates
 	{
 	  StThreeVectorF p_vecB = mHelix_Kaon[key_minus][n_kminus].cat(mHelix_Kaon[key_minus][n_kminus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event]));  // primary momentum
 	  p_vecB *= mMomentum[key_minus][n_kminus];
-	  ltrackB.SetXYZM(p_vecB.x(),p_vecB.y(),p_vecB.z(),TriFlow::mMassKaon);
+	  ltrackB.SetXYZM(p_vecB.x(),p_vecB.y(),p_vecB.z(),vmsa::mMassKaon);
 
 	  TLorentzVector trackAB      = ltrackA+ltrackB;
 	  Double_t InvMassAB          = trackAB.M();
 	  Double_t pt = trackAB.Perp();
 
 	  // fill phi candidate into mTree_Phi
-	  if(InvMassAB > TriFlow::mMassKaon*2 && InvMassAB < 1.05) 
+	  if(InvMassAB > vmsa::mMassKaon*2 && InvMassAB < 1.05) 
 	  {
 	    mXuPhiMesonTrack = mXuPhiMesonEvent->createTrack();
 	    mXuPhiMesonTrack->setMass2A(mMass2[key_plus][n_kplus]); // K+
@@ -242,13 +238,11 @@ void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2
 	  mXuPhiMesonEvent->setN_non_prim(mN_non_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 	  mXuPhiMesonEvent->setN_Tof_match(mN_Tof_match[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
-	  for(Int_t j = 0; j < TriFlow::EtaGap_total; j++)
+	  for(Int_t j = 0; j < vmsa::EtaGap_total; j++)
 	  {
 	    // QVector
 	    mXuPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
 	    mXuPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
-	    mXuPhiMesonEvent->setQ3East(mQ3East[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
-	    mXuPhiMesonEvent->setQ3West(mQ3West[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
 
 	    // Number of Tracks
 	    mXuPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][j][Bin_Event],j);
@@ -268,20 +262,20 @@ void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2
 	{
 	  StThreeVectorF p_vecA(mHelix_Kaon[key_A_plus][n_kplus].cat(mHelix_Kaon[key_A_plus][n_kplus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event_A])));  // primary momentum
 	  p_vecA *= mMomentum[key_A_plus][n_kplus];
-	  ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),TriFlow::mMassKaon); // K+
+	  ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),vmsa::mMassKaon); // K+
 
 	  for(Int_t n_kminus = 0; n_kminus < mHelix_Kaon[key_B_minus].size(); n_kminus++) // second track loop over K- candidates from event B
 	  {
 	    StThreeVectorF p_vecB(mHelix_Kaon[key_B_minus][n_kminus].cat(mHelix_Kaon[key_B_minus][n_kminus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event_B])));  // primary momentum
 	    p_vecB *= mMomentum[key_B_minus][n_kminus];
-	    ltrackB.SetXYZM(p_vecB.x(),p_vecB.y(),p_vecB.z(),TriFlow::mMassKaon); // K-
+	    ltrackB.SetXYZM(p_vecB.x(),p_vecB.y(),p_vecB.z(),vmsa::mMassKaon); // K-
 
 	    TLorentzVector trackAB      = ltrackA+ltrackB;
 	    Double_t InvMassAB          = trackAB.M();
 	    Double_t pt = trackAB.Perp();
 
 	    // fill phi candidate background into mTree_Phi
-	    if(InvMassAB > TriFlow::mMassKaon*2 && InvMassAB < 1.05) 
+	    if(InvMassAB > vmsa::mMassKaon*2 && InvMassAB < 1.05) 
 	    {
 	      mXuPhiMesonTrack = mXuPhiMesonEvent->createTrack();
 	      mXuPhiMesonTrack->setMass2A(mMass2[key_A_plus][n_kplus]); // K+
@@ -306,20 +300,20 @@ void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2
 	{
 	  StThreeVectorF p_vecA(mHelix_Kaon[key_A_minus][n_kminus].cat(mHelix_Kaon[key_A_minus][n_kminus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event_A])));  // primary momentum
 	  p_vecA *= mMomentum[key_A_minus][n_kminus];
-	  ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),TriFlow::mMassKaon); // K-
+	  ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),vmsa::mMassKaon); // K-
 
 	  for(Int_t n_kplus = 0; n_kplus < mHelix_Kaon[key_B_plus].size(); n_kplus++) // second track loop over K+ candidates from event B
 	  {
 	    StThreeVectorF p_vecB(mHelix_Kaon[key_B_plus][n_kplus].cat(mHelix_Kaon[key_B_plus][n_kplus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event_B])));  // primary momentum
 	    p_vecB *= mMomentum[key_B_plus][n_kplus];
-	    ltrackB.SetXYZM(p_vecB.x(),p_vecB.y(),p_vecB.z(),TriFlow::mMassKaon); // K+
+	    ltrackB.SetXYZM(p_vecB.x(),p_vecB.y(),p_vecB.z(),vmsa::mMassKaon); // K+
 
 	    TLorentzVector trackAB      = ltrackA+ltrackB;
 	    Double_t InvMassAB          = trackAB.M();
 	    Double_t pt = trackAB.Perp();
 
 	    // fill phi candidate background into mTree_Phi
-	    if(InvMassAB > TriFlow::mMassKaon*2 && InvMassAB < 1.05) 
+	    if(InvMassAB > vmsa::mMassKaon*2 && InvMassAB < 1.05) 
 	    {
 	      mXuPhiMesonTrack = mXuPhiMesonEvent->createTrack();
 	      mXuPhiMesonTrack->setMass2A(mMass2[key_B_plus][n_kplus]); // K+
@@ -346,26 +340,26 @@ void StTriFlowV0::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2
 
 //------------------------------------------------------------------------------------------------------------------
 
-void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Float_t vz, Float_t Psi2)
+void StVecMesonTree::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Float_t vz, Float_t Psi2)
 {
   StPicoEvent *event = (StPicoEvent*)pico->event();
 
   Int_t Bin_vz, Bin_Psi2;
 
-  Float_t vz_start = TriFlow::mVzMaxMap[event->energy()];
-  Float_t vz_bin = 2*vz_start/TriFlow::Bin_VertexZ;
+  Float_t vz_start = vmsa::mVzMaxMap[mEnergy];
+  Float_t vz_bin = 2*vz_start/vmsa::Bin_VertexZ;
 
   Float_t psi2_start = TMath::Pi()/2.0;
-  Float_t psi2_bin = 2*psi2_start/TriFlow::Bin_Phi_Psi;
+  Float_t psi2_bin = 2*psi2_start/vmsa::Bin_Phi_Psi;
 
-  for(Int_t i = 0; i < TriFlow::Bin_VertexZ; i++)
+  for(Int_t i = 0; i < vmsa::Bin_VertexZ; i++)
   {
     if((vz > -1.0*vz_start+i*vz_bin) && (vz <= -1.0*vz_start+(i+1)*vz_bin))
     {
       Bin_vz = i;
     }
   }
-  for(Int_t i = 0; i < TriFlow::Bin_Phi_Psi; i++)
+  for(Int_t i = 0; i < vmsa::Bin_Phi_Psi; i++)
   {
     if((Psi2 > -1.0*psi2_start+i*psi2_bin) && (Psi2 <= -1.0*psi2_start+(i+1)*psi2_bin))
     {
@@ -391,12 +385,10 @@ void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Floa
   mBBCx[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Float_t>(event->BBCx()));
   mVzVpd[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Float_t>(event->vzVpd()));
   mNumTracks[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<UShort_t>(pico->numberOfTracks()));
-  for(Int_t j = 0; j < TriFlow::EtaGap_total; j++)
+  for(Int_t j = 0; j < vmsa::EtaGap_total; j++)
   {
     mQ2East[cent9][Bin_vz][Bin_Psi2][j].push_back(static_cast<TVector2>(mQVector2East[j]));
     mQ2West[cent9][Bin_vz][Bin_Psi2][j].push_back(static_cast<TVector2>(mQVector2West[j]));
-    mQ3East[cent9][Bin_vz][Bin_Psi2][j].push_back(static_cast<TVector2>(mQVector3East[j]));
-    mQ3West[cent9][Bin_vz][Bin_Psi2][j].push_back(static_cast<TVector2>(mQVector3West[j]));
     mNumTrackEast[cent9][Bin_vz][Bin_Psi2][j].push_back(static_cast<Int_t>(mTrackEtaEast[j]));
     mNumTrackWest[cent9][Bin_vz][Bin_Psi2][j].push_back(static_cast<Int_t>(mTrackEtaWest[j]));
   }
@@ -406,10 +398,10 @@ void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Floa
   {
     StPicoTrack *track = pico->track(i);
 
-    if(mTriFlowCut->passTrackPhi(track))
+    if(mVecMesonCut->passTrackPhi(track))
     {
-      Float_t Mass2 = mTriFlowCut->getMass2(track);
-      Float_t scale_nSigma_factor = TriFlow::mSigScaleMap[event->energy()];
+      Float_t Mass2 = mVecMesonCut->getMass2(track);
+      Float_t scale_nSigma_factor = vmsa::mSigScaleMap[mEnergy];
       Float_t Polarity = static_cast<Float_t>(track->charge());
       Float_t momentum = track->pMom().mag();
       Float_t Mass2_low;
@@ -429,7 +421,7 @@ void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Floa
       if(Polarity < 0) charge = 1; // k-
 
 
-      if(mTriFlowCut->passSigKaonCut(track,scale_nSigma_factor))
+      if(mVecMesonCut->passSigKaonCut(track,scale_nSigma_factor))
       {
 	if(
 	    (momentum < 0.65 && ((Mass2 > Mass2_low && Mass2 < Mass2_up) || Mass2 < -10.0)) // dE/dx + ToF
@@ -437,7 +429,7 @@ void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Floa
 	  )
 	{
 	  MEKey key = MEKey(cent9,Bin_vz,Bin_Psi2,Bin_Event,charge);
-	  mMass2[key].push_back(static_cast<Float_t>(mTriFlowCut->getMass2(track))); // mass2
+	  mMass2[key].push_back(static_cast<Float_t>(mVecMesonCut->getMass2(track))); // mass2
 	  mDca[key].push_back(static_cast<Float_t>(track->dca()*track->charge())); // dca*charge 
 	  mNHitsFit[key].push_back(static_cast<Float_t>(track->nHitsFit())); // nHitsFit
 	  mNSigmaKaon[key].push_back(static_cast<Float_t>((track->nSigmaKaon())*scale_nSigma_factor)); // nSigmaKaon
@@ -458,7 +450,7 @@ void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Floa
 
   if(Flag_ME == 1) // mix event
   {
-    if(mEventCounter2[cent9][Bin_vz][Bin_Psi2] == TriFlow::Buffer_depth)
+    if(mEventCounter2[cent9][Bin_vz][Bin_Psi2] == vmsa::Buffer_depth)
     {
       doPhi(Flag_ME,cent9,Bin_vz,Bin_Psi2);
       clear_phi(cent9,Bin_vz,Bin_Psi2);
@@ -468,13 +460,13 @@ void StTriFlowV0::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, Floa
 
 //------------------------------------------------------------------------------------------------------------------
 // pass event information from Maker
-void StTriFlowV0::clearEvent()
+void StVecMesonTree::clearEvent()
 {
   mNumber_prim = 0;
   mNumber_non_prim = 0;
   mNumber_Tof_match = 0;
 
-  for(Int_t j = 0; j < TriFlow::EtaGap_total; j++)
+  for(Int_t j = 0; j < vmsa::EtaGap_total; j++)
   {
     mQVector2East[j].Set(-999.9,-999.9);
     mQVector2West[j].Set(-999.9,-999.9);
@@ -483,14 +475,14 @@ void StTriFlowV0::clearEvent()
   }
 }
 
-void StTriFlowV0::passEvent(Int_t N_prim, Int_t N_non_prim, Int_t N_Tof_match)
+void StVecMesonTree::passEvent(Int_t N_prim, Int_t N_non_prim, Int_t N_Tof_match)
 {
   mNumber_prim = N_prim;
   mNumber_non_prim = N_non_prim;
   mNumber_Tof_match = N_Tof_match;
 }
 
-void StTriFlowV0::passEventPlane2East(TVector2 Q2East_0, TVector2 Q2East_1, TVector2 Q2East_2, TVector2 Q2East_3)
+void StVecMesonTree::passEventPlane2East(TVector2 Q2East_0, TVector2 Q2East_1, TVector2 Q2East_2, TVector2 Q2East_3)
 {
   mQVector2East[0] = Q2East_0;
   mQVector2East[1] = Q2East_1;
@@ -498,7 +490,7 @@ void StTriFlowV0::passEventPlane2East(TVector2 Q2East_0, TVector2 Q2East_1, TVec
   mQVector2East[3] = Q2East_3;
 }
 
-void StTriFlowV0::passEventPlane2West(TVector2 Q2West_0, TVector2 Q2West_1, TVector2 Q2West_2, TVector2 Q2West_3)
+void StVecMesonTree::passEventPlane2West(TVector2 Q2West_0, TVector2 Q2West_1, TVector2 Q2West_2, TVector2 Q2West_3)
 {
   mQVector2West[0] = Q2West_0;
   mQVector2West[1] = Q2West_1;
@@ -506,23 +498,7 @@ void StTriFlowV0::passEventPlane2West(TVector2 Q2West_0, TVector2 Q2West_1, TVec
   mQVector2West[3] = Q2West_3;
 }
 
-void StTriFlowV0::passEventPlane3East(TVector2 Q3East_0, TVector2 Q3East_1, TVector2 Q3East_2, TVector2 Q3East_3)
-{
-  mQVector3East[0] = Q3East_0;
-  mQVector3East[1] = Q3East_1;
-  mQVector3East[2] = Q3East_2;
-  mQVector3East[3] = Q3East_3;
-}
-
-void StTriFlowV0::passEventPlane3West(TVector2 Q3West_0, TVector2 Q3West_1, TVector2 Q3West_2, TVector2 Q3West_3)
-{
-  mQVector3West[0] = Q3West_0;
-  mQVector3West[1] = Q3West_1;
-  mQVector3West[2] = Q3West_2;
-  mQVector3West[3] = Q3West_3;
-}
-
-void StTriFlowV0::passNumTrackEast(Int_t NumTrackEast_0, Int_t NumTrackEast_1, Int_t NumTrackEast_2, Int_t NumTrackEast_3)
+void StVecMesonTree::passNumTrackEast(Int_t NumTrackEast_0, Int_t NumTrackEast_1, Int_t NumTrackEast_2, Int_t NumTrackEast_3)
 {
   mTrackEtaEast[0] = NumTrackEast_0;
   mTrackEtaEast[1] = NumTrackEast_1;
@@ -530,7 +506,7 @@ void StTriFlowV0::passNumTrackEast(Int_t NumTrackEast_0, Int_t NumTrackEast_1, I
   mTrackEtaEast[3] = NumTrackEast_3;
 }
 
-void StTriFlowV0::passNumTrackWest(Int_t NumTrackWest_0, Int_t NumTrackWest_1, Int_t NumTrackWest_2, Int_t NumTrackWest_3)
+void StVecMesonTree::passNumTrackWest(Int_t NumTrackWest_0, Int_t NumTrackWest_1, Int_t NumTrackWest_2, Int_t NumTrackWest_3)
 {
   mTrackEtaWest[0] = NumTrackWest_0;
   mTrackEtaWest[1] = NumTrackWest_1;

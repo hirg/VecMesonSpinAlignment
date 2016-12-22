@@ -1,5 +1,5 @@
-#ifndef StTriFlowCut_h
-#define StTriFlowCut_h
+#ifndef StVecMesonCut_h
+#define StVecMesonCut_h
 
 #include "TObject.h"
 #include "TString.h"
@@ -8,23 +8,19 @@ class StPicoDst;
 class StPicoTrack;
 class StRefMultCorr;
 
-class StTriFlowCut : public TObject
+class StVecMesonCut : public TObject
 {
   public:
-    StTriFlowCut(Int_t energy);
-    virtual ~StTriFlowCut();
+    StVecMesonCut(Int_t energy);
+    virtual ~StVecMesonCut();
 
     bool passEventCut(StPicoDst*);
     bool passTrackBasic(StPicoTrack*);
     bool passTrackEP(StPicoTrack*);
     bool passTrackCut(StPicoTrack*);
-    bool passTrackCutSys(StPicoTrack*,Int_t,Int_t);
-    bool passPIDCut(StPicoTrack*);
-    bool passSigElectronCut(StPicoTrack*, Float_t);
     bool passSigPionCut(StPicoTrack*, Float_t);
     bool passSigKaonCut(StPicoTrack*, Float_t);
     bool passSigProntonCut(StPicoTrack*, Float_t);
-    bool passSigProntonCutSys(StPicoTrack*, Float_t, Int_t);
     bool passTrackPhi(StPicoTrack*);
     bool passTrackV0(StPicoTrack*);
     Int_t getMatchedToF();
@@ -40,6 +36,6 @@ class StTriFlowCut : public TObject
     Int_t mN_non_prim;
     Int_t mEnergy;
 
-    ClassDef(StTriFlowCut,1)
+    ClassDef(StVecMesonCut,1)
 };
 #endif

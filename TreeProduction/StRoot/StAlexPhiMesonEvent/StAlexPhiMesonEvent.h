@@ -81,8 +81,7 @@ class StAlexPhiMesonEvent : public TObject
 
     TVector2 mQ2East[4];
     TVector2 mQ2West[4];
-    TVector2 mQ3East[4];
-    TVector2 mQ3West[4];
+    // TVector2 mQ2Full;
     Int_t   mNumTrackEast[4];
     Int_t   mNumTrackWest[4];
 
@@ -92,12 +91,11 @@ class StAlexPhiMesonEvent : public TObject
     StAlexPhiMesonEvent() :
       mPrimaryvertex(-1.0,-1.0,-1.0),mRunId(-1),mEventId(-1),mRefMult(-1),mCentrality(-1),mN_prim(-1),mN_non_prim(-1),mN_Tof_match(-1),mZDCx(-1),mBBCx(-1),mVzVpd(-1),fNumTracks(0)
   {
+    // mQ2Full.Set(-999.9,-999.9); // QVector2 West
     for(Int_t j = 0; j < 4; j++)
     {
       mQ2East[j].Set(-999.9,-999.9); // QVector2 East
       mQ2West[j].Set(-999.9,-999.9); // QVector2 West
-      mQ3East[j].Set(-999.9,-999.9); // QVector3 East
-      mQ3West[j].Set(-999.9,-999.9); // QVector3 West
 
       mNumTrackEast[j] = 0;
       mNumTrackWest[j] = 0;
@@ -151,12 +149,9 @@ class StAlexPhiMesonEvent : public TObject
     // QVector2 West
     void       setQ2West(TVector2 r, Int_t j)          { mQ2West[j] = r;         }
     TVector2   getQ2West(Int_t j) const                { return mQ2West[j];      }
-    // QVector3 East
-    void       setQ3East(TVector2 r, Int_t j)          { mQ3East[j] = r;         }
-    TVector2   getQ3East(Int_t j) const                { return mQ3East[j];      }
-    // QVector3 West
-    void       setQ3West(TVector2 r, Int_t j)          { mQ3West[j] = r;         }
-    TVector2   getQ3West(Int_t j) const                { return mQ3West[j];      }
+    // QVector2 Full 
+    // void       setQ2Full(TVector2 r)                   { mQ2Full = r;            }
+    // TVector2   getQ2Full() const                       { return mQ2Full;         }
     // ---------------------------------------QVector---------------------------------------------
 
     // -----------------------------------Number of Tracks----------------------------------------

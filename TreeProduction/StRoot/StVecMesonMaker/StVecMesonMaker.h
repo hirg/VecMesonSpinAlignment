@@ -1,5 +1,5 @@
-#ifndef StTriFlowMaker_h
-#define StTriFlowMaker_h
+#ifndef StVecMesonMaker_h
+#define StVecMesonMaker_h
 
 #include "StMaker.h"
 #include "TString.h"
@@ -10,16 +10,16 @@ class StPicoEvent;
 class StRefMultCorr;
 class StRunIdEventsDb;
 class StCombPID;
-class StTriFlowCut;
-class StTriFlowProManger;
-class StTriFlowCorrection;
-class StTriFlowHistoManger;
-class StTriFlowV0;
+class StVecMesonCut;
+class StVecMesonProManger;
+class StVecMesonCorrection;
+class StVecMesonHistoManger;
+class StVecMesonV0;
 
-class StTriFlowMaker : public StMaker {
+class StVecMesonMaker : public StMaker {
   public:
-    StTriFlowMaker(const char *name, StPicoDstMaker *picoMaker, const Int_t jobCounter, const Int_t Mode, const Int_t Energy, const Int_t Flag_ME, const Int_t Flag_Embedding);
-    virtual ~StTriFlowMaker();
+    StVecMesonMaker(const char *name, StPicoDstMaker *picoMaker, const Int_t jobCounter, const Int_t Mode, const Int_t Energy, const Int_t Flag_ME);
+    virtual ~StVecMesonMaker();
     
     virtual Int_t Init();
     virtual Int_t Make();
@@ -32,16 +32,15 @@ class StTriFlowMaker : public StMaker {
     StPicoEvent *mPicoEvent;
     static StRefMultCorr *mRefMultCorr;
     StRunIdEventsDb *mRunIdEventsDb;
-    StTriFlowCut *mTriFlowCut;
-    StTriFlowProManger *mTriFlowProManger;
-    StTriFlowCorrection *mTriFlowCorrection;
-    StTriFlowHistoManger *mTriFlowHistoManger;
-    StTriFlowV0 *mTriFlowV0;
+    StVecMesonCut *mVecMesonCut;
+    StVecMesonProManger *mVecMesonProManger;
+    StVecMesonCorrection *mVecMesonCorrection;
+    StVecMesonHistoManger *mVecMesonHistoManger;
+    StVecMesonV0 *mVecMesonV0;
     
     Int_t mMode;
     Int_t mEnergy;
     Int_t mFlag_ME;
-    Int_t mFlag_Embedding;
 
     TString mInPut_Corr_ReCenter;
 
@@ -57,7 +56,7 @@ class StTriFlowMaker : public StMaker {
 
     Int_t mUsedTrackCounter;
 
-    ClassDef(StTriFlowMaker, 1)
+    ClassDef(StVecMesonMaker, 1)
 };
 
 #endif

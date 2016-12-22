@@ -1,10 +1,10 @@
-#ifndef StTriFlowV0_h
-#define StTriFlowV0_h
+#ifndef StVecMesonTree_h
+#define StVecMesonTree_h
 
 #include "StMessMgr.h"
 #include "StPhysicalHelixD.hh"
 #include "StThreeVectorF.hh"
-#include "StTriFlowMEKey.h"
+#include "StVecMesonMEKey.h"
 #include <vector>
 #include "TVector2.h"
 
@@ -14,17 +14,17 @@ class StAlexPhiMesonTrack;
 class StV0TofCorrection;
 class StV0Event;
 class StV0Track;
-class StTriFlowCut;
+class StVecMesonCut;
 class TH1F;
 class TH2F;
 class TTree;
 class TVector2;
 
-class StTriFlowV0
+class StVecMesonTree
 {
   public:
-    StTriFlowV0(Int_t energy);
-    virtual ~StTriFlowV0();
+    StVecMesonTree(Int_t energy);
+    virtual ~StVecMesonTree();
 
     void InitPhi();
 
@@ -38,14 +38,12 @@ class StTriFlowV0
     void clearEvent();
     void passEvent(Int_t,Int_t,Int_t); // N_prim,N_non_prim,N_Tof_match
     void passEventPlane2East(TVector2,TVector2,TVector2,TVector2); // qVector ater re-center: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
-    void passEventPlane2West(TVector2,TVector2,TVector2,TVector2); // qVector ater re-center: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
-    void passEventPlane3East(TVector2,TVector2,TVector2,TVector2); // qVector ater re-center: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
-    void passEventPlane3West(TVector2,TVector2,TVector2,TVector2); // qVector ater re-center: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
+    void passEventPlane2West(TVector2,TVector2,TVector2,TVector2); 
     void passNumTrackEast(Int_t,Int_t,Int_t,Int_t); // Number of East Track: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
-    void passNumTrackWest(Int_t,Int_t,Int_t,Int_t); // Number of West Track: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
+    void passNumTrackWest(Int_t,Int_t,Int_t,Int_t);
 
   private:
-    StTriFlowCut *mTriFlowCut;
+    StVecMesonCut *mVecMesonCut;
     StV0TofCorrection *mTofCorr;
     TH2F *h_Mass2;
     Int_t mEventCounter2[9][10][5]; // 0 = centrality bin, 1 = vertexZ bin, 2 = EP bin
@@ -78,17 +76,15 @@ class StTriFlowV0
     std::vector<UShort_t> mNumTracks[9][10][5];
     std::vector<TVector2> mQ2East[9][10][5][4];
     std::vector<TVector2> mQ2West[9][10][5][4];
-    std::vector<TVector2> mQ3East[9][10][5][4];
-    std::vector<TVector2> mQ3West[9][10][5][4];
     std::vector<Int_t> mNumTrackEast[9][10][5][4];
     std::vector<Int_t> mNumTrackWest[9][10][5][4];
 
     // passing variable
     Int_t mNumber_prim, mNumber_non_prim, mNumber_Tof_match;
-    TVector2 mQVector2East[4], mQVector2West[4], mQVector3East[4], mQVector3West[4];
+    TVector2 mQVector2East[4], mQVector2West[4];
     Int_t mTrackEtaEast[4], mTrackEtaWest[4];
     Int_t mEnergy;
 
-  ClassDef(StTriFlowV0,1)
+  ClassDef(StVecMesonTree,1)
 };
 #endif
