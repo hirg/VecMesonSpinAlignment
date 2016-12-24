@@ -18,8 +18,8 @@ if [ $# -eq 0 ]
       echo -n '"'$item'",' >> run$Name$counter.csh
       echo -n $counter',' >> run$Name$counter.csh
 ###############################mode###################################
-     echo -n 0',' >> run$Name$counter.csh  # fill ReCenterPar mode
-#      echo -n 1',' >> run$Name$counter.csh  # ReCenter ShiftPar mode
+     # echo -n 0',' >> run$Name$counter.csh  # fill ReCenterPar mode
+     echo -n 1',' >> run$Name$counter.csh  # ReCenter ShiftPar mode
 #      echo -n 2',' >> run$Name$counter.csh  # Resolution mode
 #      echo -n 3',' >> run$Name$counter.csh  # Phi mode
 ###############################mode###################################

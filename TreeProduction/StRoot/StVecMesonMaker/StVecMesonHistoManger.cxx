@@ -45,13 +45,13 @@ void StVecMesonHistoManger::FillQA_Event(Float_t vz, Float_t refMult)
 
 void StVecMesonHistoManger::FillEP_Eta(Float_t Psi2_East, Float_t Psi2_West)
 {
-  h_East->Fill(Psi2_East);
-  h_West->Fill(Psi2_West);
+  h_mEast->Fill(Psi2_East);
+  h_mWest->Fill(Psi2_West);
 }
 
 void StVecMesonHistoManger::FillEP_Full(Float_t Psi2_Full)
 {
-  h_Full->Fill(Psi2_Full);
+  h_mFull->Fill(Psi2_Full);
 }
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
@@ -61,8 +61,8 @@ void StVecMesonHistoManger::WriteQA()
   h_mMass2->Write();
   h_mVz->Write();
   h_mRefMult->Write();
-  h_Full->Write();
-  h_East->Write();
-  h_West->Write();
+  h_mFull->Write();
+  h_mEast->Write();
+  h_mWest->Write();
 }
 //-------------------------------------------------------------------------------------------

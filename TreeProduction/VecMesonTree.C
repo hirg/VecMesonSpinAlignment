@@ -7,7 +7,7 @@ class StPicoDstMaker;
 
 
 StChain *chain;
-void VecMesonTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu19GeV/List/run_list/19GeV_140.list", const Int_t jobCounter = 140, const Int_t Mode = 0, const Int_t energy = 2, const Int_t flag_ME = 0)
+void VecMesonTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu19GeV/List/run_list/19GeV_140.list", const Int_t jobCounter = 140, const Int_t Mode = 1, const Int_t energy = 2, const Int_t flag_ME = 0)
 {
   // mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
   // Mode: 0 for re-center correction, 1 for shift correction, 3 for phi meson
