@@ -254,21 +254,21 @@ Int_t StVecMesonMaker::Make()
 
     if(mMode == 0) // fill raw EP
     {
-      if(mVecMesonCorrection->passTrackEtaNumCut())
+      if(mVecMesonCorrection->passTrackEtaNumRawCut())
       {
-	TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(j,0); // 0 = eta_gap, 1 = east/west
+	TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(0); // 0 = eta_gap, 1 = east/west
 	Float_t Psi2_East = TMath::ATan2(Q2East.Y(),Q2East.X())/2.0;
-	TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(j,1); // 0 = eta_gap, 1 = east/west
+	TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(1); // 0 = eta_gap, 1 = east/west
 	Float_t Psi2_West = TMath::ATan2(Q2West.Y(),Q2West.X())/2.0;
-	mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West,j);
+	mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West);
       }
-      if(mVecMesonCorrection->passTrackFullNumCut())
+      if(mVecMesonCorrection->passTrackFullNumRawCut())
       {
-	TVector2 Q2Full = mVecMesonCorrection->getQVectorRaw(-1,2);
+	TVector2 Q2Full = mVecMesonCorrection->getQVectorRaw(2);
 	Float_t Psi2_Full = TMath::ATan2(Q2Full.Y(),Q2Full.X())/2.0;
 	mVecMesonHistoManger->FillEP_Full(Psi2_Full);
-	mVecMesonCorrection->clear();
       }
+      mVecMesonCorrection->clear();
     }
     if(mMode == 1) // calculate Q vector after recentering for Random Sub Event
     {
@@ -312,7 +312,7 @@ Int_t StVecMesonMaker::Make()
       }
 
       // eta sub event shift parameter
-      if(mVecMesonCorrection->passTrackEtaNumCut(j))
+      if(mVecMesonCorrection->passTrackEtaNumCut())
       {
 	for(Int_t k = 0; k < 5; k++)
 	{

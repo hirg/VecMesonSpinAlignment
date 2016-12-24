@@ -13,8 +13,8 @@ void VecMesonTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xus
   // Mode: 0 for re-center correction, 1 for shift correction, 3 for phi meson
   // flag_ME: 0 for Same Event, 1 for Mixed Event
 
-  // Int_t nEvents = 10000000;
-  Int_t nEvents = 5000;
+  Int_t nEvents = 10000000;
+  // Int_t nEvents = 5000;
 
   gROOT->LoadMacro("$STAR/StRoot/StMuDSTMaker/COMMON/macros/loadSharedLibraries.C");
   loadSharedLibraries();

@@ -40,7 +40,6 @@ void StVecMesonProManger::InitReCenter()
     p_mq2x_Full_EP[i] = new TProfile2D(ProName.Data(),ProName.Data(),1600,-0.5,1599.5,9,-0.5,8.5);// x axis is RunIndex, y axis is Centrality
     ProName = Form("qy_2nd_Vertex_%s_Full",mVStr[i].Data());
     p_mq2y_Full_EP[i] = new TProfile2D(ProName.Data(),ProName.Data(),1600,-0.5,1599.5,9,-0.5,8.5);// x axis is RunIndex, y axis is Centrality
-    ProName_Full = Form("qx_3rd_Vertex_%s_Full",mVStr[i].Data());
   }
 }
 

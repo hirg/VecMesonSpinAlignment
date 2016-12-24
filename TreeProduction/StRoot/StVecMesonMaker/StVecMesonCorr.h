@@ -49,6 +49,8 @@ class StVecMesonCorrection : public TObject
     // Shift Correction
     bool passTrackEtaNumCut();
     bool passTrackFullNumCut();
+    bool passTrackEtaNumRawCut();
+    bool passTrackFullNumRawCut();
 
     // Event Plane method
     TVector2 calPsi2_East_EP(Int_t); // 0 = ShiftOrder: 2, 4, 6, 8, 10
@@ -75,6 +77,7 @@ class StVecMesonCorrection : public TObject
     TVector2 mQ2Vector_EastRaw_EP, mQ2Vector_WestRaw_EP, mQ2Vector_FullRaw_EP;
     TVector2 mQ2Vector_East_EP, mQ2Vector_West_EP, mQ2Vector_Full_EP, mQ2Vector_A_EP, mQ2Vector_B_EP;
 
+    Int_t    mQCounter_RawEast, mQCounter_RawWest, mQCounter_RawFull;
     Int_t    mQCounter_East, mQCounter_West, mQCounter_Full;
     Int_t    mQCounter_Full_East, mQCounter_Full_West;
     Int_t    mQCounter_A, mQCounter_B;

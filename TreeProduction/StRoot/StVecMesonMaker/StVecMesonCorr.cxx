@@ -53,14 +53,11 @@ void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 
   mInPutFile = TFile::Open(InPutFile.Data());
 
-  for(Int_t i = 0; i < 4; i++)
-  {
-    mQ2Vector_East_EP[i].Set(0.0,0.0);
-    mQCounter_East[i] = 0;
+  mQ2Vector_East_EP.Set(0.0,0.0);
+  mQCounter_East = 0;
 
-    mQ2Vector_West_EP[i].Set(0.0,0.0);
-    mQCounter_West[i] = 0;
-  }
+  mQ2Vector_West_EP.Set(0.0,0.0);
+  mQCounter_West = 0;
 
   mQ2Vector_Full_EP.Set(0.0,0.0);
   mQCounter_Full = 0;
@@ -227,6 +224,7 @@ void StVecMesonCorrection::addTrack_EastRaw(StPicoTrack *track, Int_t Cent9, Int
 {
   Float_t w = getWeight(track);
   mQ2Vector_EastRaw_EP += w*calq2Vector(track);
+  mQCounter_RawEast++;
 }
 
 //---------------------------------------------------------------------------------
@@ -235,6 +233,7 @@ void StVecMesonCorrection::addTrack_WestRaw(StPicoTrack *track, Int_t Cent9, Int
 {
   Float_t w = getWeight(track);
   mQ2Vector_WestRaw_EP += w*calq2Vector(track);
+  mQCounter_RawWest++;
 }
 
 //---------------------------------------------------------------------------------
@@ -243,6 +242,7 @@ void StVecMesonCorrection::addTrack_FullRaw(StPicoTrack *track, Int_t Cent9, Int
 {
   Float_t w = getWeight(track);
   mQ2Vector_FullRaw_EP += w*calq2Vector(track);
+  mQCounter_RawFull++;
 }
 
 //---------------------------------------------------------------------------------
@@ -336,14 +336,17 @@ void StVecMesonCorrection::print(TVector2 vector)
 void StVecMesonCorrection::clear()
 {
   mQ2Vector_EastRaw_EP.Set(0.0,0.0);
+  mQCounter_RawEast = 0;
   mQ2Vector_East_EP.Set(0.0,0.0);
   mQCounter_East = 0;
 
   mQ2Vector_WestRaw_EP.Set(0.0,0.0);
+  mQCounter_RawWest = 0;
   mQ2Vector_West_EP.Set(0.0,0.0);
   mQCounter_West = 0;
   
   mQ2Vector_FullRaw_EP.Set(0.0,0.0);
+  mQCounter_RawFull = 0;
   mQ2Vector_Full_EP.Set(0.0,0.0);
   mQCounter_Full = 0;
   mQCounter_Full_East = 0;
@@ -357,6 +360,28 @@ void StVecMesonCorrection::clear()
 }
 
 //---------------------------------------------------------------------------------
+
+bool StVecMesonCorrection::passTrackEtaNumRawCut()
+{
+  if(!(mQCounter_RawEast > vmsa::mTrackMin && mQCounter_RawWest > vmsa::mTrackMin))
+  {
+    return kFALSE;
+  }
+
+  return kTRUE;
+}
+
+//---------------------------------------------------------------------------------
+
+bool StVecMesonCorrection::passTrackFullNumRawCut()
+{
+  if(!(mQCounter_RawFull > vmsa::mTrackMin_Full))
+  {
+    return kFALSE;
+  }
+  
+  return kTRUE;
+}
 
 bool StVecMesonCorrection::passTrackEtaNumCut()
 {
@@ -540,7 +565,7 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
   }
 
   Float_t Psi_Shift_raw = Psi_ReCenter + delta_Psi;
-  Psi_Shift = AngleShift(Psi_Shift_raw,2.0);
+  Psi_Shift = AngleShift(Psi_Shift_raw);
 
   return Psi_Shift;
 }
