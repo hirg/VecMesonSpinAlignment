@@ -37,10 +37,10 @@ class StVecMesonTree
 
     void clearEvent();
     void passEvent(Int_t,Int_t,Int_t); // N_prim,N_non_prim,N_Tof_match
-    void passEventPlane2East(TVector2,TVector2,TVector2,TVector2); // qVector ater re-center: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
-    void passEventPlane2West(TVector2,TVector2,TVector2,TVector2); 
-    void passNumTrackEast(Int_t,Int_t,Int_t,Int_t); // Number of East Track: eta_gap = 0.05, eta_gap = 0.10, eta_gap = 0.20, eta_gap = 0.50
-    void passNumTrackWest(Int_t,Int_t,Int_t,Int_t);
+    void passEventPlane2East(TVector2); // qVector ater re-center: eta_gap = 0.05
+    void passEventPlane2West(TVector2); 
+    void passNumTrackEast(Int_t); // Number of East Track: eta_gap = 0.05
+    void passNumTrackWest(Int_t);
 
   private:
     StVecMesonCut *mVecMesonCut;
@@ -60,7 +60,7 @@ class StVecMesonTree
     StAlexPhiMesonEvent *mXuPhiMesonEvent;
     StAlexPhiMesonTrack *mXuPhiMesonTrack;
 
-    // event information | 0 = centrality bin, 1 = vertexZ bin, 2 = EP bin, 3 = eta_gap || push_back->event
+    // event information | 0 = centrality bin, 1 = vertexZ bin, 2 = EP bin || push_back->event
     std::vector<StThreeVectorF> mPrimaryvertex[9][10][5];
     std::vector<Int_t> mRefMult[9][10][5];
     std::vector<Int_t> mCentrality[9][10][5];
@@ -74,15 +74,15 @@ class StVecMesonTree
     std::vector<Float_t> mVzVpd[9][10][5];
     std::vector<Float_t> mField[9][10][5];
     std::vector<UShort_t> mNumTracks[9][10][5];
-    std::vector<TVector2> mQ2East[9][10][5][4];
-    std::vector<TVector2> mQ2West[9][10][5][4];
-    std::vector<Int_t> mNumTrackEast[9][10][5][4];
-    std::vector<Int_t> mNumTrackWest[9][10][5][4];
+    std::vector<TVector2> mQ2East[9][10][5];
+    std::vector<TVector2> mQ2West[9][10][5];
+    std::vector<Int_t> mNumTrackEast[9][10][5];
+    std::vector<Int_t> mNumTrackWest[9][10][5];
 
     // passing variable
     Int_t mNumber_prim, mNumber_non_prim, mNumber_Tof_match;
-    TVector2 mQVector2East[4], mQVector2West[4];
-    Int_t mTrackEtaEast[4], mTrackEtaWest[4];
+    TVector2 mQVector2East, mQVector2West;
+    Int_t mTrackEtaEast, mTrackEtaWest;
     Int_t mEnergy;
 
   ClassDef(StVecMesonTree,1)

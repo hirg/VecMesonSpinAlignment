@@ -31,7 +31,6 @@ ClassImp(StVecMesonCorrection)
 
 TString StVecMesonCorrection::mVStr[2] = {"pos","neg"};
 TString StVecMesonCorrection::mOrder = "2nd";
-TString StVecMesonCorrection::mMethod = "EP";
 //---------------------------------------------------------------------------------
 
 StVecMesonCorrection::StVecMesonCorrection(Int_t energy)
@@ -88,13 +87,13 @@ void StVecMesonCorrection::InitShiftCorrection(Int_t mEnergy)
 
 //---------------------------------------------------------------------------------
 
-bool StVecMesonCorrection::passTrackEtaEast(StPicoTrack *track, Int_t i) // neg || i = different eta_gap
+bool StVecMesonCorrection::passTrackEtaEast(StPicoTrack *track) // neg
 {
   Float_t eta = track->pMom().pseudoRapidity();
 
   // eta cut
-  // eta_gap between two sub event plane is 2*mEta_Gap[i]
-  if(!(eta > -1.0*vmsa::mEtaMax && eta < -1.0*vmsa::mEta_Gap[i]))
+  // eta_gap between two sub event plane is 2*mEta_Gap
+  if(!(eta > -1.0*vmsa::mEtaMax && eta < -1.0*vmsa::mEta_Gap))
   {
     return kFALSE;
   }
@@ -104,13 +103,13 @@ bool StVecMesonCorrection::passTrackEtaEast(StPicoTrack *track, Int_t i) // neg 
 
 //---------------------------------------------------------------------------------
 
-bool StVecMesonCorrection::passTrackEtaWest(StPicoTrack *track, Int_t i) // pos || i = different eta_gap
+bool StVecMesonCorrection::passTrackEtaWest(StPicoTrack *track) // pos 
 {
   Float_t eta = track->pMom().pseudoRapidity();
 
   // eta cut
-  // eta_gap between two sub event plane is 2*mEta_Gap[i]
-  if(!(eta > vmsa::mEta_Gap[i] && eta < vmsa::mEtaMax))
+  // eta_gap between two sub event plane is 2*mEta_Gap
+  if(!(eta > vmsa::mEta_Gap && eta < vmsa::mEtaMax))
   {
     return kFALSE;
   }
@@ -161,13 +160,13 @@ Float_t StVecMesonCorrection::getWeight(StPicoTrack *track)
 }
 //---------------------------------------------------------------------------------
 
-TVector2 StVecMesonCorrection::getReCenterPar_East( Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t eta_gap)
+TVector2 StVecMesonCorrection::getReCenterPar_East( Int_t Cent9, Int_t RunIndex, Int_t vz_sign)
 {
   Float_t mean_qx, mean_qy;
   TVector2 qVector(0.0,0.0);
 
-  TString ProName_x = Form("qx_%s_Vertex_%s_EtaGap_%d_East_%s",mOrder.Data(),mVStr[vz_sign].Data(),eta_gap,mMethod.Data());
-  TString ProName_y = Form("qy_%s_Vertex_%s_EtaGap_%d_East_%s",mOrder.Data(),mVStr[vz_sign].Data(),eta_gap,mMethod.Data());
+  TString ProName_x = Form("qx_%s_Vertex_%s_East",mOrder.Data(),mVStr[vz_sign].Data());
+  TString ProName_y = Form("qy_%s_Vertex_%s_East",mOrder.Data(),mVStr[vz_sign].Data());
 
   TProfile2D *p_x = (TProfile2D*)mInPutFile->Get(ProName_x.Data());
   TProfile2D *p_y = (TProfile2D*)mInPutFile->Get(ProName_y.Data());
@@ -182,13 +181,13 @@ TVector2 StVecMesonCorrection::getReCenterPar_East( Int_t Cent9, Int_t RunIndex,
 
 //---------------------------------------------------------------------------------
 
-TVector2 StVecMesonCorrection::getReCenterPar_West(Int_t Cent9, Int_t RunIndex, Int_t vz_sign, Int_t eta_gap)
+TVector2 StVecMesonCorrection::getReCenterPar_West(Int_t Cent9, Int_t RunIndex, Int_t vz_sign)
 {
   Float_t mean_qx, mean_qy;
   TVector2 qVector(0.0,0.0);
 
-  TString ProName_x = Form("qx_%s_Vertex_%s_EtaGap_%d_West_%s",mOrder.Data(),mVStr[vz_sign].Data(),eta_gap,mMethod.Data());
-  TString ProName_y = Form("qy_%s_Vertex_%s_EtaGap_%d_West_%s",mOrder.Data(),mVStr[vz_sign].Data(),eta_gap,mMethod.Data());
+  TString ProName_x = Form("qx_%s_Vertex_%s_West",mOrder.Data(),mVStr[vz_sign].Data());
+  TString ProName_y = Form("qy_%s_Vertex_%s_West",mOrder.Data(),mVStr[vz_sign].Data());
 
   TProfile2D *p_x = (TProfile2D*)mInPutFile->Get(ProName_x.Data());
   TProfile2D *p_y = (TProfile2D*)mInPutFile->Get(ProName_y.Data());
@@ -208,8 +207,8 @@ TVector2 StVecMesonCorrection::getReCenterPar_Full(Int_t Cent9, Int_t RunIndex, 
   Float_t mean_qx, mean_qy;
   TVector2 qVector(0.0,0.0);
 
-  TString ProName_x = Form("qx_%s_Vertex_%s_Full_%s",mOrder.Data(),mVStr[vz_sign].Data(),mMethod.Data());
-  TString ProName_y = Form("qy_%s_Vertex_%s_Full_%s",mOrder.Data(),mVStr[vz_sign].Data(),mMethod.Data());
+  TString ProName_x = Form("qx_%s_Vertex_%s_Full",mOrder.Data(),mVStr[vz_sign].Data());
+  TString ProName_y = Form("qy_%s_Vertex_%s_Full",mOrder.Data(),mVStr[vz_sign].Data());
 
   TProfile2D *p_x = (TProfile2D*)mInPutFile->Get(ProName_x.Data());
   TProfile2D *p_y = (TProfile2D*)mInPutFile->Get(ProName_y.Data());
@@ -224,18 +223,18 @@ TVector2 StVecMesonCorrection::getReCenterPar_Full(Int_t Cent9, Int_t RunIndex, 
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::addTrack_EastRaw(StPicoTrack *track, Int_t Cent9, Int_t RunIndex, Int_t j)
+void StVecMesonCorrection::addTrack_EastRaw(StPicoTrack *track, Int_t Cent9, Int_t RunIndex)
 {
   Float_t w = getWeight(track);
-  mQ2Vector_EastRaw_EP[j] += w*calq2Vector(track);
+  mQ2Vector_EastRaw_EP += w*calq2Vector(track);
 }
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::addTrack_WestRaw(StPicoTrack *track, Int_t Cent9, Int_t RunIndex, Int_t j)
+void StVecMesonCorrection::addTrack_WestRaw(StPicoTrack *track, Int_t Cent9, Int_t RunIndex)
 {
   Float_t w = getWeight(track);
-  mQ2Vector_WestRaw_EP[j] += w*calq2Vector(track);
+  mQ2Vector_WestRaw_EP += w*calq2Vector(track);
 }
 
 //---------------------------------------------------------------------------------
@@ -248,22 +247,22 @@ void StVecMesonCorrection::addTrack_FullRaw(StPicoTrack *track, Int_t Cent9, Int
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::addTrack_East(StPicoTrack *track, Int_t Cent9, Int_t RunIndex, Int_t i, Int_t j)
+void StVecMesonCorrection::addTrack_East(StPicoTrack *track, Int_t Cent9, Int_t RunIndex, Int_t i)
 {
   Float_t w = getWeight(track);
-  mQ2Vector_East_EP[j] += w*(calq2Vector(track) - getReCenterPar_East(Cent9,RunIndex,i,j));
+  mQ2Vector_East_EP += w*(calq2Vector(track) - getReCenterPar_East(Cent9,RunIndex,i));
 
-  mQCounter_East[j]++;
+  mQCounter_East++;
 }
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::addTrack_West(StPicoTrack *track, Int_t Cent9, Int_t RunIndex, Int_t i, Int_t j)
+void StVecMesonCorrection::addTrack_West(StPicoTrack *track, Int_t Cent9, Int_t RunIndex, Int_t i)
 {
   Float_t w = getWeight(track);
-  mQ2Vector_West_EP[j] += w*(calq2Vector(track) - getReCenterPar_West(Cent9,RunIndex,i,j));
+  mQ2Vector_West_EP += w*(calq2Vector(track) - getReCenterPar_West(Cent9,RunIndex,i));
 
-  mQCounter_West[j]++;
+  mQCounter_West++;
 }
 
 //---------------------------------------------------------------------------------
@@ -336,16 +335,13 @@ void StVecMesonCorrection::print(TVector2 vector)
 
 void StVecMesonCorrection::clear()
 {
-  for(Int_t i = 0; i < 4; i++)
-  {
-    mQ2Vector_EastRaw_EP[i].Set(0.0,0.0);
-    mQ2Vector_East_EP[i].Set(0.0,0.0);
-    mQCounter_East[i] = 0;
+  mQ2Vector_EastRaw_EP.Set(0.0,0.0);
+  mQ2Vector_East_EP.Set(0.0,0.0);
+  mQCounter_East = 0;
 
-    mQ2Vector_WestRaw_EP[i].Set(0.0,0.0);
-    mQ2Vector_West_EP[i].Set(0.0,0.0);
-    mQCounter_West[i] = 0;
-  }
+  mQ2Vector_WestRaw_EP.Set(0.0,0.0);
+  mQ2Vector_West_EP.Set(0.0,0.0);
+  mQCounter_West = 0;
   
   mQ2Vector_FullRaw_EP.Set(0.0,0.0);
   mQ2Vector_Full_EP.Set(0.0,0.0);
@@ -362,110 +358,9 @@ void StVecMesonCorrection::clear()
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::InitNtuple()
+bool StVecMesonCorrection::passTrackEtaNumCut()
 {
-  mNtuple = new TNtuple("Ntuple","Ntuple","runId:eventId:RefMult:ZDCx:BBCx:vzVpd:Centrality9:vx:vy:vz:nToFMatched:mQ2X_East_EP_0:mQ2X_East_EP_1:mQ2X_East_EP_2:mQ2X_East_EP_3:mQ2Y_East_EP_0:mQ2Y_East_EP_1:mQ2Y_East_EP_2:mQ2Y_East_EP_3:mQ2X_West_EP_0:mQ2X_West_EP_1:mQ2X_West_EP_2:mQ2X_West_EP_3:mQ2Y_West_EP_0:mQ2Y_West_EP_1:mQ2Y_West_EP_2:mQ2Y_West_EP_3:mQ2X_Full_EP:mQ2Y_Full_EP:mQCounter_East_0:mQCounter_East_1:mQCounter_East_2:mQCounter_East_3:mQCounter_West_0:mQCounter_West_1:mQCounter_West_2:mQCounter_West_3:mQCounter_Full:mQCounter_Full_East:mQCounter_Full_West:runIndex:mQ2X_A_EP:mQ2Y_A_EP:mQCounter_A:mQ2X_B_EP:mQ2Y_B_EP:mQ2X_B_SP:mQ2Y_B_SP:mQCounter_B");
-  mNtuple->SetAutoSave(50000000);
-}
-
-//---------------------------------------------------------------------------------
-
-Int_t StVecMesonCorrection::fillNtuple(StPicoDst *pico, Int_t Cent9, Int_t nToFMatched, Int_t runIndex)
-{
-  StPicoEvent *event = pico->event();
-  if(!event)
-  {
-    return kFALSE;
-  }
-
-  Randomization();
-
-  Int_t Id = 0;
-  // event information
-  mFillNtuple[Id++] = (Float_t)event->runId();
-  mFillNtuple[Id++] = (Float_t)event->eventId();
-  mFillNtuple[Id++] = (Float_t)event->refMult();
-  mFillNtuple[Id++] = (Float_t)event->ZDCx();
-  mFillNtuple[Id++] = (Float_t)event->BBCx();
-  mFillNtuple[Id++] = (Float_t)event->vzVpd();
-  mFillNtuple[Id++] = (Float_t)Cent9;
-  mFillNtuple[Id++] = (Float_t)event->primaryVertex().x();
-  mFillNtuple[Id++] = (Float_t)event->primaryVertex().y();
-  mFillNtuple[Id++] = (Float_t)event->primaryVertex().z();
-  mFillNtuple[Id++] = (Float_t)nToFMatched;
-
-  // Q Vector 
-  // East
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[0].X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[1].X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[2].X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[3].X();
-
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[0].Y();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[1].Y();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[2].Y();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_East_EP[3].Y();
-
-  // West
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[0].X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[1].X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[2].X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[3].X();
-
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[0].Y();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[1].Y();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[2].Y();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_West_EP[3].Y();
-
-  // Full
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_Full_EP.X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_Full_EP.Y();
-
-  // Counter
-  // East
-  mFillNtuple[Id++] = (Float_t)mQCounter_East[0];
-  mFillNtuple[Id++] = (Float_t)mQCounter_East[1];
-  mFillNtuple[Id++] = (Float_t)mQCounter_East[2];
-  mFillNtuple[Id++] = (Float_t)mQCounter_East[3];
-  // West
-  mFillNtuple[Id++] = (Float_t)mQCounter_West[0];
-  mFillNtuple[Id++] = (Float_t)mQCounter_West[1];
-  mFillNtuple[Id++] = (Float_t)mQCounter_West[2];
-  mFillNtuple[Id++] = (Float_t)mQCounter_West[3];
-  // Full
-  mFillNtuple[Id++] = (Float_t)mQCounter_Full;
-  mFillNtuple[Id++] = (Float_t)mQCounter_Full_East;
-  mFillNtuple[Id++] = (Float_t)mQCounter_Full_West;
-
-  // runIndex
-  mFillNtuple[Id++] = (Float_t)runIndex;
-
-  // random sub
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_A_EP.X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_A_EP.Y();
-  mFillNtuple[Id++] = (Float_t)mQCounter_A;
-
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_B_EP.X();
-  mFillNtuple[Id++] = (Float_t)mQ2Vector_B_EP.Y();
-  mFillNtuple[Id++] = (Float_t)mQCounter_B;
-
-  mNtuple->Fill(mFillNtuple);
-
-  return kTRUE;
-}
-
-//---------------------------------------------------------------------------------
-
-void StVecMesonCorrection::writeNtuple()
-{
-  mNtuple->Write();
-}
-
-//---------------------------------------------------------------------------------
-
-bool StVecMesonCorrection::passTrackEtaNumCut(Int_t j)
-{
-  if(!(mQCounter_East[j] > vmsa::mTrackMin && mQCounter_West[j] > vmsa::mTrackMin))
+  if(!(mQCounter_East > vmsa::mTrackMin && mQCounter_West > vmsa::mTrackMin))
   {
     return kFALSE;
   }
@@ -487,12 +382,12 @@ bool StVecMesonCorrection::passTrackFullNumCut()
 
 //---------------------------------------------------------------------------------
 // 2nd
-TVector2 StVecMesonCorrection::calPsi2_East_EP(Int_t j, Int_t k) // j = eta_gap, k = ShiftOrder
+TVector2 StVecMesonCorrection::calPsi2_East_EP(Int_t k) // k = ShiftOrder
 {
   TVector2 PsiVector(0.0,0.0); 
 
-  Float_t Qx = mQ2Vector_East_EP[j].X();
-  Float_t Qy = mQ2Vector_East_EP[j].Y();
+  Float_t Qx = mQ2Vector_East_EP.X();
+  Float_t Qy = mQ2Vector_East_EP.Y();
   Float_t Psi = TMath::ATan2(Qy,Qx)/2.0;
   Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder[k]*Psi);
   Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder[k]*Psi);
@@ -502,12 +397,12 @@ TVector2 StVecMesonCorrection::calPsi2_East_EP(Int_t j, Int_t k) // j = eta_gap,
   return PsiVector;
 }
 
-TVector2 StVecMesonCorrection::calPsi2_West_EP(Int_t j, Int_t k) // j = eta_gap, k = ShiftOrder
+TVector2 StVecMesonCorrection::calPsi2_West_EP(Int_t k) // k = ShiftOrder
 {
   TVector2 PsiVector(0.0,0.0); 
 
-  Float_t Qx = mQ2Vector_West_EP[j].X();
-  Float_t Qy = mQ2Vector_West_EP[j].Y();
+  Float_t Qx = mQ2Vector_West_EP.X();
+  Float_t Qy = mQ2Vector_West_EP.Y();
   Float_t Psi = TMath::ATan2(Qy,Qx)/2.0;
   Float_t Psi_Sin = TMath::Sin(vmsa::mShiftOrder[k]*Psi);
   Float_t Psi_Cos = TMath::Cos(vmsa::mShiftOrder[k]*Psi);
@@ -534,16 +429,16 @@ TVector2 StVecMesonCorrection::calPsi2_Full_EP(Int_t k) // k = ShiftOrder
 
 //---------------------------------------------------------------------------------
 
-Float_t StVecMesonCorrection::AngleShift(Float_t Psi_raw, Float_t order)
+Float_t StVecMesonCorrection::AngleShift(Float_t Psi_raw)
 {
   Float_t Psi_Corr = Psi_raw;
-  if(Psi_raw > TMath::Pi()/order)
+  if(Psi_raw > 0.5*TMath::Pi())
   {
-    Psi_Corr = Psi_raw - 2.0*TMath::Pi()/order;
+    Psi_Corr = Psi_raw - TMath::Pi();
   }
-  if(Psi_raw < -1.0*TMath::Pi()/order)
+  if(Psi_raw < -0.5*TMath::Pi())
   {
-    Psi_Corr = Psi_raw + 2.0*TMath::Pi()/order;
+    Psi_Corr = Psi_raw + TMath::Pi();
   }
 
   return Psi_Corr;
@@ -552,9 +447,9 @@ Float_t StVecMesonCorrection::AngleShift(Float_t Psi_raw, Float_t order)
 //---------------------------------------------------------------------------------
 
 // 2nd
-Float_t StVecMesonCorrection::calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, Int_t eta_gap)
+Float_t StVecMesonCorrection::calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign)
 {
-  Float_t Psi_ReCenter = TMath::ATan2(mQ2Vector_East_EP[eta_gap].Y(),mQ2Vector_East_EP[eta_gap].X())/2.0;
+  Float_t Psi_ReCenter = TMath::ATan2(mQ2Vector_East_EP.Y(),mQ2Vector_East_EP.X())/2.0;
   Float_t mean_sin[5], mean_cos[5];
   Float_t delta_Psi = 0.0;
   Float_t Psi_Shift;
@@ -564,11 +459,11 @@ Float_t StVecMesonCorrection::calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9,
     TString ProName_cos, ProName_sin;
     TProfile2D *p_cos, *p_sin;
 
-    ProName_cos = Form("CosPsi2_Vertex_%s_EtaGap_%d_Order_%d_East_EP",mVStr[vz_sign].Data(),eta_gap,k);
+    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_East",mVStr[vz_sign].Data(),k);
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_EtaGap_%d_Order_%d_East_EP",mVStr[vz_sign].Data(),eta_gap,k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_East",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
@@ -576,14 +471,14 @@ Float_t StVecMesonCorrection::calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9,
   }
 
   Float_t Psi_Shift_raw = Psi_ReCenter + delta_Psi;
-  Psi_Shift = AngleShift(Psi_Shift_raw,2.0);
+  Psi_Shift = AngleShift(Psi_Shift_raw);
 
   return Psi_Shift;
 }
 
-Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, Int_t eta_gap)
+Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign)
 {
-  Float_t Psi_ReCenter = TMath::ATan2(mQ2Vector_West_EP[eta_gap].Y(),mQ2Vector_West_EP[eta_gap].X())/2.0;
+  Float_t Psi_ReCenter = TMath::ATan2(mQ2Vector_West_EP.Y(),mQ2Vector_West_EP.X())/2.0;
   Float_t mean_sin[5], mean_cos[5];
   Float_t delta_Psi = 0.0;
   Float_t Psi_Shift;
@@ -593,11 +488,11 @@ Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9,
     TString ProName_cos, ProName_sin;
     TProfile2D *p_cos, *p_sin;
 
-    ProName_cos = Form("CosPsi2_Vertex_%s_EtaGap_%d_Order_%d_West_EP",mVStr[vz_sign].Data(),eta_gap,k);
+    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_West",mVStr[vz_sign].Data(),k);
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_EtaGap_%d_Order_%d_West_EP",mVStr[vz_sign].Data(),eta_gap,k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_West_EP",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
@@ -605,7 +500,7 @@ Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9,
   }
 
   Float_t Psi_Shift_raw = Psi_ReCenter + delta_Psi;
-  Psi_Shift = AngleShift(Psi_Shift_raw,2.0);
+  Psi_Shift = AngleShift(Psi_Shift_raw);
 
   return Psi_Shift;
 }
@@ -651,10 +546,9 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
 }
 
 //---------------------------------------------------------------------------------
-Float_t StVecMesonCorrection::getResolution2_EP(Int_t Cent9, Int_t eta_gap)
+Float_t StVecMesonCorrection::getResolution2_EP(Int_t Cent9)
 {
-  TString ProName = Form("Res2_EtaGap_%d_EP",eta_gap);
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get(ProName.Data());
+  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_Res2");
   Float_t Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
   if(Res_raw <= 0)
   {
@@ -670,8 +564,7 @@ Float_t StVecMesonCorrection::getResolution2_EP(Int_t Cent9, Int_t eta_gap)
 //---------------------------------------------------------------------------------
 Float_t StVecMesonCorrection::getResolution2_Full_EP(Int_t Cent9)
 {
-  TString ProName = "Res2_Ran_EP";
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get(ProName.Data());
+  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_Res2_Full");
   Float_t Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
   if(Res_raw <= 0)
   {
@@ -688,22 +581,24 @@ Float_t StVecMesonCorrection::getResolution2_Full_EP(Int_t Cent9)
   }
 }
 //---------------------------------------------------------------------------------
-TVector2 StVecMesonCorrection::getQVector(Int_t j, Int_t l) // 0 = eta_gap, 1 = east/west
+TVector2 StVecMesonCorrection::getQVector(Int_t l) // east/west
 {
-  if(l == 0) return mQ2Vector_East_EP[j];
-  if(l == 1) return mQ2Vector_West_EP[j];
+  if(l == 0) return mQ2Vector_East_EP;
+  if(l == 1) return mQ2Vector_West_EP;
+  if(l == 1) return mQ2Vector_Full_EP;
 }
 
-TVector2 StVecMesonCorrection::getQVectorRaw(Int_t j, Int_t l) // 0 = eta_gap, 1 = east/west
+TVector2 StVecMesonCorrection::getQVectorRaw(Int_t l) // east/west
 {
-  if(l == 0) return mQ2Vector_EastRaw_EP[j];
-  if(l == 1) return mQ2Vector_WestRaw_EP[j];
-  if(j == -1 && l == 2) return mQ2Vector_FullRaw_EP;
+  if(l == 0) return mQ2Vector_EastRaw_EP;
+  if(l == 1) return mQ2Vector_WestRaw_EP;
+  if(l == 2) return mQ2Vector_FullRaw_EP;
 }
 
-Int_t StVecMesonCorrection::getNumTrack(Int_t j, Int_t l) // 0 = eta_gap, 1 = east/west
+Int_t StVecMesonCorrection::getNumTrack(Int_t l) // east/west
 {
-  if(l == 0) return mQCounter_East[j];
-  if(l == 1) return mQCounter_West[j];
+  if(l == 0) return mQCounter_East;
+  if(l == 1) return mQCounter_West;
+  if(l == 2) return mQCounter_Full;
 }
 //---------------------------------------------------------------------------------

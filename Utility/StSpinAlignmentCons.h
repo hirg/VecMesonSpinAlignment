@@ -47,7 +47,8 @@ namespace vmsa
   float const mSigKaon = 2.5;
 
   // used constant
-  float const mEta_Gap[4] = {0.05,0.10,0.20,0.50};
+  // float const mEta_Gap[4] = {0.05,0.10,0.20,0.50};
+  float const mEta_Gap = 0.05;
   float const mShiftOrder[5] = {2.0, 4.0, 6.0, 8.0, 10.0};
 
   int const pt_total = 25; // pt bin

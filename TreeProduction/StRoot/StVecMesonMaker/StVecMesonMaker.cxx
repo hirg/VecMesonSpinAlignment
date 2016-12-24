@@ -81,9 +81,6 @@ Int_t StVecMesonMaker::Init()
     mVecMesonCorrection->InitReCenterCorrection(mEnergy);
     mFile_Corr_Shift = new TFile(mOutPut_Corr_Shift.Data(),"RECREATE");
     mVecMesonProManger->InitShift();
-    mFile_Corr_ReCenter = new TFile(mOutPut_Corr_ReCenter.Data(),"RECREATE");
-    mFile_Corr_ReCenter->cd();
-    mVecMesonCorrection->InitNtuple();
   }
   if(mMode == 3)
   {
@@ -113,12 +110,6 @@ Int_t StVecMesonMaker::Finish()
   }
   if(mMode == 1)
   {
-    if(mOutPut_Corr_ReCenter != "")
-    {
-      mFile_Corr_ReCenter->cd();
-      mVecMesonCorrection->writeNtuple();
-      mFile_Corr_ReCenter->Close();
-    }
     if(mOutPut_Corr_Shift != "")
     {
       mFile_Corr_Shift->cd();
@@ -201,7 +192,6 @@ Int_t StVecMesonMaker::Make()
     const Double_t reweight = mRefMultCorr->getWeight();
     const Int_t nToFMatched = mVecMesonCut->getMatchedToF();
 
-//    cout << "nTracks = " << nTracks << endl;
     for(Int_t i = 0; i < nTracks; i++) // track loop
     {
       StPicoTrack *track = (StPicoTrack*)mPicoDst->track(i);
@@ -230,20 +220,17 @@ Int_t StVecMesonMaker::Make()
 	    mVecMesonCorrection->addTrack_FullRaw(track,cent9,runIndex);
 	  }
 
-	  for(Int_t j = 0; j < 4; j++) // eta_gap loop
+	  if(mVecMesonCorrection->passTrackEtaEast(track)) // neg eta sub
 	  {
-	    if(mVecMesonCorrection->passTrackEtaEast(track,j)) // neg eta sub
-	    {
-	      TVector2 q2Vector_East = mVecMesonCorrection->calq2Vector(track);
-	      mVecMesonProManger->FillTrackEast(q2Vector_East,cent9,runIndex,vz_sign,j,pt);
-	      mVecMesonCorrection->addTrack_EastRaw(track,cent9,runIndex,j);
-	    }
-	    if(mVecMesonCorrection->passTrackEtaWest(track,j)) // pos eta sub
-	    {
-	      TVector2 q2Vector_West = mVecMesonCorrection->calq2Vector(track);
-	      mVecMesonProManger->FillTrackWest(q2Vector_West,cent9,runIndex,vz_sign,j,pt);
-	      mVecMesonCorrection->addTrack_WestRaw(track,cent9,runIndex,j);
-	    }
+	    TVector2 q2Vector_East = mVecMesonCorrection->calq2Vector(track);
+	    mVecMesonProManger->FillTrackEast(q2Vector_East,cent9,runIndex,vz_sign,pt);
+	    mVecMesonCorrection->addTrack_EastRaw(track,cent9,runIndex);
+	  }
+	  if(mVecMesonCorrection->passTrackEtaWest(track)) // pos eta sub
+	  {
+	    TVector2 q2Vector_West = mVecMesonCorrection->calq2Vector(track);
+	    mVecMesonProManger->FillTrackWest(q2Vector_West,cent9,runIndex,vz_sign,pt);
+	    mVecMesonCorrection->addTrack_WestRaw(track,cent9,runIndex);
 	  }
 	}
 	else // calculate Q Vector after recentering for full event and eta sub event
@@ -253,37 +240,35 @@ Int_t StVecMesonMaker::Make()
 	    mVecMesonCorrection->addTrack_Full(track,cent9,runIndex,vz_sign);
 	    mUsedTrackCounter++;
 	  }
-	  for(Int_t j = 0; j < 4; j++) // eta_gap loop
+	  if(mVecMesonCorrection->passTrackEtaEast(track)) // neg eta sub
 	  {
-	    if(mVecMesonCorrection->passTrackEtaEast(track,j)) // neg eta sub
-	    {
-	      mVecMesonCorrection->addTrack_East(track,cent9,runIndex,vz_sign,j);
-	    }
-	    if(mVecMesonCorrection->passTrackEtaWest(track,j)) // pos eta sub
-	    {
-	      mVecMesonCorrection->addTrack_West(track,cent9,runIndex,vz_sign,j);
-	    }
+	    mVecMesonCorrection->addTrack_East(track,cent9,runIndex,vz_sign);
+	  }
+	  if(mVecMesonCorrection->passTrackEtaWest(track)) // pos eta sub
+	  {
+	    mVecMesonCorrection->addTrack_West(track,cent9,runIndex,vz_sign);
 	  }
 	}
       }
     }
+
     if(mMode == 0) // fill raw EP
     {
-      for(Int_t j = 0; j < 4; j++) // eta_gap loop
+      if(mVecMesonCorrection->passTrackEtaNumCut())
       {
-	if(mVecMesonCorrection->passTrackEtaNumCut(j))
-	{
-	  TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(j,0); // 0 = eta_gap, 1 = east/west
-	  Float_t Psi2_East = TMath::ATan2(Q2East.Y(),Q2East.X())/2.0;
-	  TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(j,1); // 0 = eta_gap, 1 = east/west
-	  Float_t Psi2_West = TMath::ATan2(Q2West.Y(),Q2West.X())/2.0;
-	  mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West,j);
-	}
+	TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(j,0); // 0 = eta_gap, 1 = east/west
+	Float_t Psi2_East = TMath::ATan2(Q2East.Y(),Q2East.X())/2.0;
+	TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(j,1); // 0 = eta_gap, 1 = east/west
+	Float_t Psi2_West = TMath::ATan2(Q2West.Y(),Q2West.X())/2.0;
+	mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West,j);
       }
-      TVector2 Q2Full = mVecMesonCorrection->getQVectorRaw(-1,2);
-      Float_t Psi2_Full = TMath::ATan2(Q2Full.Y(),Q2Full.X())/2.0;
-      mVecMesonHistoManger->FillEP_Full(Psi2_Full);
-      mVecMesonCorrection->clear();
+      if(mVecMesonCorrection->passTrackFullNumCut())
+      {
+	TVector2 Q2Full = mVecMesonCorrection->getQVectorRaw(-1,2);
+	Float_t Psi2_Full = TMath::ATan2(Q2Full.Y(),Q2Full.X())/2.0;
+	mVecMesonHistoManger->FillEP_Full(Psi2_Full);
+	mVecMesonCorrection->clear();
+      }
     }
     if(mMode == 1) // calculate Q vector after recentering for Random Sub Event
     {
@@ -316,9 +301,6 @@ Int_t StVecMesonMaker::Make()
 	}
       }
 
-      // re-center and calculate shift parameter
-      mVecMesonCorrection->fillNtuple(mPicoDst,cent9,nToFMatched,runIndex);
-
       // full event shift parameter
       if(mVecMesonCorrection->passTrackFullNumCut())
       {
@@ -330,18 +312,15 @@ Int_t StVecMesonMaker::Make()
       }
 
       // eta sub event shift parameter
-      for(Int_t j = 0; j < 4; j ++)
+      if(mVecMesonCorrection->passTrackEtaNumCut(j))
       {
-        if(mVecMesonCorrection->passTrackEtaNumCut(j))
+	for(Int_t k = 0; k < 5; k++)
 	{
-	  for(Int_t k = 0; k < 5; k++)
-	  {
-	    TVector2 Psi2Vector_East_EP = mVecMesonCorrection->calPsi2_East_EP(j,k);
-	    mVecMesonProManger->FillEventEast_EP(Psi2Vector_East_EP,cent9,runIndex,vz_sign,j,k);
+	  TVector2 Psi2Vector_East_EP = mVecMesonCorrection->calPsi2_East_EP(k);
+	  mVecMesonProManger->FillEventEast_EP(Psi2Vector_East_EP,cent9,runIndex,vz_sign,k);
 
-	    TVector2 Psi2Vector_West_EP = mVecMesonCorrection->calPsi2_West_EP(j,k);
-	    mVecMesonProManger->FillEventWest_EP(Psi2Vector_West_EP,cent9,runIndex,vz_sign,j,k);
-	  }
+	  TVector2 Psi2Vector_West_EP = mVecMesonCorrection->calPsi2_West_EP(k);
+	  mVecMesonProManger->FillEventWest_EP(Psi2Vector_West_EP,cent9,runIndex,vz_sign,k);
 	}
       }
       mVecMesonCorrection->clear();
@@ -351,27 +330,24 @@ Int_t StVecMesonMaker::Make()
     if(mMode == 3)
     { // phi meson
       Float_t Psi2_East;
-      TVector2 Q2East[vmsa::EtaGap_total], Q2West[vmsa::EtaGap_total];
-      Int_t NumTrackEast[vmsa::EtaGap_total], NumTrackWest[vmsa::EtaGap_total]; 
-      for(Int_t j = 0; j < vmsa::EtaGap_total; j++)
+      TVector2 Q2East, Q2West;
+      Int_t NumTrackEast, NumTrackWest; 
+      Q2East.Set(-999.9,-999.9); // initialize Q Vector to unreasonable value
+      Q2West.Set(-999.9,-999.9);
+      NumTrackEast = 0;
+      NumTrackWest = 0;
+      if(mVecMesonCorrection->passTrackEtaNumCut())
       {
-	Q2East[j].Set(-999.9,-999.9); // initialize Q Vector to unreasonable value
-	Q2West[j].Set(-999.9,-999.9);
-	NumTrackEast[j] = 0;
-	NumTrackWest[j] = 0;
-	if(mVecMesonCorrection->passTrackEtaNumCut(j))
-	{
-	  // get QVector of sub event
-	  Q2East[j] = mVecMesonCorrection->getQVector(j,0); // 0 = eta_gap, 1 = east/west
-	  Q2West[j] = mVecMesonCorrection->getQVector(j,1); // 0 = eta_gap, 1 = east/west
-	  NumTrackEast[j] = mVecMesonCorrection->getNumTrack(j,0); // 0 = eta_gap, 1 = east/west
-	  NumTrackWest[j] = mVecMesonCorrection->getNumTrack(j,1); // 0 = eta_gap, 1 = east/west
-	}
+	// get QVector of sub event
+	Q2East = mVecMesonCorrection->getQVector(0); // east
+	Q2West = mVecMesonCorrection->getQVector(1); // west
+	NumTrackEast = mVecMesonCorrection->getNumTrack(0);
+	NumTrackWest = mVecMesonCorrection->getNumTrack(1);
       }
 
-      if(mVecMesonCorrection->passTrackEtaNumCut(0))
+      if(mVecMesonCorrection->passTrackEtaNumCut())
       {
-	Psi2_East = mVecMesonCorrection->calShiftAngle2East_EP(runIndex,cent9,vz_sign,0);
+	Psi2_East = mVecMesonCorrection->calShiftAngle2East_EP(runIndex,cent9,vz_sign);
 
 	// get N_prim, N_non_prim, N_Tof_match
 	Int_t N_prim = mVecMesonCut->getNpirm();
@@ -383,12 +359,12 @@ Int_t StVecMesonMaker::Make()
 	mVecMesonTree->passEvent(N_prim, N_non_prim, N_Tof_match);
 
 	// 2nd sub event plane
-	mVecMesonTree->passEventPlane2East(Q2East[0],Q2East[1],Q2East[2],Q2East[3]);
-	mVecMesonTree->passEventPlane2West(Q2West[0],Q2West[1],Q2West[2],Q2West[3]);
+	mVecMesonTree->passEventPlane2East(Q2East);
+	mVecMesonTree->passEventPlane2West(Q2West);
 
 	// Number of Track in East and West part of TPC
-	mVecMesonTree->passNumTrackEast(NumTrackEast[0],NumTrackEast[1],NumTrackEast[2],NumTrackEast[3]);
-	mVecMesonTree->passNumTrackWest(NumTrackWest[0],NumTrackWest[1],NumTrackWest[2],NumTrackWest[3]);
+	mVecMesonTree->passNumTrackEast(NumTrackEast);
+	mVecMesonTree->passNumTrackWest(NumTrackWest);
 
 	mVecMesonTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2_East);
       }

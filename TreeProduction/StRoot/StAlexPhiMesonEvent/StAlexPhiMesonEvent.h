@@ -79,11 +79,11 @@ class StAlexPhiMesonEvent : public TObject
 
     UShort_t      fNumTracks;
 
-    TVector2 mQ2East[4];
-    TVector2 mQ2West[4];
+    TVector2 mQ2East;
+    TVector2 mQ2West;
     // TVector2 mQ2Full;
-    Int_t   mNumTrackEast[4];
-    Int_t   mNumTrackWest[4];
+    Int_t   mNumTrackEast;
+    Int_t   mNumTrackWest;
 
     TClonesArray* fTracks;      //->
 
@@ -92,14 +92,12 @@ class StAlexPhiMesonEvent : public TObject
       mPrimaryvertex(-1.0,-1.0,-1.0),mRunId(-1),mEventId(-1),mRefMult(-1),mCentrality(-1),mN_prim(-1),mN_non_prim(-1),mN_Tof_match(-1),mZDCx(-1),mBBCx(-1),mVzVpd(-1),fNumTracks(0)
   {
     // mQ2Full.Set(-999.9,-999.9); // QVector2 West
-    for(Int_t j = 0; j < 4; j++)
-    {
-      mQ2East[j].Set(-999.9,-999.9); // QVector2 East
-      mQ2West[j].Set(-999.9,-999.9); // QVector2 West
+    mQ2East.Set(-999.9,-999.9); // QVector2 East
+    mQ2West.Set(-999.9,-999.9); // QVector2 West
 
-      mNumTrackEast[j] = 0;
-      mNumTrackWest[j] = 0;
-    }
+    mNumTrackEast = 0;
+    mNumTrackWest = 0;
+
     fTracks      = new TClonesArray( "StAlexPhiMesonTrack", 10 );
   }
     ~StAlexPhiMesonEvent()
@@ -144,11 +142,11 @@ class StAlexPhiMesonEvent : public TObject
 
     // ---------------------------------------QVector---------------------------------------------
     // QVector2 East
-    void       setQ2East(TVector2 r, Int_t j)          { mQ2East[j] = r;         }
-    TVector2   getQ2East(Int_t j) const                { return mQ2East[j];      }
+    void       setQ2East(TVector2 r)                   { mQ2East = r;            }
+    TVector2   getQ2East() const                       { return mQ2East;         }
     // QVector2 West
-    void       setQ2West(TVector2 r, Int_t j)          { mQ2West[j] = r;         }
-    TVector2   getQ2West(Int_t j) const                { return mQ2West[j];      }
+    void       setQ2West(TVector2 r)                   { mQ2West = r;            }
+    TVector2   getQ2West() const                       { return mQ2West;         }
     // QVector2 Full 
     // void       setQ2Full(TVector2 r)                   { mQ2Full = r;            }
     // TVector2   getQ2Full() const                       { return mQ2Full;         }
@@ -156,11 +154,11 @@ class StAlexPhiMesonEvent : public TObject
 
     // -----------------------------------Number of Tracks----------------------------------------
     // East
-    void       setNumTrackEast(Int_t r, Int_t j)       { mNumTrackEast[j] = r;   }
-    Int_t      getNumTrackEast(Int_t j) const          { return mNumTrackEast[j];}
+    void       setNumTrackEast(Int_t r)                { mNumTrackEast = r;      }
+    Int_t      getNumTrackEast() const                 { return mNumTrackEast;   }
     // West
-    void       setNumTrackWest(Int_t r, Int_t j)       { mNumTrackWest[j] = r;   }
-    Int_t      getNumTrackWest(Int_t j) const          { return mNumTrackWest[j];}
+    void       setNumTrackWest(Int_t r)                { mNumTrackWest = r;      }
+    Int_t      getNumTrackWest() const                 { return mNumTrackWest;   }
     // -----------------------------------Number of Tracks----------------------------------------
     StAlexPhiMesonTrack* createTrack()
     {
