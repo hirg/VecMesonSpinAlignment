@@ -65,7 +65,7 @@ void StVecMesonHistoManger::WriteQA()
   h_mWestRaw->Write();
 }
 //-------------------------------------------------------------------------------------------
-void StVecMesonHistoManger::Init()
+void StVecMesonHistoManger::InitEP()
 {
   h_mEastReCenter = new TH1F("h_mEastReCenter","h_mEastReCenter",360,-TMath::Pi(),TMath::Pi());
   h_mWestReCenter = new TH1F("h_mWestReCenter","h_mWestReCenter",360,-TMath::Pi(),TMath::Pi());
@@ -80,7 +80,7 @@ void StVecMesonHistoManger::Init()
   h_mFullShift = new TH1F("h_mFullShift","h_mFullShift",360,-TMath::Pi(),TMath::Pi());
 }
 
-void StVecMesonHistoManger::FillEP_Sub(Float_t Psi2East_ReCenter, Float_t Psi2West_ReCenter, Float_t Psi2East_Shift, Float_t Psi2West_Shift)
+void StVecMesonHistoManger::FillEP_Sub(Float_t Psi2East_ReCenter, Float_t Psi2East_Shift, Float_t Psi2West_ReCenter, Float_t Psi2West_Shift)
 {
   h_mEastReCenter->Fill(Psi2East_ReCenter);
   h_mEastShift->Fill(Psi2East_Shift);
@@ -97,8 +97,8 @@ void StVecMesonHistoManger::FillEP_Ran(Float_t Psi2RanA_ReCenter, Float_t Psi2Ra
   h_mRanBReCenter->Fill(Psi2RanB_ReCenter);
   h_mRanBShift->Fill(Psi2RanB_Shift);
 
-  h_mFullReCenter->Fill(Psi2_Full);
-  h_mFullShift->Fill(Psi2_Full);
+  h_mFullReCenter->Fill(Psi2Full_ReCenter);
+  h_mFullShift->Fill(Psi2Full_Shift);
 }
 
 void StVecMesonHistoManger::WriteEP()

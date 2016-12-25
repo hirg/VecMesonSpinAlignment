@@ -37,11 +37,11 @@ StVecMesonMaker::StVecMesonMaker(const char* name, StPicoDstMaker *picoMaker, co
 
   if(mMode == 0)
   {
-    mOutPut_ReCenterPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/RecenterParameter/file_%s_ReCenterPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+    mOutPut_ReCenterPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ReCenterParameter/file_%s_ReCenterPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
   if(mMode == 1)
   {
-    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_Corr_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
+    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_ShiftPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
   }
   if(mMode == 2)
   {
@@ -376,13 +376,13 @@ Int_t StVecMesonMaker::Make()
 
       if(mVecMesonCorrection->passTrackEtaNumCut())
       {
-	mVecMesonHistoManger->FillEP_Sub(Psi2East_ReCenter,Psi2West_ReCenter,Psi2RanA_ReCenter,Psi2RanB_ReCenter,Psi2Full_ReCenter);
+	mVecMesonHistoManger->FillEP_Sub(Psi2East_ReCenter,Psi2East_Shift,Psi2West_ReCenter,Psi2West_Shift);
 	mVecMesonProManger->FillRes_Sub(cent9,Psi2East_Shift,Psi2West_Shift);
       }
 
-      if(mVecMesonProManger->passTrackFullNumCut())
+      if(mVecMesonCorrection->passTrackFullNumCut())
       {
-	mVecMesonHistoManger->FillEP_Ran(Psi2East_Shift,Psi2West_Shift,Psi2RanA_Shift,Psi2RanB_Shift,Psi2Full_Shift);
+	mVecMesonHistoManger->FillEP_Ran(Psi2RanA_ReCenter,Psi2RanA_Shift,Psi2RanB_ReCenter,Psi2RanB_Shift,Psi2Full_ReCenter,Psi2Full_Shift);
 	mVecMesonProManger->FillRes_Ran(cent9,Psi2RanA_Shift,Psi2RanB_Shift);
       }
     }

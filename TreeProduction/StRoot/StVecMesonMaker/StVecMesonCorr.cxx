@@ -49,7 +49,7 @@ StVecMesonCorrection::~StVecMesonCorrection()
 
 void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 {
-  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/RecenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ReCenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
 
   mInPutFile = TFile::Open(InPutFile.Data());
 
@@ -75,7 +75,7 @@ void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 
 void StVecMesonCorrection::InitShiftCorrection(Int_t mEnergy)
 {
-  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/ShiftParameter/file_%s_Corr_Shift.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_ShiftPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Shift = TFile::Open(InPutFile_Shift.Data());
 }
 
@@ -512,7 +512,7 @@ Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9,
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_West_EP",mVStr[vz_sign].Data(),k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_West",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
@@ -525,7 +525,7 @@ Float_t StVecMesonCorrection::calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9,
   return Psi_Shift;
 }
 
-Float_t StTriFlowResolution::calShiftAngle2A_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign)
+Float_t StVecMesonCorrection::calShiftAngle2A_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign)
 {
   Float_t Psi_ReCenter = TMath::ATan2(mQ2Vector_A_EP.Y(),mQ2Vector_A_EP.X())/2.0;
   Float_t mean_sin[5], mean_cos[5];
@@ -537,11 +537,11 @@ Float_t StTriFlowResolution::calShiftAngle2A_EP(Int_t runIndex, Int_t Cent9, Int
     TString ProName_cos, ProName_sin;
     TProfile2D *p_cos, *p_sin;
 
-    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_Full_EP",mVStr[vz_sign].Data(),k);
+    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_Full",mVStr[vz_sign].Data(),k);
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_Full_EP",mVStr[vz_sign].Data(),k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_Full",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
@@ -554,7 +554,7 @@ Float_t StTriFlowResolution::calShiftAngle2A_EP(Int_t runIndex, Int_t Cent9, Int
   return Psi_Shift;
 }
 
-Float_t StTriFlowResolution::calShiftAngle2B_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign)
+Float_t StVecMesonCorrection::calShiftAngle2B_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign)
 {
   Float_t Psi_ReCenter = TMath::ATan2(mQ2Vector_B_EP.Y(),mQ2Vector_B_EP.X())/2.0;
   Float_t mean_sin[5], mean_cos[5];
@@ -566,11 +566,11 @@ Float_t StTriFlowResolution::calShiftAngle2B_EP(Int_t runIndex, Int_t Cent9, Int
     TString ProName_cos, ProName_sin;
     TProfile2D *p_cos, *p_sin;
 
-    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_Full_EP",mVStr[vz_sign].Data(),k);
+    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_Full",mVStr[vz_sign].Data(),k);
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_Full_EP",mVStr[vz_sign].Data(),k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_Full",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
@@ -595,11 +595,11 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
     TString ProName_cos, ProName_sin;
     TProfile2D *p_cos, *p_sin;
 
-    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_Full_EP",mVStr[vz_sign].Data(),k);
+    ProName_cos = Form("CosPsi2_Vertex_%s_Order_%d_Full",mVStr[vz_sign].Data(),k);
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_Full_EP",mVStr[vz_sign].Data(),k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_Full",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 

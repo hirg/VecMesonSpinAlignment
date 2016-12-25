@@ -2,6 +2,7 @@
 #include "../../../Utility/StSpinAlignmentCons.h"
 #include "TProfile2D.h"
 #include "TProfile.h"
+#include "TMath.h"
 
 ClassImp(StVecMesonProManger)
 
