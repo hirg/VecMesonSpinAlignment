@@ -45,13 +45,13 @@ class StVecMesonMaker : public StMaker {
     TString mInPut_Corr_ReCenter;
 
     TString mOutPut_ReCenterPar;
-    TString mOutPut_Corr_ReCenter;
-    TString mOutPut_Corr_Shift;
+    TString mOutPut_ShiftPar;
+    TString mOutPut_Resolution;
     TString mOutPut_Phi;
 
     TFile *mFile_ReCenterPar;
-    TFile *mFile_Corr_ReCenter;
-    TFile *mFile_Corr_Shift;
+    TFile *mFile_ShiftPar;
+    TFile *mFile_Resolution;
     TFile *mFile_Phi;
 
     Int_t mUsedTrackCounter;

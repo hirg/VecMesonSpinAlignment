@@ -63,8 +63,12 @@ class StVecMesonCorrection : public TObject
     // Event Plane method
     Float_t calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
     Float_t calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
-    Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, StPicoTrack *track);
+    Float_t calShiftAngle2A_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
+    Float_t calShiftAngle2B_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
+    Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
+    Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, StPicoTrack *track); // subtract self-correlation
 
+    void InitResolutionCorr(Int_t);
     Float_t getResolution2_EP(Int_t Cent9);
     Float_t getResolution2_Full_EP(Int_t Cent9);
 

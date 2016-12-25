@@ -41,7 +41,11 @@ StVecMesonMaker::StVecMesonMaker(const char* name, StPicoDstMaker *picoMaker, co
   }
   if(mMode == 1)
   {
-    mOutPut_Corr_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_Corr_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
+    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_Corr_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
+  }
+  if(mMode == 2)
+  {
+    mOutPut_Resolution = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Resolution/file_%s_Resolution_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter); 
   }
   if(mMode == 3)
   {
@@ -77,9 +81,19 @@ Int_t StVecMesonMaker::Init()
   {
     mUsedTrackCounter = 0;
     mVecMesonCorrection->InitReCenterCorrection(mEnergy);
-    mFile_Corr_Shift = new TFile(mOutPut_Corr_Shift.Data(),"RECREATE");
+    mFile_ShiftPar = new TFile(mOutPut_ShiftPar.Data(),"RECREATE");
     mVecMesonProManger->InitShift();
   }
+
+  if(mMode == 2)
+  {
+    mVecMesonCorrection->InitReCenterCorrection(mEnergy);
+    mVecMesonCorrection->InitShiftCorrection(mEnergy);
+    mVecMesonProManger->InitResolution();
+    mVecMesonHistoManger->InitEP();
+    mFile_Resolution = new TFile(mOutPut_Resolution.Data(),"RECREATE");
+  }
+
   if(mMode == 3)
   {
     mVecMesonTree = new StVecMesonTree(mEnergy);
@@ -88,6 +102,7 @@ Int_t StVecMesonMaker::Init()
     mVecMesonTree->InitPhi();
     mVecMesonCorrection->InitReCenterCorrection(mEnergy);
     mVecMesonCorrection->InitShiftCorrection(mEnergy);
+    mVecMesonCorrection->InitResolutionCorr(mEnergy);
   }
 
   return kStOK;
@@ -108,11 +123,21 @@ Int_t StVecMesonMaker::Finish()
   }
   if(mMode == 1)
   {
-    if(mOutPut_Corr_Shift != "")
+    if(mOutPut_ShiftPar != "")
     {
-      mFile_Corr_Shift->cd();
+      mFile_ShiftPar->cd();
       mVecMesonProManger->WriteShift();
-      mFile_Corr_Shift->Close();
+      mFile_ShiftPar->Close();
+    }
+  }
+  if(mMode == 2)
+  {
+    if(mOutPut_Resolution != "")
+    {
+      mFile_Resolution->cd();
+      mVecMesonHistoManger->WriteEP();
+      mVecMesonProManger->WriteResolution();
+      mFile_Resolution->Close();
     }
   }
   if(mMode == 3)
@@ -256,21 +281,48 @@ Int_t StVecMesonMaker::Make()
       if(mVecMesonCorrection->passTrackEtaNumRawCut())
       {
 	TVector2 Q2East = mVecMesonCorrection->getQVectorRaw(0); // 0 = eta_gap, 1 = east/west
-	Float_t Psi2_East = TMath::ATan2(Q2East.Y(),Q2East.X())/2.0;
+	Float_t Psi2_East = 0.5*TMath::ATan2(Q2East.Y(),Q2East.X());
 	TVector2 Q2West = mVecMesonCorrection->getQVectorRaw(1); // 0 = eta_gap, 1 = east/west
-	Float_t Psi2_West = TMath::ATan2(Q2West.Y(),Q2West.X())/2.0;
+	Float_t Psi2_West = 0.5*TMath::ATan2(Q2West.Y(),Q2West.X());
 	mVecMesonHistoManger->FillEP_Eta(Psi2_East,Psi2_West);
       }
       if(mVecMesonCorrection->passTrackFullNumRawCut())
       {
 	TVector2 Q2Full = mVecMesonCorrection->getQVectorRaw(2);
-	Float_t Psi2_Full = TMath::ATan2(Q2Full.Y(),Q2Full.X())/2.0;
+	Float_t Psi2_Full = 0.5*TMath::ATan2(Q2Full.Y(),Q2Full.X());
 	mVecMesonHistoManger->FillEP_Full(Psi2_Full);
       }
-      mVecMesonCorrection->clear();
     }
-    if(mMode == 1) // calculate Q vector after recentering for Random Sub Event
+
+    if(mMode == 1)
     {
+      // full event shift parameter
+      if(mVecMesonCorrection->passTrackFullNumCut())
+      {
+	for(Int_t k = 0; k < 5; k++) // ShiftOrder loop
+	{
+	  TVector2 Psi2Vector_Full_EP = mVecMesonCorrection->calPsi2_Full_EP(k);
+	  mVecMesonProManger->FillEventFull_EP(Psi2Vector_Full_EP,cent9,runIndex,vz_sign,k);
+	}
+      }
+
+      // eta sub event shift parameter
+      if(mVecMesonCorrection->passTrackEtaNumCut())
+      {
+	for(Int_t k = 0; k < 5; k++)
+	{
+	  TVector2 Psi2Vector_East_EP = mVecMesonCorrection->calPsi2_East_EP(k);
+	  mVecMesonProManger->FillEventEast_EP(Psi2Vector_East_EP,cent9,runIndex,vz_sign,k);
+
+	  TVector2 Psi2Vector_West_EP = mVecMesonCorrection->calPsi2_West_EP(k);
+	  mVecMesonProManger->FillEventWest_EP(Psi2Vector_West_EP,cent9,runIndex,vz_sign,k);
+	}
+      }
+    }
+
+    if(mMode == 2) // calculate resolution for eta_sub and random sub event plane
+    {
+      // calculate Q vector after recentering for Random Sub Event
       Int_t iTrack[mUsedTrackCounter];
       Float_t ranCounter = (Float_t)mUsedTrackCounter/2.0 - 1;
       for(Int_t i = 0; i < mUsedTrackCounter; i++)
@@ -299,31 +351,40 @@ Int_t StVecMesonMaker::Make()
 	  }
 	}
       }
+      mUsedTrackCounter = 0;
 
-      // full event shift parameter
-      if(mVecMesonCorrection->passTrackFullNumCut())
-      {
-	for(Int_t k = 0; k < 5; k++) // ShiftOrder loop
-	{
-	  TVector2 Psi2Vector_Full_EP = mVecMesonCorrection->calPsi2_Full_EP(k);
-	  mVecMesonProManger->FillEventFull_EP(Psi2Vector_Full_EP,cent9,runIndex,vz_sign,k);
-	}
-      }
+      // calculate resolution
+      TVector2 QVecEast = mVecMesonCorrection->getQVector(0);
+      Float_t Psi2East_ReCenter = 0.5*TMath::ATan2(QVecEast.Y(),QVecEast.X());
+      Float_t Psi2East_Shift = mVecMesonCorrection->calShiftAngle2East_EP(runIndex,cent9,vz_sign);
 
-      // eta sub event shift parameter
+      TVector2 QVecWest = mVecMesonCorrection->getQVector(1);
+      Float_t Psi2West_ReCenter = 0.5*TMath::ATan2(QVecWest.Y(),QVecWest.X());
+      Float_t Psi2West_Shift = mVecMesonCorrection->calShiftAngle2West_EP(runIndex,cent9,vz_sign);
+
+      TVector2 QVecFull = mVecMesonCorrection->getQVector(2);
+      Float_t Psi2Full_ReCenter = 0.5*TMath::ATan2(QVecFull.Y(),QVecFull.X());
+      Float_t Psi2Full_Shift = mVecMesonCorrection->calShiftAngle2Full_EP(runIndex,cent9,vz_sign);
+
+      TVector2 QVecRanA = mVecMesonCorrection->getQVector(3);
+      Float_t Psi2RanA_ReCenter = 0.5*TMath::ATan2(QVecRanA.Y(),QVecRanA.X());
+      Float_t Psi2RanA_Shift = mVecMesonCorrection->calShiftAngle2A_EP(runIndex,cent9,vz_sign);
+
+      TVector2 QVecRanB = mVecMesonCorrection->getQVector(4);
+      Float_t Psi2RanB_ReCenter = 0.5*TMath::ATan2(QVecRanB.Y(),QVecRanB.X());
+      Float_t Psi2RanB_Shift = mVecMesonCorrection->calShiftAngle2B_EP(runIndex,cent9,vz_sign);
+
       if(mVecMesonCorrection->passTrackEtaNumCut())
       {
-	for(Int_t k = 0; k < 5; k++)
-	{
-	  TVector2 Psi2Vector_East_EP = mVecMesonCorrection->calPsi2_East_EP(k);
-	  mVecMesonProManger->FillEventEast_EP(Psi2Vector_East_EP,cent9,runIndex,vz_sign,k);
-
-	  TVector2 Psi2Vector_West_EP = mVecMesonCorrection->calPsi2_West_EP(k);
-	  mVecMesonProManger->FillEventWest_EP(Psi2Vector_West_EP,cent9,runIndex,vz_sign,k);
-	}
+	mVecMesonHistoManger->FillEP_Sub(Psi2East_ReCenter,Psi2West_ReCenter,Psi2RanA_ReCenter,Psi2RanB_ReCenter,Psi2Full_ReCenter);
+	mVecMesonProManger->FillRes_Sub(cent9,Psi2East_Shift,Psi2West_Shift);
       }
-      mVecMesonCorrection->clear();
-      mUsedTrackCounter = 0;
+
+      if(mVecMesonProManger->passTrackFullNumCut())
+      {
+	mVecMesonHistoManger->FillEP_Ran(Psi2East_Shift,Psi2West_Shift,Psi2RanA_Shift,Psi2RanB_Shift,Psi2Full_Shift);
+	mVecMesonProManger->FillRes_Ran(cent9,Psi2RanA_Shift,Psi2RanB_Shift);
+      }
     }
 
     if(mMode == 3)
@@ -367,8 +428,8 @@ Int_t StVecMesonMaker::Make()
 
 	mVecMesonTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2_East);
       }
-      mVecMesonCorrection->clear();
     }
+    mVecMesonCorrection->clear();
   }
 
   return kStOK;
