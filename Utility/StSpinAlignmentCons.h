@@ -164,7 +164,7 @@ namespace vmsa
 
   // used in RcPhiEffCorr
   std::string const mParType[2] = {"Kplus","Kminus"};
-  std::string const mYear[2] = {"run11","run14"};
+  std::string const mYear[2] = {"run11","run10"};
   std::string const mCuts[2] = {"pr","gl"};
   int const NCentMax = 9; 
   float const weight[NCentMax] = {1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.5,0.5};

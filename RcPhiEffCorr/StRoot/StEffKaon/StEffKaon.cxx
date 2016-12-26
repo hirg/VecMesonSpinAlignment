@@ -19,20 +19,19 @@ ClassImp(StEffKaon)
 
 int StEffKaon::mInput_flag = 1;
 
-StEffKaon::StEffKaon(int Energy, long StartEvent, long StopEvent, int PID)
+StEffKaon::StEffKaon(int Energy, long StartEvent, long StopEvent, int PID, int year, int cut)
 {
   mEnergy = Energy;
   mPID = PID;
 
-  // string InPutList = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/List/Kaon_list/run14/%s_StMcEvent.list",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str());
-  string InPutList = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/List/Kaon_list/run11/%s_StMcEvent.list",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str());
+  string InPutList = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/List/Kaon_list/%s/%s_StMcEvent.list",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mYear[year].c_str(),vmsa::mParType[mPID].c_str());
 
   SetInPutList(InPutList); // set input list
 
   SetStartEvent(StartEvent); // set start event
   SetStopEvent(StopEvent); // set stop event
 
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_StMcEvent.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str(),vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
   SetOutPutFile(OutPutFile); // set output file
 
   mEffCut = new StEffCut(mEnergy);
@@ -143,7 +142,7 @@ void StEffKaon::Init()
     mChain_Event->SetBranchAddress("zdc",&mZdc);
     mChain_Event->SetBranchAddress("bbc",&mBbc);
     mChain_Event->SetBranchAddress("nMcTracks",&mNMcTracks);
-    mChain_Event->SetBranchAddress("nRTracks",&mNRcTracks);
+    mChain_Event->SetBranchAddress("nRcTracks",&mNRcTracks);
     mChain_Event->SetBranchAddress("magField",&mMagField);
     mChain_Event->SetBranchAddress("t0",&mT0);
     mChain_Event->SetBranchAddress("t1",&mT1);

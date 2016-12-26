@@ -16,7 +16,7 @@ class StEffHistManger;
 class StEffKaon
 {
   public:
-    StEffKaon(int Energy, long StartEvent, long StopEvent, int PID);
+    StEffKaon(int Energy, long StartEvent, long StopEvent, int PID, int Year, int Cut);
     ~StEffKaon();
 
     void SetInPutList(const string inputlist);

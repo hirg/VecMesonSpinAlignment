@@ -15,12 +15,12 @@ ClassImp(StEffMcPhi)
 
 int StEffMcPhi::mInput_flag = 1;
 
-StEffMcPhi::StEffMcPhi(int Energy, long StartEvent, long StopEvent, int PID)
+StEffMcPhi::StEffMcPhi(int Energy, long StartEvent, long StopEvent, int PID, int year, int cut)
 {
   energy = Energy;
   pid = PID;
 
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_SingleKaon_run11_pr.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_SingleKaon_%s_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
 
   SetInPutFile(InPutFile); // set input list
 
