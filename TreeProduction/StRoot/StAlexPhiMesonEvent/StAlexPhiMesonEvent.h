@@ -81,9 +81,12 @@ class StAlexPhiMesonEvent : public TObject
 
     TVector2 mQ2East;
     TVector2 mQ2West;
-    // TVector2 mQ2Full;
+    TVector2 mQ2Full;
     Int_t   mNumTrackEast;
     Int_t   mNumTrackWest;
+    Int_t   mNumTrackFull;
+    Int_t   mNumTrackFullEast;
+    Int_t   mNumTrackFullWest;
 
     TClonesArray* fTracks;      //->
 
@@ -91,12 +94,15 @@ class StAlexPhiMesonEvent : public TObject
     StAlexPhiMesonEvent() :
       mPrimaryvertex(-1.0,-1.0,-1.0),mRunId(-1),mEventId(-1),mRefMult(-1),mCentrality(-1),mN_prim(-1),mN_non_prim(-1),mN_Tof_match(-1),mZDCx(-1),mBBCx(-1),mVzVpd(-1),fNumTracks(0)
   {
-    // mQ2Full.Set(-999.9,-999.9); // QVector2 West
     mQ2East.Set(-999.9,-999.9); // QVector2 East
     mQ2West.Set(-999.9,-999.9); // QVector2 West
+    mQ2Full.Set(-999.9,-999.9); // QVector2 West
 
     mNumTrackEast = 0;
     mNumTrackWest = 0;
+    mNumTrackFull = 0;
+    mNumTrackFullEast = 0;
+    mNumTrackFullWest = 0;
 
     fTracks      = new TClonesArray( "StAlexPhiMesonTrack", 10 );
   }
@@ -106,59 +112,68 @@ class StAlexPhiMesonEvent : public TObject
       fTracks = NULL;
     }
 
-    void       setPrimaryVertex(StThreeVectorF r)      { mPrimaryvertex = r;     }
-    StThreeVectorF    getPrimaryVertex() const         { return mPrimaryvertex;  }
+    void       setPrimaryVertex(StThreeVectorF r)      { mPrimaryvertex = r;       }
+    StThreeVectorF    getPrimaryVertex() const         { return mPrimaryvertex;    }
 
-    void       setRunId(Int_t  r)                      { mRunId = r;             }
-    Int_t      getRunId() const                        { return mRunId;          }
+    void       setRunId(Int_t  r)                      { mRunId = r;               }
+    Int_t      getRunId() const                        { return mRunId;            }
 
-    void       setEventId(Int_t  r)                    { mEventId = r;           }
-    Int_t      getEventId() const                      { return mEventId;        }
+    void       setEventId(Int_t  r)                    { mEventId = r;             }
+    Int_t      getEventId() const                      { return mEventId;          }
 
-    void       setRefMult(Int_t r)                     { mRefMult = r;           }
-    Int_t      getRefMult() const                      { return mRefMult;        }
+    void       setRefMult(Int_t r)                     { mRefMult = r;             }
+    Int_t      getRefMult() const                      { return mRefMult;          }
 
-    void       setCentrality(Int_t r)                  { mCentrality = r;        }
-    Int_t      getCentrality() const                   { return mCentrality;     }
+    void       setCentrality(Int_t r)                  { mCentrality = r;          }
+    Int_t      getCentrality() const                   { return mCentrality;       }
 
-    void       setN_prim(Int_t r)                      { mN_prim = r;            }
-    Int_t      getN_prim() const                       { return mN_prim;         }
+    void       setN_prim(Int_t r)                      { mN_prim = r;              }
+    Int_t      getN_prim() const                       { return mN_prim;           }
 
-    void       setN_non_prim(Int_t r)                  { mN_non_prim = r;        }
-    Int_t      getN_non_prim() const                   { return mN_non_prim;     }
+    void       setN_non_prim(Int_t r)                  { mN_non_prim = r;          }
+    Int_t      getN_non_prim() const                   { return mN_non_prim;       }
 
-    void       setN_Tof_match(Int_t r)                 { mN_Tof_match = r;       }
-    Int_t      getN_Tof_match() const                  { return mN_Tof_match;    }
+    void       setN_Tof_match(Int_t r)                 { mN_Tof_match = r;         }
+    Int_t      getN_Tof_match() const                  { return mN_Tof_match;      }
 
 
-    void       setZDCx(Float_t r)                      { mZDCx = r;              }
-    Float_t    getZDCx() const                         { return mZDCx;           }
+    void       setZDCx(Float_t r)                      { mZDCx = r;                }
+    Float_t    getZDCx() const                         { return mZDCx;             }
 
-    void       setBBCx(Float_t r)                      { mBBCx = r;              }
-    Float_t    getBBCx() const                         { return mBBCx;           }
+    void       setBBCx(Float_t r)                      { mBBCx = r;                }
+    Float_t    getBBCx() const                         { return mBBCx;             }
 
-    void       setVzVpd(Float_t r)                     { mVzVpd = r;             }
-    Float_t    getVzVpd() const                        { return mVzVpd;          }
+    void       setVzVpd(Float_t r)                     { mVzVpd = r;               }
+    Float_t    getVzVpd() const                        { return mVzVpd;            }
 
     // ---------------------------------------QVector---------------------------------------------
     // QVector2 East
-    void       setQ2East(TVector2 r)                   { mQ2East = r;            }
-    TVector2   getQ2East() const                       { return mQ2East;         }
+    void       setQ2East(TVector2 r)                   { mQ2East = r;              }
+    TVector2   getQ2East() const                       { return mQ2East;           }
     // QVector2 West
-    void       setQ2West(TVector2 r)                   { mQ2West = r;            }
-    TVector2   getQ2West() const                       { return mQ2West;         }
+    void       setQ2West(TVector2 r)                   { mQ2West = r;              }
+    TVector2   getQ2West() const                       { return mQ2West;           }
     // QVector2 Full 
-    // void       setQ2Full(TVector2 r)                   { mQ2Full = r;            }
-    // TVector2   getQ2Full() const                       { return mQ2Full;         }
+    void       setQ2Full(TVector2 r)                   { mQ2Full = r;              }
+    TVector2   getQ2Full() const                       { return mQ2Full;           }
     // ---------------------------------------QVector---------------------------------------------
 
     // -----------------------------------Number of Tracks----------------------------------------
     // East
-    void       setNumTrackEast(Int_t r)                { mNumTrackEast = r;      }
-    Int_t      getNumTrackEast() const                 { return mNumTrackEast;   }
+    void       setNumTrackEast(Int_t r)                { mNumTrackEast = r;        }
+    Int_t      getNumTrackEast() const                 { return mNumTrackEast;     }
     // West
-    void       setNumTrackWest(Int_t r)                { mNumTrackWest = r;      }
-    Int_t      getNumTrackWest() const                 { return mNumTrackWest;   }
+    void       setNumTrackWest(Int_t r)                { mNumTrackWest = r;        }
+    Int_t      getNumTrackWest() const                 { return mNumTrackWest;     }
+    // Full 
+    void       setNumTrackFull(Int_t r)                { mNumTrackFull = r;        }
+    Int_t      getNumTrackFull() const                 { return mNumTrackFull;     }
+    // Full East
+    void       setNumTrackFullEast(Int_t r)            { mNumTrackFullEast = r;    }
+    Int_t      getNumTrackFullEast() const             { return mNumTrackFullEast; }
+    // Full West
+    void       setNumTrackFullWest(Int_t r)            { mNumTrackFullWest = r;    }
+    Int_t      getNumTrackFullWest() const             { return mNumTrackFullWest; }
     // -----------------------------------Number of Tracks----------------------------------------
     StAlexPhiMesonTrack* createTrack()
     {

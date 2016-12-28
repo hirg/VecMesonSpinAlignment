@@ -389,25 +389,19 @@ Int_t StVecMesonMaker::Make()
 
     if(mMode == 3)
     { // phi meson
-      Float_t Psi2_East;
-      TVector2 Q2East, Q2West;
-      Int_t NumTrackEast, NumTrackWest; 
-      Q2East.Set(-999.9,-999.9); // initialize Q Vector to unreasonable value
-      Q2West.Set(-999.9,-999.9);
-      NumTrackEast = 0;
-      NumTrackWest = 0;
-      if(mVecMesonCorrection->passTrackEtaNumCut())
+      if(mVecMesonCorrection->passTrackFullNumCut())
       {
 	// get QVector of sub event
-	Q2East = mVecMesonCorrection->getQVector(0); // east
-	Q2West = mVecMesonCorrection->getQVector(1); // west
-	NumTrackEast = mVecMesonCorrection->getNumTrack(0);
-	NumTrackWest = mVecMesonCorrection->getNumTrack(1);
-      }
+	TVector2 Q2East = mVecMesonCorrection->getQVector(0); // east
+	TVector2 Q2West = mVecMesonCorrection->getQVector(1); // west
+	TVector2 Q2Full = mVecMesonCorrection->getQVector(2); // full 
+	Int_t NumTrackEast = mVecMesonCorrection->getNumTrack(0);
+	Int_t NumTrackWest = mVecMesonCorrection->getNumTrack(1);
+	Int_t NumTrackFull = mVecMesonCorrection->getNumTrack(2);
+	Int_t NumTrackFullEast = mVecMesonCorrection->getNumTrack(3);
+	Int_t NumTrackFullWest = mVecMesonCorrection->getNumTrack(4);
 
-      if(mVecMesonCorrection->passTrackEtaNumCut())
-      {
-	Psi2_East = mVecMesonCorrection->calShiftAngle2East_EP(runIndex,cent9,vz_sign);
+	Float_t Psi2 = mVecMesonCorrection->calShiftAngle2Full_EP(runIndex,cent9,vz_sign);
 
 	// get N_prim, N_non_prim, N_Tof_match
 	Int_t N_prim = mVecMesonCut->getNpirm();
@@ -418,15 +412,13 @@ Int_t StVecMesonMaker::Make()
 	mVecMesonTree->clearEvent();
 	mVecMesonTree->passEvent(N_prim, N_non_prim, N_Tof_match);
 
-	// 2nd sub event plane
-	mVecMesonTree->passEventPlane2East(Q2East);
-	mVecMesonTree->passEventPlane2West(Q2West);
+	// pass re-centered event plane to StVecMesonTree
+	mVecMesonTree->passEventPlane(Q2East,Q2West,Q2Full);
 
-	// Number of Track in East and West part of TPC
-	mVecMesonTree->passNumTrackEast(NumTrackEast);
-	mVecMesonTree->passNumTrackWest(NumTrackWest);
+	// pass NumOfTrack to StVecMesonTree
+	mVecMesonTree->passNumTrack(NumTrackEast,NumTrackWest,NumTrackFull,NumTrackFullEast,NumTrackFullWest);
 
-	mVecMesonTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2_East);
+	mVecMesonTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2);
       }
     }
     mVecMesonCorrection->clear();

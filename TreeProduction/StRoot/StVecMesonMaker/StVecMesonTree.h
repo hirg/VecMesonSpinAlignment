@@ -37,10 +37,8 @@ class StVecMesonTree
 
     void clearEvent();
     void passEvent(Int_t,Int_t,Int_t); // N_prim,N_non_prim,N_Tof_match
-    void passEventPlane2East(TVector2); // qVector ater re-center: eta_gap = 0.05
-    void passEventPlane2West(TVector2); 
-    void passNumTrackEast(Int_t); // Number of East Track: eta_gap = 0.05
-    void passNumTrackWest(Int_t);
+    void passEventPlane(TVector2,TVector2,TVector2); // qVector ater re-center: east, west, full
+    void passNumTrack(Int_t,Int_t,Int_t,Int_t,Int_t); // Number of Tracks: east, west, full, full_east, full_west
 
   private:
     StVecMesonCut *mVecMesonCut;
@@ -76,13 +74,17 @@ class StVecMesonTree
     std::vector<UShort_t> mNumTracks[9][10][5];
     std::vector<TVector2> mQ2East[9][10][5];
     std::vector<TVector2> mQ2West[9][10][5];
+    std::vector<TVector2> mQ2Full[9][10][5];
     std::vector<Int_t> mNumTrackEast[9][10][5];
     std::vector<Int_t> mNumTrackWest[9][10][5];
+    std::vector<Int_t> mNumTrackFull[9][10][5];
+    std::vector<Int_t> mNumTrackFullEast[9][10][5];
+    std::vector<Int_t> mNumTrackFullWest[9][10][5];
 
     // passing variable
     Int_t mNumber_prim, mNumber_non_prim, mNumber_Tof_match;
-    TVector2 mQVector2East, mQVector2West;
-    Int_t mTrackEtaEast, mTrackEtaWest;
+    TVector2 mQVector2East, mQVector2West, mQVector2Full;
+    Int_t mTrackEtaEast, mTrackEtaWest, mTrackFull, mTrackFullEast, mTrackFullWest;
     Int_t mEnergy;
 
   ClassDef(StVecMesonTree,1)

@@ -81,8 +81,12 @@ void StVecMesonTree::clear_phi(Int_t cent9, Int_t Bin_vz, Int_t Bin_Psi2)
   mVzVpd[cent9][Bin_vz][Bin_Psi2].clear();
   mQ2East[cent9][Bin_vz][Bin_Psi2].clear();
   mQ2West[cent9][Bin_vz][Bin_Psi2].clear();
+  mQ2Full[cent9][Bin_vz][Bin_Psi2].clear();
   mNumTrackEast[cent9][Bin_vz][Bin_Psi2].clear();
   mNumTrackWest[cent9][Bin_vz][Bin_Psi2].clear();
+  mNumTrackFull[cent9][Bin_vz][Bin_Psi2].clear();
+  mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2].clear();
+  mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2].clear();
 
   for(Int_t Bin_Event = 0; Bin_Event < vmsa::Buffer_depth; Bin_Event++)
   {
@@ -155,9 +159,13 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
       // QVector
       mXuPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
       mXuPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mXuPhiMesonEvent->setQ2Full(mQ2Full[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
       // Number of Tracks
       mXuPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
       mXuPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mXuPhiMesonEvent->setNumTrackFull(mNumTrackFull[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mXuPhiMesonEvent->setNumTrackFullEast(mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mXuPhiMesonEvent->setNumTrackFullWest(mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
       mXuPhiMesonEvent->setZDCx(mZDCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
       mXuPhiMesonEvent->setBBCx(mBBCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
@@ -236,10 +244,14 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
 	  // QVector
 	  mXuPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 	  mXuPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mXuPhiMesonEvent->setQ2Full(mQ2Full[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
 	  // Number of Tracks
 	  mXuPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 	  mXuPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mXuPhiMesonEvent->setNumTrackFull(mNumTrackFull[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mXuPhiMesonEvent->setNumTrackFullEast(mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mXuPhiMesonEvent->setNumTrackFullWest(mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
 	  mXuPhiMesonEvent->setZDCx(mZDCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 	  mXuPhiMesonEvent->setBBCx(mBBCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
@@ -379,8 +391,12 @@ void StVecMesonTree::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, F
   mNumTracks[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<UShort_t>(pico->numberOfTracks()));
   mQ2East[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<TVector2>(mQVector2East));
   mQ2West[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<TVector2>(mQVector2West));
+  mQ2Full[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<TVector2>(mQVector2Full));
   mNumTrackEast[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Int_t>(mTrackEtaEast));
   mNumTrackWest[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Int_t>(mTrackEtaWest));
+  mNumTrackFull[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Int_t>(mTrackFull));
+  mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Int_t>(mTrackFullEast));
+  mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2].push_back(static_cast<Int_t>(mTrackFullWest));
 
   // store Track Information
   for(Int_t i = 0; i < nTracks; i ++) // loop over all particles in event
@@ -457,6 +473,13 @@ void StVecMesonTree::clearEvent()
 
   mQVector2East.Set(-999.9,-999.9);
   mQVector2West.Set(-999.9,-999.9);
+  mQVector2Full.Set(-999.9,-999.9);
+
+  mTrackEtaEast  = 0;
+  mTrackEtaWest  = 0;
+  mTrackFull     = 0;
+  mTrackFullEast = 0;
+  mTrackFullWest = 0;
 }
 
 void StVecMesonTree::passEvent(Int_t N_prim, Int_t N_non_prim, Int_t N_Tof_match)
@@ -466,23 +489,19 @@ void StVecMesonTree::passEvent(Int_t N_prim, Int_t N_non_prim, Int_t N_Tof_match
   mNumber_Tof_match = N_Tof_match;
 }
 
-void StVecMesonTree::passEventPlane2East(TVector2 Q2East)
+void StVecMesonTree::passEventPlane(TVector2 Q2East, TVector2 Q2West, TVector2, Q2Full)
 {
   mQVector2East = Q2East;
-}
-
-void StVecMesonTree::passEventPlane2West(TVector2 Q2West)
-{
   mQVector2West = Q2West;
+  mQVector2Full = Q2Full;
 }
 
-void StVecMesonTree::passNumTrackEast(Int_t NumTrackEast)
+void StVecMesonTree::passNumTrack(Int_t NumTrackEast, Int_t NumTrackWest, Int_t NumTrackFull, Int_t NumTrackFullEast, Int_t NumTrackFullWest)
 {
-  mTrackEtaEast = NumTrackEast;
-}
-
-void StVecMesonTree::passNumTrackWest(Int_t NumTrackWest)
-{
-  mTrackEtaWest = NumTrackWest;
+  mTrackEtaEast  = NumTrackEast;
+  mTrackEtaWest  = NumTrackWest;
+  mTrackFull     = NumTrackFull;
+  mTrackFullEast = NumTrackFullEast;
+  mTrackFullWest = NumTrackFullWest;
 }
 //------------------------------------------------------------------------------------------------------------------

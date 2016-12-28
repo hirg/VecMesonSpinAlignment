@@ -715,5 +715,7 @@ Int_t StVecMesonCorrection::getNumTrack(Int_t l) // east/west
   if(l == 0) return mQCounter_East;
   if(l == 1) return mQCounter_West;
   if(l == 2) return mQCounter_Full;
+  if(l == 3) return mQCounter_Full_East;
+  if(l == 4) return mQCounter_Full_West;
 }
 //---------------------------------------------------------------------------------
