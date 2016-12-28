@@ -489,7 +489,7 @@ void StVecMesonTree::passEvent(Int_t N_prim, Int_t N_non_prim, Int_t N_Tof_match
   mNumber_Tof_match = N_Tof_match;
 }
 
-void StVecMesonTree::passEventPlane(TVector2 Q2East, TVector2 Q2West, TVector2, Q2Full)
+void StVecMesonTree::passEventPlane(TVector2 Q2East, TVector2 Q2West, TVector2 Q2Full)
 {
   mQVector2East = Q2East;
   mQVector2West = Q2West;
