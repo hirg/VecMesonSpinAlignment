@@ -55,8 +55,8 @@ class StVecMesonTree
     vectorFloatMap mNSigmaKaon;
 
     TTree *mTree_Phi;
-    StAlexPhiMesonEvent *mXuPhiMesonEvent;
-    StAlexPhiMesonTrack *mXuPhiMesonTrack;
+    StAlexPhiMesonEvent *mPhiMesonEvent;
+    StAlexPhiMesonTrack *mPhiMesonTrack;
 
     // event information | 0 = centrality bin, 1 = vertexZ bin, 2 = EP bin || push_back->event
     std::vector<StThreeVectorF> mPrimaryvertex[9][10][5];

@@ -50,9 +50,9 @@ void StVecMesonTree::InitPhi()
     }
   }
 
-  mXuPhiMesonEvent = new StAlexPhiMesonEvent();
-  mTree_Phi = new TTree("XuPhiMesonEvent","XuPhiMesonEvent");
-  mTree_Phi->Branch("phi_flow_branch","StAlexPhiMesonEvent",&mXuPhiMesonEvent);
+  mPhiMesonEvent = new StAlexPhiMesonEvent();
+  mTree_Phi = new TTree("PhiMesonEvent","PhiMesonEvent");
+  mTree_Phi->Branch("phi_SpinAlignment_branch","StAlexPhiMesonEvent",&mPhiMesonEvent);
   mTree_Phi->SetAutoSave(5000000);
 }
 
@@ -146,30 +146,30 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
     for(Int_t Bin_Event = 0; Bin_Event < mEventCounter2[cent9][Bin_vz][Bin_Psi2]; Bin_Event++)
     {
       // event header
-      mXuPhiMesonEvent->clearTrackList();
-      mXuPhiMesonEvent->setPrimaryVertex(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setRunId(mRunId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setEventId(mEventId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setRefMult(mRefMult[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setCentrality(mCentrality[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setN_prim(mN_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setN_non_prim(mN_non_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setN_Tof_match(mN_Tof_match[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->clearTrackList();
+      mPhiMesonEvent->setPrimaryVertex(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setRunId(mRunId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setEventId(mEventId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setRefMult(mRefMult[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setCentrality(mCentrality[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setN_prim(mN_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setN_non_prim(mN_non_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setN_Tof_match(mN_Tof_match[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
       // QVector
-      mXuPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setQ2Full(mQ2Full[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setQ2Full(mQ2Full[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
       // Number of Tracks
-      mXuPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setNumTrackFull(mNumTrackFull[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setNumTrackFullEast(mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setNumTrackFullWest(mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setNumTrackFull(mNumTrackFull[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setNumTrackFullEast(mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setNumTrackFullWest(mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
-      mXuPhiMesonEvent->setZDCx(mZDCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setBBCx(mBBCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-      mXuPhiMesonEvent->setVzVpd(mVzVpd[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setZDCx(mZDCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setBBCx(mBBCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+      mPhiMesonEvent->setVzVpd(mVzVpd[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
       // start to select phi candidate in a event
       MEKey key_plus  = MEKey(cent9,Bin_vz,Bin_Psi2,Bin_Event,0);
@@ -195,17 +195,17 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
 	  // fill phi candidate into mTree_Phi
 	  if(InvMassAB > vmsa::mMassKaon*2 && InvMassAB < 1.05) 
 	  {
-	    mXuPhiMesonTrack = mXuPhiMesonEvent->createTrack();
-	    mXuPhiMesonTrack->setMass2A(mMass2[key_plus][n_kplus]); // K+
-	    mXuPhiMesonTrack->setMass2B(mMass2[key_minus][n_kminus]); // K-
-	    mXuPhiMesonTrack->setNSigKaonA(mNSigmaKaon[key_plus][n_kplus]); // K+
-	    mXuPhiMesonTrack->setNSigKaonB(mNSigmaKaon[key_minus][n_kminus]); // K-
-	    mXuPhiMesonTrack->setDcaA(mDca[key_plus][n_kplus]); // K+
-	    mXuPhiMesonTrack->setDcaB(mDca[key_minus][n_kminus]); // K-
-	    mXuPhiMesonTrack->setTrackA(ltrackA); // K+
-	    mXuPhiMesonTrack->setTrackB(ltrackB); // K-
-	    mXuPhiMesonTrack->setFlagA(Bin_Event); // K+
-	    mXuPhiMesonTrack->setFlagB(Bin_Event); // K-
+	    mPhiMesonTrack = mPhiMesonEvent->createTrack();
+	    mPhiMesonTrack->setMass2A(mMass2[key_plus][n_kplus]); // K+
+	    mPhiMesonTrack->setMass2B(mMass2[key_minus][n_kminus]); // K-
+	    mPhiMesonTrack->setNSigKaonA(mNSigmaKaon[key_plus][n_kplus]); // K+
+	    mPhiMesonTrack->setNSigKaonB(mNSigmaKaon[key_minus][n_kminus]); // K-
+	    mPhiMesonTrack->setDcaA(mDca[key_plus][n_kplus]); // K+
+	    mPhiMesonTrack->setDcaB(mDca[key_minus][n_kminus]); // K-
+	    mPhiMesonTrack->setTrackA(ltrackA); // K+
+	    mPhiMesonTrack->setTrackB(ltrackB); // K-
+	    mPhiMesonTrack->setFlagA(Bin_Event); // K+
+	    mPhiMesonTrack->setFlagB(Bin_Event); // K-
 	  }
 
 	  // Fill histogram with InvMassAB information
@@ -231,31 +231,31 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
 	{
 	  Int_t Bin_Event = Bin_Event_A;
 	  // event header
-	  mXuPhiMesonEvent->clearTrackList();
-	  mXuPhiMesonEvent->setPrimaryVertex(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setRunId(mRunId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setEventId(mEventId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setRefMult(mRefMult[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setCentrality(mCentrality[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setN_prim(mN_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setN_non_prim(mN_non_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setN_Tof_match(mN_Tof_match[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->clearTrackList();
+	  mPhiMesonEvent->setPrimaryVertex(mPrimaryvertex[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setRunId(mRunId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setEventId(mEventId[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setRefMult(mRefMult[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setCentrality(mCentrality[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setN_prim(mN_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setN_non_prim(mN_non_prim[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setN_Tof_match(mN_Tof_match[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
 	  // QVector
-	  mXuPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setQ2Full(mQ2Full[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setQ2East(mQ2East[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setQ2West(mQ2West[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setQ2Full(mQ2Full[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
 	  // Number of Tracks
-	  mXuPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setNumTrackFull(mNumTrackFull[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setNumTrackFullEast(mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setNumTrackFullWest(mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setNumTrackEast(mNumTrackEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setNumTrackWest(mNumTrackWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setNumTrackFull(mNumTrackFull[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setNumTrackFullEast(mNumTrackFullEast[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setNumTrackFullWest(mNumTrackFullWest[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 
-	  mXuPhiMesonEvent->setZDCx(mZDCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setBBCx(mBBCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
-	  mXuPhiMesonEvent->setVzVpd(mVzVpd[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setZDCx(mZDCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setBBCx(mBBCx[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
+	  mPhiMesonEvent->setVzVpd(mVzVpd[cent9][Bin_vz][Bin_Psi2][Bin_Event]);
 	}
 
 	TLorentzVector ltrackA, ltrackB;
@@ -281,17 +281,17 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
 	    // fill phi candidate background into mTree_Phi
 	    if(InvMassAB > vmsa::mMassKaon*2 && InvMassAB < 1.05) 
 	    {
-	      mXuPhiMesonTrack = mXuPhiMesonEvent->createTrack();
-	      mXuPhiMesonTrack->setMass2A(mMass2[key_A_plus][n_kplus]); // K+
-	      mXuPhiMesonTrack->setMass2B(mMass2[key_B_minus][n_kminus]); // K-
-	      mXuPhiMesonTrack->setNSigKaonA(mNSigmaKaon[key_A_plus][n_kplus]); // K+
-	      mXuPhiMesonTrack->setNSigKaonB(mNSigmaKaon[key_B_minus][n_kminus]); // K-
-	      mXuPhiMesonTrack->setDcaA(mDca[key_A_plus][n_kplus]); // K+
-	      mXuPhiMesonTrack->setDcaB(mDca[key_B_minus][n_kminus]); // K-
-	      mXuPhiMesonTrack->setTrackA(ltrackA); // K+
-	      mXuPhiMesonTrack->setTrackB(ltrackB); // K-
-	      mXuPhiMesonTrack->setFlagA(Bin_Event_A); // K+
-	      mXuPhiMesonTrack->setFlagB(Bin_Event_B); // K-
+	      mPhiMesonTrack = mPhiMesonEvent->createTrack();
+	      mPhiMesonTrack->setMass2A(mMass2[key_A_plus][n_kplus]); // K+
+	      mPhiMesonTrack->setMass2B(mMass2[key_B_minus][n_kminus]); // K-
+	      mPhiMesonTrack->setNSigKaonA(mNSigmaKaon[key_A_plus][n_kplus]); // K+
+	      mPhiMesonTrack->setNSigKaonB(mNSigmaKaon[key_B_minus][n_kminus]); // K-
+	      mPhiMesonTrack->setDcaA(mDca[key_A_plus][n_kplus]); // K+
+	      mPhiMesonTrack->setDcaB(mDca[key_B_minus][n_kminus]); // K-
+	      mPhiMesonTrack->setTrackA(ltrackA); // K+
+	      mPhiMesonTrack->setTrackB(ltrackB); // K-
+	      mPhiMesonTrack->setFlagA(Bin_Event_A); // K+
+	      mPhiMesonTrack->setFlagB(Bin_Event_B); // K-
 	    }
 
 	    // Fill histogram with InvMassAB information
@@ -319,17 +319,17 @@ void StVecMesonTree::doPhi(Int_t Flag_ME, Int_t cent9, Int_t Bin_vz, Int_t Bin_P
 	    // fill phi candidate background into mTree_Phi
 	    if(InvMassAB > vmsa::mMassKaon*2 && InvMassAB < 1.05) 
 	    {
-	      mXuPhiMesonTrack = mXuPhiMesonEvent->createTrack();
-	      mXuPhiMesonTrack->setMass2A(mMass2[key_B_plus][n_kplus]); // K+
-	      mXuPhiMesonTrack->setMass2B(mMass2[key_A_minus][n_kminus]); // K-
-	      mXuPhiMesonTrack->setNSigKaonA(mNSigmaKaon[key_B_plus][n_kplus]); // K+
-	      mXuPhiMesonTrack->setNSigKaonB(mNSigmaKaon[key_A_minus][n_kminus]); // K-
-	      mXuPhiMesonTrack->setDcaA(mDca[key_B_plus][n_kplus]); // K+
-	      mXuPhiMesonTrack->setDcaB(mDca[key_A_minus][n_kminus]); // K-
-	      mXuPhiMesonTrack->setTrackA(ltrackB); // K+
-	      mXuPhiMesonTrack->setTrackB(ltrackA); // K-
-	      mXuPhiMesonTrack->setFlagA(Bin_Event_B); // K+
-	      mXuPhiMesonTrack->setFlagB(Bin_Event_A); // K-
+	      mPhiMesonTrack = mPhiMesonEvent->createTrack();
+	      mPhiMesonTrack->setMass2A(mMass2[key_B_plus][n_kplus]); // K+
+	      mPhiMesonTrack->setMass2B(mMass2[key_A_minus][n_kminus]); // K-
+	      mPhiMesonTrack->setNSigKaonA(mNSigmaKaon[key_B_plus][n_kplus]); // K+
+	      mPhiMesonTrack->setNSigKaonB(mNSigmaKaon[key_A_minus][n_kminus]); // K-
+	      mPhiMesonTrack->setDcaA(mDca[key_B_plus][n_kplus]); // K+
+	      mPhiMesonTrack->setDcaB(mDca[key_A_minus][n_kminus]); // K-
+	      mPhiMesonTrack->setTrackA(ltrackB); // K+
+	      mPhiMesonTrack->setTrackB(ltrackA); // K-
+	      mPhiMesonTrack->setFlagA(Bin_Event_B); // K+
+	      mPhiMesonTrack->setFlagB(Bin_Event_A); // K-
 	    }
 
 	    // Fill histogram with InvMassAB information
