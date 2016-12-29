@@ -47,7 +47,7 @@ StVecMesonCorrection::~StVecMesonCorrection()
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
+void StVecMesonCorrection::InitReCenterCorrection()
 {
   TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ReCenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
 
@@ -73,7 +73,7 @@ void StVecMesonCorrection::InitReCenterCorrection(Int_t mEnergy)
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::InitShiftCorrection(Int_t mEnergy)
+void StVecMesonCorrection::InitShiftCorrection()
 {
   TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_ShiftPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Shift = TFile::Open(InPutFile_Shift.Data());
@@ -614,16 +614,11 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
 
 Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, StPicoTrack *track)
 {
-  TVector2 QVector_sub(0.0,0.0);
+  TVector2 QVector_sub = mQ2Vector_Full_EP;
   if(passTrackFull(track))
   {
     Float_t w = getWeight(track);
     QVector_sub = mQ2Vector_Full_EP - w*(calq2Vector(track) - getReCenterPar_Full(Cent9,runIndex,vz_sign));
-//    QVector_sub = mQ2Vector_Full_EP; 
-  }
-  else
-  {
-    QVector_sub = mQ2Vector_Full_EP;
   }
   Float_t Psi_ReCenter = TMath::ATan2(QVector_sub.Y(),QVector_sub.X())/2.0;
   Float_t mean_sin[5], mean_cos[5];
@@ -654,9 +649,9 @@ Float_t StVecMesonCorrection::calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9,
 
 //---------------------------------------------------------------------------------
 
-void StVecMesonCorrection::InitResolutionCorr(Int_t mEnergy)
+void StVecMesonCorrection::InitResolutionCorr()
 {
-  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Res = TFile::Open(InPutFile_Res.Data());
 }
 

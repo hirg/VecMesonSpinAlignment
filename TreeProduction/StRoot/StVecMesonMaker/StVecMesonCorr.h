@@ -26,7 +26,7 @@ class StVecMesonCorrection : public TObject
     TVector2 calq2Vector(StPicoTrack*);
     Float_t getWeight(StPicoTrack*);
 
-    void InitReCenterCorrection(Int_t);
+    void InitReCenterCorrection();
     void addTrack_EastRaw(StPicoTrack* track, Int_t Cent9, Int_t RunIndex);
     void addTrack_WestRaw(StPicoTrack* track, Int_t Cent9, Int_t RunIndex);
     void addTrack_FullRaw(StPicoTrack* track, Int_t Cent9, Int_t RunIndex);
@@ -57,7 +57,7 @@ class StVecMesonCorrection : public TObject
     TVector2 calPsi2_West_EP(Int_t);
     TVector2 calPsi2_Full_EP(Int_t);
 
-    void InitShiftCorrection(Int_t);
+    void InitShiftCorrection();
     Float_t AngleShift(Float_t Psi_raw);
 
     // Event Plane method
@@ -68,7 +68,7 @@ class StVecMesonCorrection : public TObject
     Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
     Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, StPicoTrack *track); // subtract self-correlation
 
-    void InitResolutionCorr(Int_t);
+    void InitResolutionCorr();
     Float_t getResolution2_EP(Int_t Cent9);
     Float_t getResolution2_Full_EP(Int_t Cent9);
 

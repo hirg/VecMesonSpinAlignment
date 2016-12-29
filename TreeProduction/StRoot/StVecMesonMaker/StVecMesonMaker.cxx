@@ -49,7 +49,7 @@ StVecMesonMaker::StVecMesonMaker(const char* name, StPicoDstMaker *picoMaker, co
   }
   if(mMode == 3)
   {
-    mOutPut_Phi = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/file_%s_Phi_%s_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::MixEvent[mFlag_ME].Data(),jobCounter); 
+    mOutPut_Phi = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/Forest/file_%s_Phi_%s_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::MixEvent[mFlag_ME].Data(),jobCounter); 
   }
 }
 
@@ -80,15 +80,15 @@ Int_t StVecMesonMaker::Init()
   if(mMode == 1)
   {
     mUsedTrackCounter = 0;
-    mVecMesonCorrection->InitReCenterCorrection(mEnergy);
+    mVecMesonCorrection->InitReCenterCorrection();
     mFile_ShiftPar = new TFile(mOutPut_ShiftPar.Data(),"RECREATE");
     mVecMesonProManger->InitShift();
   }
 
   if(mMode == 2)
   {
-    mVecMesonCorrection->InitReCenterCorrection(mEnergy);
-    mVecMesonCorrection->InitShiftCorrection(mEnergy);
+    mVecMesonCorrection->InitReCenterCorrection();
+    mVecMesonCorrection->InitShiftCorrection();
     mVecMesonProManger->InitResolution();
     mVecMesonHistoManger->InitEP();
     mFile_Resolution = new TFile(mOutPut_Resolution.Data(),"RECREATE");
@@ -100,9 +100,9 @@ Int_t StVecMesonMaker::Init()
     mFile_Phi = new TFile(mOutPut_Phi.Data(),"RECREATE");
     mFile_Phi->cd();
     mVecMesonTree->InitPhi();
-    mVecMesonCorrection->InitReCenterCorrection(mEnergy);
-    mVecMesonCorrection->InitShiftCorrection(mEnergy);
-    mVecMesonCorrection->InitResolutionCorr(mEnergy);
+    mVecMesonCorrection->InitReCenterCorrection();
+    mVecMesonCorrection->InitShiftCorrection();
+    mVecMesonCorrection->InitResolutionCorr();
   }
 
   return kStOK;
@@ -186,8 +186,8 @@ Int_t StVecMesonMaker::Make()
   Float_t vz = mPicoEvent->primaryVertex().z();
   Float_t zdcX = mPicoEvent->ZDCx();
   mRefMultCorr->init(runId);
-  if(mEnergy == 0) mRefMultCorr->initEvent(refMult,vz,zdcX); // for 200 GeV
-  if(mEnergy != 0) mRefMultCorr->initEvent(refMult,vz); // for BES Energy
+  if(mEnergy == 6) mRefMultCorr->initEvent(refMult,vz,zdcX); // for 200 GeV
+  if(mEnergy != 6) mRefMultCorr->initEvent(refMult,vz); // for BES Energy
 
   // vz sign
   Int_t vz_sign;

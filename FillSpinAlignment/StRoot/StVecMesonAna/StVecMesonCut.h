@@ -1,15 +1,15 @@
-#ifndef StStrangenessCut_h
-#define StStrangenessCut_h
+#ifndef StVecMesonCut_h
+#define StVecMesonCut_h
 
 #include "TObject.h"
 #include "TString.h"
 #include "TLorentzVector.h"
 
-class StStrangenessCut : public TObject
+class StVecMesonCut : public TObject
 {
   public:
-    StStrangenessCut(Int_t energy);
-    ~StStrangenessCut();
+    StVecMesonCut(Int_t energy);
+    ~StVecMesonCut();
 
     bool passTrackEP(TLorentzVector, Float_t);
     bool passTrackEtaEast(TLorentzVector, Int_t); // different eta_gap
@@ -20,6 +20,6 @@ class StStrangenessCut : public TObject
   private:
     Int_t mEnergy;
 
-    ClassDef(StStrangenessCut,1)
+    ClassDef(StVecMesonCut,1)
 };
 #endif

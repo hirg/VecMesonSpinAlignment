@@ -64,6 +64,10 @@ namespace vmsa
   int const Bin_Phi_Psi = 5;
   int const Buffer_depth = 5;
   TString const MixEvent[2] = {"SE","ME"};
+
+  TString const vm_tree[2]  = {"PhiMesonEvent","KStarEvent"};
+  TString const vm_branch[2] = {"phi_SpinAlignment_branch","KStar_SpinAlignment_branch"};
+  int const mList_Delta = 50;
   //--------------------------------------------------
 
   // used in CalSpinAlginment
@@ -136,12 +140,17 @@ namespace vmsa
 
   // shared constant
   std::string const mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
-  std::string const mPID[3] = {"Phi","KStar","K0S"};
-  float const Norm_Start[2] = {1.04,0.41};
-  float const Norm_Stop[2]  = {1.05,0.46};
-  float const BW_Start[2] = {0.994,1.0};
-  float const BW_Stop[2]  = {1.050,1.0};
-  float const Width[2]   = {0.00426,0.0487};
+  float const mEnergyValue[NumBeamEnergy] = {7.7,11.5,19.6,27.0,39.0,62.4,200.0};
+  int const mBeamYear[NumBeamEnergy] = {2010,2010,2011,2011,2010,2010,2011};
+
+  std::string const mPID[3]   = {"Phi","KStar","K0S"};
+  float const Norm_Start[3]   = {1.04,0.41,0.41};
+  float const Norm_Stop[3]    = {1.05,0.46,0.46};
+  float const BW_Start[3]     = {0.994,1.0,1.0};
+  float const BW_Stop[3]      = {1.050,1.0,1.0};
+  float const Width[3]        = {0.00426,0.0487,0.0487};
+  float const InvMass_low[3]  = {0.98,0.4,0.4};
+  float const InvMass_high[3] = {1.05,0.6,0.6};
   float const nSigVec = 2.0;
 
   float const ptEffMax = 8.0;

@@ -1,5 +1,5 @@
-#ifndef StStrangenessAna_h
-#define StStrangenessAna_h
+#ifndef StVecMesonAna_h
+#define StVecMesonAna_h
 
 #include "TObject.h"
 #include "TString.h"
@@ -9,18 +9,16 @@ class TFile;
 class TChain;
 class StAlexPhiMesonEvent;
 class StAlexPhiMesonTrack;
-class StStrangenessCorr;
-class StStrangenessCut;
-class StStrangenessHistoManger;
+class StVecMesonCorr;
+class StVecMesonCut;
+class StVecMesonHistoManger;
 class StRunIdEventsDb;
-class StV0Event;
-class StV0Track;
 
-class StStrangenessAna : public TObject
+class StVecMesonAna : public TObject
 {
   public:
-    StStrangenessAna(Int_t energy, Int_t X_flag, Int_t List, Long64_t start_event, Long64_t stop_event, Int_t mode, Int_t flag_Embedding); // energy: 0 for 200GeV, 1 for 39GeV | X_flag: 0 for Same Event, 1 for Mixed Event | List: number of list to use | mode: 0 for phi, 1 for Kstar | flag_Embedding: 0 for production, 1 for embedding
-    ~StStrangenessAna();
+    StVecMesonAna(Int_t energy, Int_t X_flag, Int_t List, Long64_t start_event, Long64_t stop_event, Int_t mode); // X_flag: 0 for Same Event, 1 for Mixed Event | List: number of list to use | mode: 0 for phi, 1 for Kstar, 2 for K0S
+    ~StVecMesonAna();
 
     void setInputDir(const TString inputdir);
     void setOutputfile(const TString outputfile);
@@ -51,19 +49,18 @@ class StStrangenessAna : public TObject
     Int_t mX_flag; // 0 for Same Event, 1 for Mixed Event
     Int_t mList;
     Int_t mMode; // 0 for phi, 1 for Kstar
-    Int_t mFlag_Embedding; // 0 for production, 1 for embedding
-    StAlexPhiMesonEvent *mXuPhiMeson_event;
-    StAlexPhiMesonTrack *mXuPhiMeson_track;
-    StStrangenessCorr *mStrangenessCorr;
-    StStrangenessCut *mStrangenessCut;
-    StStrangenessHistoManger *mStrangenessHistoManger;
+    StAlexPhiMesonEvent *mPhiMeson_event;
+    StAlexPhiMesonTrack *mPhiMeson_track;
+    StVecMesonCorr *mVecMesonCorr;
+    StVecMesonCut *mVecMesonCut;
+    StVecMesonHistoManger *mVecMesonHistoManger;
     StRunIdEventsDb *mRunIdEventsDb;
 
     static StRefMultCorr *mRefMultCorr;
     static Int_t mInPut_flag;
-    static char* XUV0_EVENT_TREE;
-    static char* XUV0_EVENT_BRANCH;
+    static char* VM_EVENT_TREE;
+    static char* VM_EVENT_BRANCH;
 
-  ClassDef(StStrangenessAna,1)
+  ClassDef(StVecMesonAna,1)
 };
 #endif
