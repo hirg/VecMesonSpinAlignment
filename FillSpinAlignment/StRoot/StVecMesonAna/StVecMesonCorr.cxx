@@ -1,9 +1,10 @@
-#include "StVecMesonCorr.h"
-#include "StVecMesonCons.h"
+#include "StRoot/StVecMesonAna/StVecMesonCorr.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "TLorentzVector.h"
 #include "TProfile2D.h"
 #include "TMath.h"
 #include "TFile.h"
+#include "TF1.h"
 #include "StMessMgr.h"
 
 Double_t Resolution_Full(Double_t *x_val, Double_t *par)
@@ -35,7 +36,7 @@ StVecMesonCorr::~StVecMesonCorr()
 // ReCenter Correction
 void StVecMesonCorr::InitReCenterCorrection()
 {
-  TString InPutFile_ReCenter = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/RecenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mBeamEnergy[mEnergy].Data());
+  TString InPutFile_ReCenter = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ReCenterParameter/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
 
   mInPutFile_ReCenter = TFile::Open(InPutFile_ReCenter.Data());
 }
@@ -130,7 +131,7 @@ Float_t StVecMesonCorr::getWeight(TLorentzVector lTrack)
 // Shift Correction
 void StVecMesonCorr::InitShiftCorrection()
 {
-  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_Corr_Shift.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mBeamEnergy[mEnergy].Data());
+  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_ShiftPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Shift = TFile::Open(InPutFile_Shift.Data());
 }
 
@@ -187,7 +188,7 @@ Float_t StVecMesonCorr::calShiftAngle2East_EP(TVector2 Q2Vector_East, Int_t runI
     p_cos = (TProfile2D*)mInPutFile_Shift->Get(ProName_cos.Data());
     mean_cos[k] = p_cos->GetBinContent(p_cos->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
-    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_East",mVStr[vz_sign].Data(),eta_gap,k);
+    ProName_sin = Form("SinPsi2_Vertex_%s_Order_%d_East",mVStr[vz_sign].Data(),k);
     p_sin = (TProfile2D*)mInPutFile_Shift->Get(ProName_sin.Data());
     mean_sin[k] = p_sin->GetBinContent(p_sin->FindBin((Double_t)runIndex,(Double_t)Cent9));
 
@@ -298,13 +299,13 @@ Float_t StVecMesonCorr::calShiftAngle2Full_EP(TVector2 Q2Vector_Full, Int_t runI
 // Resolution Correction
 void StVecMesonCorr::InitResolutionCorr()
 {
-  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mBeamEnergy[mEnergy].Data());
+  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mInPutFile_Res = TFile::Open(InPutFile_Res.Data());
 }
 
 Float_t StVecMesonCorr::getResolution2_EP(Int_t Cent9)
 {
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_Res2_Sub");
+  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_mRes2_Sub");
   Float_t Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
   if(Res_raw <= 0)
   {
@@ -318,7 +319,7 @@ Float_t StVecMesonCorr::getResolution2_EP(Int_t Cent9)
 }
 Float_t StVecMesonCorr::getResolution2_Full_EP(Int_t Cent9)
 {
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_Res2_Ran");
+  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_mRes2_Ran");
   Float_t Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
   if(Res_raw <= 0)
   {

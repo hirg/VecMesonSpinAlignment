@@ -12,8 +12,8 @@ class StVecMesonCut : public TObject
     ~StVecMesonCut();
 
     bool passTrackEP(TLorentzVector, Float_t);
-    bool passTrackEtaEast(TLorentzVector, Int_t); // different eta_gap
-    bool passTrackEtaWest(TLorentzVector, Int_t);
+    bool passTrackEtaEast(TLorentzVector); // different eta_gap
+    bool passTrackEtaWest(TLorentzVector);
     bool passPhiEtaEast(TLorentzVector); // eta cut for Phi candidate
     bool passPhiEtaWest(TLorentzVector);
 

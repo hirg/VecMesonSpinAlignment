@@ -38,12 +38,15 @@ class StVecMesonCorr : public TObject
 
     // Resolution Correction
     void InitResolutionCorr();
-    Float_t getResolution2_EP(Int_t, Int_t); // centrality, eta_gap
+    Float_t getResolution2_EP(Int_t); // centrality
+    Float_t getResolution2_Full_EP(Int_t);
 
   private:
     TFile *mInPutFile_ReCenter; // input file for ReCenter Correction
-    TFile *mInPutFile_Shift; // input file for ReCenter Correction
-    TFile *mInPutFile_Res; // input file for ReCenter Correction
+    TFile *mInPutFile_Shift; // input file for Shift Correction
+    TFile *mInPutFile_Res; // input file for Resolution Correction
+
+    Int_t mEnergy;
 
     static TString mVStr[2];
     static TString mOrder;

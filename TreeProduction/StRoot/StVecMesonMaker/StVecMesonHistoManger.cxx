@@ -1,4 +1,4 @@
-#include "StVecMesonHistoManger.h"
+#include "StRoot/StVecMesonMaker/StVecMesonHistoManger.h"
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TMath.h"

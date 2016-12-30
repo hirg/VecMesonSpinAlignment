@@ -1,8 +1,8 @@
-#include "StVecMesonAna.h"
-#include "StVecMesonCons.h"
-#include "StVecMesonCut.h"
-#include "StVecMesonCorr.h"
-#include "StVecMesonHistoManger.h"
+#include "StRoot/StVecMesonAna/StVecMesonAna.h"
+#include "StRoot/StVecMesonAna/StVecMesonCut.h"
+#include "StRoot/StVecMesonAna/StVecMesonCorr.h"
+#include "StRoot/StVecMesonAna/StVecMesonHistoManger.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "StRoot/StRefMultCorr/StRefMultCorr.h"
 #include "StRoot/StRefMultCorr/CentralityMaker.h"
 #include "StRoot/StAlexPhiMesonEvent/StAlexPhiMesonEvent.h"
@@ -78,25 +78,26 @@ void StVecMesonAna::Init()
 {
   mVecMesonCorr->InitReCenterCorrection();
   mVecMesonCorr->InitShiftCorrection();
+  mVecMesonCorr->InitResolutionCorr();
   mVecMesonHistoManger->Init(mX_flag,mMode);
 
-  TString inputdir = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Forest/",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mPID[mMode].Data());
+  TString inputdir = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Forest/",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mPID[mMode].c_str());
   setInputDir(inputdir);
 
   const Int_t list_start = vmsa::mList_Delta*mList + 1; // start list
   const Int_t list_stop  = vmsa::mList_Delta*(mList+1); // stop list
 
-  TString InPutList = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/List/%s_list/spin_List/Split_%s_%s_%d_%d.list",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mPID[mMode].Data(),vmsa::MixEvent[mX_flag].Data(),vmsa::mBeamEnergy[mEnergy].Data(),list_start,list_stop);
+  TString InPutList = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/List/Split_%s_%s_%d_%d.list",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mPID[mMode].c_str(),vmsa::MixEvent[mX_flag].Data(),vmsa::mBeamEnergy[mEnergy].c_str(),list_start,list_stop);
   setInPutList(InPutList);
 
-  TString outputfile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/Yields_%s_%s_%d.root",vmsa::mBeamEnergy[mEnergy].Data(),vmsa::mPID[mMode].Data(),vmsa::MixEvent[mX_flag].Data(),vmsa::mBeamEnergy[mEnergy].Data(),mList);
+  TString outputfile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/Yields_%s_%s_%d.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mPID[mMode].c_str(),vmsa::MixEvent[mX_flag].Data(),vmsa::mBeamEnergy[mEnergy].c_str(),mList);
   setOutputfile(outputfile);
 
   setStartEvent(Long64_t(mStart_Event));
   setStopEvent(Long64_t(mStop_Event));
   //----------------------------------------------------------------------------------------------------
 
-  TString Notification = Form("Initializing parameters and input/output for %s %s",vmsa::mPID[mMode].Data(),vmsa::MixEvent[mX_flag].Data());
+  TString Notification = Form("Initializing parameters and input/output for %s %s",vmsa::mPID[mMode].c_str(),vmsa::MixEvent[mX_flag].Data());
   cout << Notification.Data() << endl;
   mFile_OutPut = new TFile(mOutputfile.Data(),"RECREATE");
 
@@ -276,7 +277,7 @@ void StVecMesonAna::MakePhi()
     }
 
     // get Track Information
-    if(mVecMesonCorr->passTrackNumCut(NumTrackEast,NumTrackWest))
+    if(mVecMesonCorr->passTrackEtaNumCut(NumTrackEast,NumTrackWest))
     {
       for(UShort_t nTracks = 0; nTracks < NumTrackUsed; nTracks++) // loop over all tracks of the actual event
       {
@@ -335,6 +336,7 @@ void StVecMesonAna::MakePhi()
 
 	    mVecMesonHistoManger->Fill(pt_lTrack,cent9,CosThetaStar,Res2,InvMass_lTrack,reweight,mX_flag,mMode);
 	  }
+
 
 	  if(mVecMesonCut->passPhiEtaWest(lTrackA)) // K+ pos eta (west)
 	  { // Below is East Only

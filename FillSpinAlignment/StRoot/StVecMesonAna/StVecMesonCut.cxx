@@ -1,6 +1,5 @@
-#include "StVecMesonCut.h"
-#include "../../../Utility/StSpinAlignmentCons.h"
-#include "StRoot/StPicoDstMaker/StPicoTrack.h"
+#include "StRoot/StVecMesonAna/StVecMesonCut.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "StMessMgr.h"
 
 ClassImp(StVecMesonCut)

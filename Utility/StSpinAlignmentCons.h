@@ -124,6 +124,8 @@ namespace vmsa
   int const CTS_total = 7; // cos(theta*) bin
   int const CTS_start = 0;
   int const CTS_stop  = 7;
+  float const CTS_low[7] = {0.0/7.0,1.0/7.0,2.0/7.0,3.0/7.0,4.0/7.0,5.0/7.0,6.0/7.0};
+  float const CTS_up[7]  = {1.0/7.0,2.0/7.0,3.0/7.0,4.0/7.0,5.0/7.0,6.0/7.0,7.0/7.0};
 
   int const EtaGap_total = 4; // EtaGap bin
   int const Eta_start = 0; // EtaGap bin

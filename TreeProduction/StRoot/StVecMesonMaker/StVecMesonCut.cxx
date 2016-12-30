@@ -1,5 +1,5 @@
-#include "StVecMesonCut.h"
-#include "../../../Utility/StSpinAlignmentCons.h"
+#include "StRoot/StVecMesonMaker/StVecMesonCut.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
 #include "StRoot/StPicoDstMaker/StPicoEvent.h"
 #include "StRoot/StPicoDstMaker/StPicoTrack.h"

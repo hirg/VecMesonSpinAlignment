@@ -24,10 +24,9 @@ void calPhiRes(int energy = 6, int pid = 0)
 {
   TGaxis::SetMaxDigits(4);
 
-  // use v3 histogram right now
-  string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/%s/flow_%s/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   cout << "InPut Same Event: " << InPutFile_SE.c_str() << endl;
-  string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/%s/flow_%s/merged_file/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   cout << "InPut Mixed Event: " << InPutFile_ME.c_str() << endl;
   
   TFile *File_SE = TFile::Open(InPutFile_SE.c_str());
@@ -41,13 +40,17 @@ void calPhiRes(int energy = 6, int pid = 0)
       for(int i_sys = vmsa::Sys_start; i_sys < vmsa::Sys_stop; ++i_sys) // Systematic loop
       {
 	string KEY_Yield_SE = Form("Yields_Centrality_%d_EtaGap_%d_%s_SE_SysErrors_%d",i_cent,i_eta,vmsa::mPID[pid].c_str(),i_sys);
-	h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(KEY_Yield_SE.c_str())->Clone(); 
+	// h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(KEY_Yield_SE.c_str())->Clone(); // for 19.6, 27 and 62.4 GeV
+	string Name_Yield_SE = Form("Yields_Centrality_%d_EtaGap_%d_%s_SE",i_cent,i_eta,vmsa::mPID[pid].c_str());
+	h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(Name_Yield_SE.c_str())->Clone(); 
 	int Norm_bin_start = h_mYield_SE[KEY_Yield_SE]->FindBin(vmsa::Norm_Start[pid]);
 	int Norm_bin_stop  = h_mYield_SE[KEY_Yield_SE]->FindBin(vmsa::Norm_Stop[pid]);
 	float Inte_SE = h_mYield_SE[KEY_Yield_SE]->Integral(Norm_bin_start,Norm_bin_stop);
 
 	string KEY_Yield_ME = Form("Yields_Centrality_%d_EtaGap_%d_%s_ME_SysErrors_%d",i_cent,i_eta,vmsa::mPID[pid].c_str(),i_sys);
-	h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(KEY_Yield_ME.c_str())->Clone(); 
+	// h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(KEY_Yield_ME.c_str())->Clone(); // for 19.6, 27 and 62.4 GeV
+	string Name_Yield_ME = Form("Yields_Centrality_%d_EtaGap_%d_%s_ME",i_cent,i_eta,vmsa::mPID[pid].c_str());
+	h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(Name_Yield_ME.c_str())->Clone(); 
 	float Inte_ME = h_mYield_ME[KEY_Yield_ME]->Integral(Norm_bin_start,Norm_bin_stop);
 	h_mYield_ME[KEY_Yield_ME]->Scale(Inte_SE/Inte_ME);
 

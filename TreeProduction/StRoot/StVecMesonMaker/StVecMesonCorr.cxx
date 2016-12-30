@@ -1,5 +1,5 @@
-#include "StVecMesonCorr.h"
-#include "../../../Utility/StSpinAlignmentCons.h"
+#include "StRoot/StVecMesonMaker/StVecMesonCorr.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
 #include "StRoot/StPicoDstMaker/StPicoEvent.h"
 #include "StRoot/StPicoDstMaker/StPicoTrack.h"
@@ -657,7 +657,7 @@ void StVecMesonCorrection::InitResolutionCorr()
 
 Float_t StVecMesonCorrection::getResolution2_EP(Int_t Cent9)
 {
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_Res2_Sub");
+  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_mRes2_Sub");
   Float_t Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
   if(Res_raw <= 0)
   {
@@ -672,7 +672,7 @@ Float_t StVecMesonCorrection::getResolution2_EP(Int_t Cent9)
 
 Float_t StVecMesonCorrection::getResolution2_Full_EP(Int_t Cent9)
 {
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_Res2_Ran");
+  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_mRes2_Ran");
   Float_t Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
   if(Res_raw <= 0)
   {

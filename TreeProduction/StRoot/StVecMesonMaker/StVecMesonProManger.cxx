@@ -1,5 +1,5 @@
-#include "StVecMesonProManger.h"
-#include "../../../Utility/StSpinAlignmentCons.h"
+#include "StRoot/StVecMesonMaker/StVecMesonProManger.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "TProfile2D.h"
 #include "TProfile.h"
 #include "TMath.h"
