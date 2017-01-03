@@ -9,10 +9,12 @@ if [ $# -eq 0 ]
     PID=Phi
     List_SM=ME
     SM=_${List_SM}_
-    Energy=19GeV
+    Energy=62GeV
     Name="_${Energy}_$PID$SM"
     suffix=".root"
-    for((counter=0;counter<3;counter=counter+1)) # 19GeV
+    # for((counter=0;counter<3;counter=counter+1)) # 19GeV
+    # for((counter=0;counter<5;counter=counter+1)) # 27GeV
+    for((counter=0;counter<7;counter=counter+1)) # 62GeV
     do
       cp ./run.csh ./run$Name$counter.csh
 
@@ -20,10 +22,10 @@ if [ $# -eq 0 ]
 ###############################energy###################################
       # echo -n 0',' >> run$Name$counter.csh  # 7.7GeV
       # echo -n 1',' >> run$Name$counter.csh  # 11.5GeV
-      echo -n 2',' >> run$Name$counter.csh  # 19.6GeV
+      # echo -n 2',' >> run$Name$counter.csh  # 19.6GeV
       # echo -n 3',' >> run$Name$counter.csh  # 27GeV
       # echo -n 4',' >> run$Name$counter.csh  # 39GeV
-      # echo -n 5',' >> run$Name$counter.csh  # 62.4GeV
+      echo -n 5',' >> run$Name$counter.csh  # 62.4GeV
       # echo -n 6',' >> run$Name$counter.csh  # 200GeV
 ###############################energy###################################
 
