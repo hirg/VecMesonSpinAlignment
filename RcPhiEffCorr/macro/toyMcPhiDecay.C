@@ -19,7 +19,7 @@ using namespace std;
 
 typedef std::map<std::string,TH1D*> TH1DMap;
 
-void readEfficiency(int energy, int year, int cut);
+void readEfficiency(int energy, int year, int cut, int jobID);
 void getKinematics(TLorentzVector& lPhi, double const mass);
 void setDecayChannels(int const pid);
 void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters);
@@ -38,12 +38,12 @@ TH1D *h_FramePhi[2];
 
 TFile *File_OutPut;
 
-void toyMcPhiDecay(const int energy = 6, const int pid = 0, const int year = 0, const int cut = 0, const int NMax = 1000000)
+void toyMcPhiDecay(const int energy = 4, const int pid = 0, const int year = 1, const int cut = 0, const int NMax = 100000, const int jobID = 3)
 {
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
   gRandom->SetSeed();
-  readEfficiency(energy,year,cut);
+  readEfficiency(energy,year,cut,jobID);
 
   pydecay = TPythia6Decayer::Instance();
   pydecay->Init();
@@ -217,13 +217,13 @@ void findHist(TLorentzVector const& lKaon, int iParticleIndex, int& EtaBin, int&
   PhiBin = h_FramePhi[iParticleIndex]->FindBin(phi)-1;
 }
 
-void readEfficiency(int energy, int year, int cut)
+void readEfficiency(int energy, int year, int cut, int jobID)
 {
-  string inputKplus = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mParType[0].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
+  string inputKplus = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mParType[0].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
   TFile *File_Kplus = TFile::Open(inputKplus.c_str());
   cout << "OPEN Efficiency File for K+: " << inputKplus.c_str() << endl;
 
-  string inputKminus = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mParType[1].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
+  string inputKminus = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mParType[1].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
   TFile *File_Kminus = TFile::Open(inputKminus.c_str());
   cout << "OPEN Efficiency File for K-: " << inputKminus.c_str() << endl;
 
@@ -246,7 +246,8 @@ void readEfficiency(int energy, int year, int cut)
     }
   }
 
-  string outputfile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/Phi/Efficiency/Eff_%s_SingleKaon_%s_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
+  string outputfile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/Efficiency/Eff_%s_SingleKaon_%s_%s_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str(),jobID);
+  cout << "OutPut File set to: " << outputfile.c_str() << endl;
   File_OutPut = new TFile(outputfile.c_str(),"RECREATE");
   File_OutPut->cd();
 

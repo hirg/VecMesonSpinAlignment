@@ -18,19 +18,19 @@ namespace McAnaCuts
   std::vector<unsigned int> getAllTriggers()
   {
     std::vector<unsigned int> t;
-    // t.push_back(350003); // miniBias triger @ 200 GeV
-    // t.push_back(350013); 
-    // t.push_back(350023); 
-    // t.push_back(350033); 
-    // t.push_back(350043);
+    t.push_back(350003); // miniBias triger @ 200 GeV
+    t.push_back(350013); 
+    t.push_back(350023); 
+    t.push_back(350033); 
+    t.push_back(350043);
 
     // t.push_back(270001); // miniBias triger @ 62.4 GeV
     // t.push_back(270011); 
     // t.push_back(270021); 
     // t.push_back(270005); 
 
-    t.push_back(280001); // miniBias triger @ 39 GeV
-    t.push_back(280002); 
+    // t.push_back(280001); // miniBias triger @ 39 GeV
+    // t.push_back(280002); 
 
     // t.push_back(360001); // miniBias triger @ 27 GeV
     // t.push_back(360002); 

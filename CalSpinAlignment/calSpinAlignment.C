@@ -154,7 +154,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
     h_mMass[KEY_QA]->SetMarkerSize(0.4);
     h_mMass[KEY_QA]->SetLineColor(1);
     h_mMass[KEY_QA]->DrawCopy("pE");
-    cout << "KEY_QA = " << KEY_QA.c_str() << endl;
+    // cout << "KEY_QA = " << KEY_QA.c_str() << endl;
 
     string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
     plotTopLegend((char*)pT_range.c_str(),0.2,0.7,0.08,1,0.0,42,1);

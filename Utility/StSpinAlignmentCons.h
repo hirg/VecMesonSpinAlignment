@@ -56,7 +56,7 @@ namespace vmsa
   int const pt_stop  = 25;
   float const ptRawStart[pt_total] = {0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2};
   float const ptRawStop[pt_total]  = {0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
-  float const pt_bin[pt_total+1] = {0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
+  double const pt_bin[pt_total+1] = {0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.4,3.8,4.2,4.6,5.0,5.4,5.8,6.2,6.6,7.2,8.0};
 
   // mix event
   int const Bin_Centrality = 9;
@@ -109,7 +109,7 @@ namespace vmsa
     {2,4,7,10,13,16,19,23,24}
   };
   int const pt_rebin_first[NumBeamEnergy] = {0,0,0,0,0,0,0};
-  int const pt_rebin_last[NumBeamEnergy]  = {1,2,3,4,5,6,8};
+  int const pt_rebin_last[NumBeamEnergy]  = {8,8,8,8,8,8,8};
   int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,2};
   int const pt_RawQA[NumBeamEnergy]    = {2,4,6,8,10,12,14};
 

@@ -6,10 +6,10 @@ date
 if [ $# -eq 0 ]
 then
   PID=Kminus
-  Energy=39GeV
-  # InPutList="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/List/Kaon_list/run11/${PID}.list"
-  InPutList="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/List/Kaon_list/${PID}.list"
-  OutPutDir="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Embedding/$PID/StMcEvents/StMcEvents_"
+  Energy=200GeV
+  Year=run11 # run10 for 7.7, 11.5, 39 and 62.4 GeV | run11 for 19.6, 27 and 200 GeV | run14 for 14.5
+  InPutList="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/SpinAlignment/Embedding/$PID/List/$Year/${PID}.list"
+  OutPutDir="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/SpinAlignment/Embedding/$PID/StMcEvents/StMcEvents_"
   suffix=".root"
   counter=0
   for item in `cat $InPutList`
@@ -21,7 +21,7 @@ then
     echo '"'$item'"'',''"'$OutPutFile'"'')'"'" >> ./embedding_${PID}_$counter.csh
     qsub -hard -l scratchfree=500,h_cpu=00:30:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/Embedding/Kaon/embedding_${PID}_$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/Embedding/Kaon/embedding_${PID}_$counter.err ./embedding_${PID}_$counter.csh
 
-    mv ./embedding_${PID}_$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Script/Embedding/Kaon/
+    mv ./embedding_${PID}_$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Script/
     let counter=$counter+1
   done
 

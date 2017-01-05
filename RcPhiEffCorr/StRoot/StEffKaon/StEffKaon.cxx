@@ -24,14 +24,14 @@ StEffKaon::StEffKaon(int Energy, long StartEvent, long StopEvent, int PID, int y
   mEnergy = Energy;
   mPID = PID;
 
-  string InPutList = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/List/Kaon_list/%s/%s_StMcEvent.list",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mYear[year].c_str(),vmsa::mParType[mPID].c_str());
+  string InPutList = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Embedding/%s/List/%s/%s_StMcEvent.list",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str(),vmsa::mYear[year].c_str(),vmsa::mParType[mPID].c_str());
 
   SetInPutList(InPutList); // set input list
 
   SetStartEvent(StartEvent); // set start event
   SetStopEvent(StopEvent); // set stop event
 
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str(),vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Embedding/%s/Efficiency/Eff_%s_StMcEvent_%s_%s.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mParType[mPID].c_str(),vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mYear[year].c_str(),vmsa::mCuts[cut].c_str());
   SetOutPutFile(OutPutFile); // set output file
 
   mEffCut = new StEffCut(mEnergy);

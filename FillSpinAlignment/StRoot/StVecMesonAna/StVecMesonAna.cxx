@@ -272,7 +272,7 @@ void StVecMesonAna::MakePhi()
       if((stop_event_use-start_event_use) > 0)
       {
 	Double_t event_percent = 100.0*((Double_t)(counter-start_event_use))/((Double_t)(stop_event_use-start_event_use));
-	cout << " " << counter-start_event_use << " (" << event_percent << "%) " << "\n" << "==> Processing data (strangeness_SpinAlignment) " << flush;
+	cout << " " << counter-start_event_use << " (" << event_percent << "%) " << "\n" << "==> Processing data (VecMesonSpinAlignment) " << flush;
       }
     }
 
@@ -336,7 +336,6 @@ void StVecMesonAna::MakePhi()
 
 	    mVecMesonHistoManger->Fill(pt_lTrack,cent9,CosThetaStar,Res2,InvMass_lTrack,reweight,mX_flag,mMode);
 	  }
-
 
 	  if(mVecMesonCut->passPhiEtaWest(lTrackA)) // K+ pos eta (west)
 	  { // Below is East Only
