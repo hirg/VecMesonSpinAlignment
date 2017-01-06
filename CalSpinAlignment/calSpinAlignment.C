@@ -21,7 +21,7 @@
 #define _PlotQA_  0
 #endif
 
-void calSpinAlignment(int energy = 6, int pid = 0)
+void calSpinAlignment(int energy = 2, int pid = 0, int year = 0)
 {
   TGaxis::SetMaxDigits(4);
 
@@ -42,20 +42,20 @@ void calSpinAlignment(int energy = 6, int pid = 0)
       {
 	for(int i_theta = vmsa::CTS_start; i_theta < vmsa::CTS_stop; i_theta++) // cos(theta*) loop
 	{
-	    string KEY_SE = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SE",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
-	    h_mMass_SE[KEY_SE] = (TH1F*)File_SE->Get(KEY_SE.c_str())->Clone(); 
-	    int Norm_bin_start = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Start[pid]);
-	    int Norm_bin_stop  = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Stop[pid]);
-	    float Inte_SE = h_mMass_SE[KEY_SE]->Integral(Norm_bin_start,Norm_bin_stop);
+	  string KEY_SE = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SE",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
+	  h_mMass_SE[KEY_SE] = (TH1F*)File_SE->Get(KEY_SE.c_str())->Clone(); 
+	  int Norm_bin_start = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Start[pid]);
+	  int Norm_bin_stop  = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Stop[pid]);
+	  float Inte_SE = h_mMass_SE[KEY_SE]->Integral(Norm_bin_start,Norm_bin_stop);
 
-	    string KEY_ME = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_ME",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
-	    h_mMass_ME[KEY_ME] = (TH1F*)File_ME->Get(KEY_ME.c_str())->Clone(); 
-	    float Inte_ME = h_mMass_ME[KEY_ME]->Integral(Norm_bin_start,Norm_bin_stop);
-	    h_mMass_ME[KEY_ME]->Scale(Inte_SE/Inte_ME);
+	  string KEY_ME = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_ME",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
+	  h_mMass_ME[KEY_ME] = (TH1F*)File_ME->Get(KEY_ME.c_str())->Clone(); 
+	  float Inte_ME = h_mMass_ME[KEY_ME]->Integral(Norm_bin_start,Norm_bin_stop);
+	  h_mMass_ME[KEY_ME]->Scale(Inte_SE/Inte_ME);
 
-	    string KEY_SM = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
-	    h_mMass_SM[KEY_SM] = (TH1F*)h_mMass_SE[KEY_SE]->Clone();
-	    h_mMass_SM[KEY_SM]->Add(h_mMass_ME[KEY_ME],-1.0);
+	  string KEY_SM = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
+	  h_mMass_SM[KEY_SM] = (TH1F*)h_mMass_SE[KEY_SE]->Clone();
+	  h_mMass_SM[KEY_SM]->Add(h_mMass_ME[KEY_ME],-1.0);
 	}
       }
     }
@@ -262,8 +262,8 @@ void calSpinAlignment(int energy = 6, int pid = 0)
 	    f_bw->FixParameter(0,ParFit_theta[KEY_theta][0]);
 	    f_bw->FixParameter(1,ParFit_theta[KEY_theta][1]);
 	    f_bw->SetParameter(2,ParFit_theta[KEY_theta][2]/7.0);
-	    f_bw->SetParameter(3,ParFit_theta[KEY_theta][3]);
-	    f_bw->SetParameter(4,ParFit_theta[KEY_theta][4]);
+	    f_bw->SetParameter(3,ParFit_theta[KEY_theta][3]/7.0);
+	    f_bw->SetParameter(4,ParFit_theta[KEY_theta][4]/7.0);
 	    f_bw->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
 	    h_mMass[KEY]->Fit(f_bw,"NQR");
 
@@ -708,7 +708,7 @@ void calSpinAlignment(int energy = 6, int pid = 0)
   string leg_line = "#rho_{00} = 1/3";
   plotTopLegend((char*)leg_line.c_str(),3.6,0.447,0.03,1,0.0,42,0);
 
-  string leg_energy = Form("AuAu %s (run11)", vmsa::mBeamEnergy[energy].c_str());
+  string leg_energy = Form("AuAu %s (%s)", vmsa::mBeamEnergy[energy].c_str(), vmsa::mYear[year].c_str());
   plotTopLegend((char*)leg_energy.c_str(),1.4,0.27,0.04,1,0.0,42,0);
   string leg_centrality = "20%-60%";
   plotTopLegend((char*)leg_centrality.c_str(),2.0,0.24,0.04,1,0.0,42,0);
