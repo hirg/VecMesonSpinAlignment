@@ -32,5 +32,6 @@ Utility/compareHistograms/compareHistograms.o
 Utility/compareHistograms/compareHistograms
 
 figures/*
+!figures/c_rho00PtEnergy.eps
 
 Embedding/*.root
