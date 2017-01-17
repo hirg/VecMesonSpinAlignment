@@ -130,9 +130,9 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   string leg_p0Gaus   = Form("p_{0}^{Gaussian} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(0),f_ResGaus->GetParError(0));
   string leg_p1Gaus   = Form("p_{1}^{Gaussian} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(1),f_ResGaus->GetParError(1));
   string leg_chi2Gaus = Form("#chi^{2}/NDF = %2.2f/%d",f_ResGaus->GetChisquare(),f_ResGaus->GetNDF());
-  plotTopLegend(leg_p0Gaus.c_str(),0.2,0.80,0.03,kGray+2,0.0,42,1);
-  plotTopLegend(leg_p1Gaus.c_str(),0.2,0.74,0.03,kGray+2,0.0,42,1);
-  plotTopLegend(leg_chi2Gaus.c_str(),0.2,0.68,0.03,kGray+2,0.0,42,1);
+  plotTopLegend((char*)leg_p0Gaus.c_str(),0.2,0.80,0.03,kGray+2,0.0,42,1);
+  plotTopLegend((char*)leg_p1Gaus.c_str(),0.2,0.74,0.03,kGray+2,0.0,42,1);
+  plotTopLegend((char*)leg_chi2Gaus.c_str(),0.2,0.68,0.03,kGray+2,0.0,42,1);
 
   g_ResEP->SetMarkerStyle(24);
   g_ResEP->SetMarkerColor(kRed);
@@ -149,9 +149,9 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   string leg_p0EP   = Form("p_{0}^{Sergei} = %2.4f #pm %2.4f",f_ResEP->GetParameter(0),f_ResEP->GetParError(0));
   string leg_p1EP   = Form("p_{1}^{Sergei} = %2.4f #pm %2.4f",f_ResEP->GetParameter(1),f_ResEP->GetParError(1));
   string leg_chi2EP = Form("#chi^{2}/NDF = %2.2f/%d",f_ResEP->GetChisquare(),f_ResEP->GetNDF());
-  plotTopLegend(leg_p0EP.c_str(),0.58,0.40,0.03,kRed,0.0,42,1);
-  plotTopLegend(leg_p1EP.c_str(),0.58,0.34,0.03,kRed,0.0,42,1);
-  plotTopLegend(leg_chi2EP.c_str(),0.58,0.28,0.03,kRed,0.0,42,1);
+  plotTopLegend((char*)leg_p0EP.c_str(),0.58,0.40,0.03,kRed,0.0,42,1);
+  plotTopLegend((char*)leg_p1EP.c_str(),0.58,0.34,0.03,kRed,0.0,42,1);
+  plotTopLegend((char*)leg_chi2EP.c_str(),0.58,0.28,0.03,kRed,0.0,42,1);
 
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/McResCorr/Mc%sResCorrFactor.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
@@ -165,6 +165,7 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   g_ResEP->Write();
   File_OutPut->Close();
 
-  c_res->SaveAs("../figures/resCorrFactor.eps");
+  string FigureName = Form("../figures/resCorrFactor%s.eps",vmsa::mBeamEnergy[energy].c_str());
+  c_res->SaveAs(FigureName.c_str());
 }
 

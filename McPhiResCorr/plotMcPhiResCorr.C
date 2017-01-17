@@ -34,8 +34,8 @@ void plotMcPhiResCorr(int energy = 6)
   gStyle->SetOptDate(0);
   TGaxis::SetMaxDigits(4);
   gRandom->SetSeed();
-  int const BinRho = floor(60 * gRandom->Rndm());
-  // int const BinRho = 40; 
+  // int const BinRho = floor(60 * gRandom->Rndm());
+  int const BinRho = 40; 
   float const rhoInPut = 0.01*BinRho;
 
   string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",vmsa::mBeamEnergy[energy].c_str());
@@ -52,8 +52,8 @@ void plotMcPhiResCorr(int energy = 6)
   f_v2->SetLineStyle(2);
   g_v2->Fit(f_v2,"N");
 
-  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
-  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr_40.root",vmsa::mBeamEnergy[energy].c_str());
+  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
+  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr_40.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Hist = TFile::Open(InPutHist.c_str());
   string HistTracks = Form("h_Tracks_%d",BinRho);
   TH3F *h_Tracks = (TH3F*)File_Hist->Get(HistTracks.c_str());
@@ -158,7 +158,7 @@ void plotMcPhiResCorr(int energy = 6)
   TF1 *f_res = new TF1("f_res",EventPlaneResolution,0,10,0);
   float resEP = f_res->Eval(chi);
   string leg_PsiEP = Form("Sergei: #chi = %2.2f, resolution = %2.2f",chi,resEP);
-  plotTopLegend(leg_PsiEP.c_str(),0.2,0.85,0.03,2,0.0,42,1);
+  plotTopLegend((char*)leg_PsiEP.c_str(),0.2,0.85,0.03,2,0.0,42,1);
 
   h_PsiGaus->SetMarkerStyle(24);
   h_PsiGaus->SetMarkerColor(kGray+2);
@@ -178,7 +178,7 @@ void plotMcPhiResCorr(int energy = 6)
   float sigma = f_gaus->GetParameter(2);
   float resGaus = cos(2.0*sigma);
   string leg_PsiGaus = Form("Gaussian: #sigma = %2.2f, resolution = cos(2*#sigma) = %2.2f",sigma,resGaus);
-  plotTopLegend(leg_PsiGaus.c_str(),0.2,0.8,0.03,kGray+2,0.0,42,1);
+  plotTopLegend((char*)leg_PsiGaus.c_str(),0.2,0.8,0.03,kGray+2,0.0,42,1);
 
   TCanvas *c_v2fitQA = new TCanvas("c_v2fitQA","c_v2fitQA",10,10,1200,600);
   c_v2fitQA->Divide(2,1);
@@ -236,8 +236,8 @@ void plotMcPhiResCorr(int energy = 6)
       f_flow->Draw("l same");
       string legPt = Form("p_{T} = %2.2f GeV/c",pt);
       string legV2 = Form("v_{2} = %2.3f #pm %0.3f",v2,err_v2);
-      plotTopLegend(legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
-      plotTopLegend(legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
     } 
   }
 
@@ -296,8 +296,8 @@ void plotMcPhiResCorr(int energy = 6)
       f_flow->Draw("l same");
       string legPt = Form("p_{T} = %2.2f GeV/c",pt);
       string legV2 = Form("v_{2} = %2.3f #pm %0.3f",v2,err_v2);
-      plotTopLegend(legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
-      plotTopLegend(legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
     } 
   }
 
@@ -356,8 +356,8 @@ void plotMcPhiResCorr(int energy = 6)
       f_flow->Draw("l same");
       string legPt = Form("p_{T} = %2.2f GeV/c",pt);
       string legV2 = Form("v_{2} = %2.3f #pm %0.3f",v2,err_v2);
-      plotTopLegend(legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
-      plotTopLegend(legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
     } 
   }
 
@@ -416,8 +416,8 @@ void plotMcPhiResCorr(int energy = 6)
       f_flow->Draw("l same");
       string legPt = Form("p_{T} = %2.2f GeV/c",pt);
       string legV2 = Form("v_{2} = %2.3f #pm %0.3f",v2,err_v2);
-      plotTopLegend(legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
-      plotTopLegend(legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPt.c_str(),0.4,0.35,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legV2.c_str(),0.4,0.25,0.04,1,0.0,42,1);
     } 
   }
 
@@ -480,7 +480,8 @@ void plotMcPhiResCorr(int energy = 6)
   g_v2->SetMarkerSize(2.4);
   g_v2->Draw("pE same");
 
-  plotTopLegend("AuAu 39 GeV 10%-40%",0.4,0.35,0.04,1,0.0,42,1);
+  string legEnergy = Form("AuAu %s 10%%-40%%",vmsa::mBeamEnergy[energy].c_str());
+  plotTopLegend((char*)legEnergy.c_str(),0.4,0.35,0.04,1,0.0,42,1);
   TLegend *legv2 = new TLegend(0.2,0.7,0.55,0.85);
   legv2->SetBorderSize(0.0);
   legv2->SetFillColor(10);
@@ -513,7 +514,7 @@ void plotMcPhiResCorr(int energy = 6)
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
-    h_cosQAproj[i_pt]->Fit(f_rho,"N");
+    h_cosQAproj[i_pt]->Fit(f_rho,"NQ");
     float rho = f_rho->GetParameter(0);
     float err_rho = f_rho->GetParError(0);
     g_rhoQA->SetPoint(i_pt,pt,rho);
@@ -547,7 +548,7 @@ void plotMcPhiResCorr(int energy = 6)
       f_rho->SetLineColor(2);
       f_rho->Draw("l same");
       string legPtRho = Form("p_{T} = %2.2f GeV/c, #rho_{00} = %2.3f #pm %0.3f",pt,rho,err_rho);
-      plotTopLegend(legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
     } 
   }
 
@@ -572,7 +573,7 @@ void plotMcPhiResCorr(int energy = 6)
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
-    h_cosRPproj[i_pt]->Fit(f_rho,"N");
+    h_cosRPproj[i_pt]->Fit(f_rho,"NQ");
     float rho = f_rho->GetParameter(0);
     float err_rho = f_rho->GetParError(0);
     g_rhoRP->SetPoint(i_pt,pt,rho);
@@ -606,7 +607,7 @@ void plotMcPhiResCorr(int energy = 6)
       f_rho->SetLineColor(2);
       f_rho->Draw("l same");
       string legPtRho = Form("p_{T} = %2.2f GeV/c, #rho_{00} = %2.3f #pm %0.3f",pt,rho,err_rho);
-      plotTopLegend(legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
     } 
   }
 
@@ -631,7 +632,7 @@ void plotMcPhiResCorr(int energy = 6)
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
-    h_cosGausproj[i_pt]->Fit(f_rho,"N");
+    h_cosGausproj[i_pt]->Fit(f_rho,"NQ");
     float rho = f_rho->GetParameter(0);
     float err_rho = f_rho->GetParError(0);
     g_rhoGaus->SetPoint(i_pt,pt,rho);
@@ -665,7 +666,7 @@ void plotMcPhiResCorr(int energy = 6)
       f_rho->SetLineColor(2);
       f_rho->Draw("l same");
       string legPtRho = Form("p_{T} = %2.2f GeV/c, #rho_{00} = %2.3f #pm %0.3f",pt,rho,err_rho);
-      plotTopLegend(legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
     } 
   }
 
@@ -690,7 +691,7 @@ void plotMcPhiResCorr(int energy = 6)
     TF1 *f_rho = new TF1("f_rho",SpinDensity,-1.0,1.0,2);
     f_rho->SetParameter(0,0.33);
     f_rho->SetParameter(1,100);
-    h_cosEPproj[i_pt]->Fit(f_rho,"N");
+    h_cosEPproj[i_pt]->Fit(f_rho,"NQ");
     float rho = f_rho->GetParameter(0);
     float err_rho = f_rho->GetParError(0);
     g_rhoEP->SetPoint(i_pt,pt,rho);
@@ -724,7 +725,7 @@ void plotMcPhiResCorr(int energy = 6)
       f_rho->SetLineColor(2);
       f_rho->Draw("l same");
       string legPtRho = Form("p_{T} = %2.2f GeV/c, #rho_{00} = %2.3f #pm %0.3f",pt,rho,err_rho);
-      plotTopLegend(legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
+      plotTopLegend((char*)legPtRho.c_str(),0.2,0.20,0.04,1,0.0,42,1);
     } 
   }
 
@@ -758,7 +759,7 @@ void plotMcPhiResCorr(int energy = 6)
   g_rhoQA->Draw("pE same");
   TF1 *f_polQA = new TF1("f_polQA","pol0",vmsa::ptMin,vmsa::ptMax);
   f_polQA->SetParameter(0,0.33);
-  g_rhoQA->Fit(f_polQA,"N");
+  g_rhoQA->Fit(f_polQA,"NQ");
   f_polQA->SetLineStyle(2);
   f_polQA->SetLineColor(MarkerColorQA);
   f_polQA->SetLineWidth(2);
@@ -775,7 +776,7 @@ void plotMcPhiResCorr(int energy = 6)
   g_rhoRP->Draw("pE same");
   TF1 *f_polRP = new TF1("f_polRP","pol0",vmsa::ptMin,vmsa::ptMax);
   f_polRP->SetParameter(0,0.33);
-  g_rhoRP->Fit(f_polRP,"N");
+  g_rhoRP->Fit(f_polRP,"NQ");
   f_polRP->SetLineStyle(2);
   f_polRP->SetLineColor(MarkerColorRP);
   f_polRP->SetLineWidth(2);
@@ -792,7 +793,7 @@ void plotMcPhiResCorr(int energy = 6)
   g_rhoGaus->Draw("pE same");
   TF1 *f_polGaus = new TF1("f_polGaus","pol0",vmsa::ptMin,vmsa::ptMax);
   f_polGaus->SetParameter(0,0.33);
-  g_rhoGaus->Fit(f_polGaus,"N");
+  g_rhoGaus->Fit(f_polGaus,"NQ");
   f_polGaus->SetLineStyle(2);
   f_polGaus->SetLineColor(MarkerColorGaus);
   f_polGaus->SetLineWidth(2);
@@ -809,7 +810,7 @@ void plotMcPhiResCorr(int energy = 6)
   g_rhoEP->Draw("pE same");
   TF1 *f_polEP = new TF1("f_polEP","pol0",vmsa::ptMin,vmsa::ptMax);
   f_polEP->SetParameter(0,0.33);
-  g_rhoEP->Fit(f_polEP,"N");
+  g_rhoEP->Fit(f_polEP,"NQ");
   f_polEP->SetLineStyle(2);
   f_polEP->SetLineColor(MarkerColorEP);
   f_polEP->SetLineWidth(2);

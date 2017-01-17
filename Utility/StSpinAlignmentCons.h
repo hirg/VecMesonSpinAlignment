@@ -109,9 +109,9 @@ namespace vmsa
     {2,4,7,10,13,16,19,23,24}
   };
   int const pt_rebin_first[NumBeamEnergy] = {0,0,0,0,0,0,0};
-  int const pt_rebin_last[NumBeamEnergy]  = {8,8,8,8,8,8,8};
-  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,2};
-  int const pt_RawQA[NumBeamEnergy]    = {2,4,6,8,10,12,14};
+  int const pt_rebin_last[NumBeamEnergy]  = {8,8,6,6,6,6,7};
+  int const pt_QA[NumBeamEnergy]    = {1,1,2,2,3,3,6};
+  int const pt_RawQA[NumBeamEnergy]    = {2,4,6,3,10,12,14};
 
   std::string const Centrality[9] = {"70%-80%","60%-70%","50%-60%","40%-50%","30%-40%","20%-30%","10%-20%","5%-10%","0%-5%"}; // Centrality bin
   int const Cent_Total = 5;
@@ -140,20 +140,41 @@ namespace vmsa
   int const Sys_stop  = 1;
   int const Sys_QA    = 0;
 
+  int const Norm_start = 0;
+  int const Norm_stop  = 3;
+  int const Norm_QA    = 1;
+
+  std::string const mInteMethod[2] = {"Count","Inte"};
+  int const Method_start = 0;
+  int const Method_stop  = 2;
+  int const Method_QA    = 0;
+
+  float const nSigVecSys[3] = {2.0,2.5,3.0};
+  int const Sig_start = 0;
+  int const Sig_stop  = 3;
+  int const Sig_QA    = 2;
+
   // shared constant
   std::string const mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
   float const mEnergyValue[NumBeamEnergy] = {7.7,11.5,19.6,27.0,39.0,62.4,200.0};
   int const mBeamYear[NumBeamEnergy] = {2010,2010,2011,2011,2010,2010,2011};
 
   std::string const mPID[3]   = {"Phi","KStar","K0S"};
-  float const Norm_Start[3]   = {1.04,0.41,0.41};
-  float const Norm_Stop[3]    = {1.05,0.46,0.46};
+  float const Norm_Start[3][2]  = {{1.04,0.99},{0.41,0.30},{0.41,0.30}}; // normalise to right and left
+  float const Norm_Stop[3][2]   = {{1.05,1.00},{0.46,0.31},{0.46,0.31}};
   float const BW_Start[3]     = {0.994,1.0,1.0};
   float const BW_Stop[3]      = {1.050,1.0,1.0};
   float const Width[3]        = {0.00426,0.0487,0.0487};
   float const InvMass_low[3]  = {0.98,0.4,0.4};
   float const InvMass_high[3] = {1.05,0.6,0.6};
   float const nSigVec = 2.0;
+
+  // used for systematic errors
+  int const FuncParNum[4] = {5,6,7,6};
+  int const Func_start = 0;
+  int const Func_stop  = 1;
+  int const Func_QA    = 0;
+  float const FuncPar[4][4] = {{0,100,0.0,0.0},{0,0.5,0.5,0.0},{0,0.5,0.2,0.2},{0,1.5,0.2,0.0}};
 
   float const ptEffMax = 8.0;
   float const ptMin = 0.2;

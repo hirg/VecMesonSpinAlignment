@@ -142,6 +142,20 @@ double pTLevy(double *var, double *par)
   return y;
 }
 
+//---------------Back Ground Subtraction-----------------------
+double BreitWigner(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double m0 = par[0];
+  double Gamma = par[1];
+  double Norm = par[2];
+
+  double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
+  double BW = Norm*Gamma/denom;
+
+  return BW;
+}
+
 double PolyBreitWigner(double *x_val, double *par)
 {
   double x = x_val[0];
@@ -167,7 +181,7 @@ double Poly(double *x_val, double *par)
   return y;
 }
 
-double BreitWigner(double *x_val, double *par)
+double ParaBreitWigner(double *x_val, double *par)
 {
   double x = x_val[0];
   double m0 = par[0];
@@ -177,8 +191,72 @@ double BreitWigner(double *x_val, double *par)
   double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
   double BW = Norm*Gamma/denom;
 
-  return BW;
+  double Para = par[3] + par[4]*x + par[5]*x*x;
+
+  double y = BW + Para;
+
+  return y;
 }
+
+double Para(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double y = par[0] + par[1]*x + par[2]*x*x;
+
+  return y;
+}
+
+double LogaBreitWigner(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double m0 = par[0];
+  double Gamma = par[1];
+  double Norm = par[2];
+
+  double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
+  double BW = Norm*Gamma/denom;
+
+  double log = par[3] + par[4]*TMath::Log(par[5]*x+par[6]);
+
+  double y = BW + log;
+
+  return y;
+}
+
+double Loga(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double y = par[0] + par[1]*TMath::Log(par[2]*x+par[3]);
+
+  return y;
+}
+
+double SqRtBreitWigner(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double m0 = par[0];
+  double Gamma = par[1];
+  double Norm = par[2];
+
+  double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
+  double BW = Norm*Gamma/denom;
+
+  double sqrt = par[3] + par[4]*TMath::Sqrt(x+par[5]);
+
+  double y = BW + sqrt;
+
+  return y;
+}
+
+double SqRt(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double y = par[0] + par[1]*TMath::Sqrt(x+par[2]);
+
+  return y;
+}
+
+//---------------Back Ground Subtraction-----------------------
 
 float ErrorAdd(float x, float y)
 {

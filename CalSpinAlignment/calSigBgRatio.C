@@ -25,9 +25,9 @@ void calSigBgRatio(int energy = 3, int pid = 0)
 {
   TGaxis::SetMaxDigits(4);
 
-  string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_SE_%s.root.oldCut",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   
-  string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_ME_%s.root.oldCut",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_SE = TFile::Open(InPutFile_SE.c_str());
   TFile *File_ME = TFile::Open(InPutFile_ME.c_str());
 
@@ -105,6 +105,9 @@ void calSigBgRatio(int energy = 3, int pid = 0)
     }
   }
 
+  float inteStart = vmsa::InvMass[pid]+vmsa::nSigVec*vmsa::Width[pid];
+  float inteStop  = vmsa::InvMass[pid]-vmsa::nSigVec*vmsa::Width[pid];
+
 #if _PlotQA_
   TCanvas *c_SigBg = new TCanvas("c_SigBg","c_SigBg",10,10,900,900);
   c_SigBg->Divide(3,3);
@@ -124,6 +127,7 @@ void calSigBgRatio(int energy = 3, int pid = 0)
 	h_mMassSE[KeySE]->SetMarkerColor(1);
 	h_mMassSE[KeySE]->SetMarkerStyle(24);
 	h_mMassSE[KeySE]->SetMarkerSize(0.8);
+	h_mMassSE[KeySE]->GetYaxis()->SetRangeUser(-0.1*h_mMassSE[KeySE]->GetMaximum(),1.1*h_mMassSE[KeySE]->GetMaximum());
 	h_mMassSE[KeySE]->DrawCopy("pE");
 
 	string KeyME = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_sumME",i_pad,i_cent,i_eta,vmsa::mPID[pid].c_str());
@@ -137,14 +141,14 @@ void calSigBgRatio(int energy = 3, int pid = 0)
 	h_mMassSM[KeySM]->SetFillColor(4);
 	h_mMassSM[KeySM]->SetFillStyle(3004);
 	h_mMassSM[KeySM]->DrawCopy("h same");
+	PlotLine(inteStart,inteStart,0.0,h_mMassSE[KeySE]->GetMaximum()*0.9,4,2,2);
+	PlotLine(inteStop,inteStop,0.0,h_mMassSE[KeySE]->GetMaximum()*0.9,4,2,2);
       }
     }
   }
 #endif
 
   TGraphAsymmErrors *g_ratio = new TGraphAsymmErrors();
-  float inteStart = vmsa::InvMass[pid]+vmsa::nSigVec*vmsa::Width[pid];
-  float inteStop  = vmsa::InvMass[pid]-vmsa::nSigVec*vmsa::Width[pid];
   for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // Centrality loop
   {
     for(int i_eta = vmsa::Eta_start; i_eta < vmsa::Eta_stop; i_eta++) // EtaGap loop

@@ -18,10 +18,10 @@
 #include "../Utility/type.h"
 
 #ifndef _PlotQA_
-#define _PlotQA_  0
+#define _PlotQA_  1
 #endif
 
-void calSpinAlignment(int energy = 2, int pid = 0, int year = 0)
+void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
 {
   TGaxis::SetMaxDigits(4);
 

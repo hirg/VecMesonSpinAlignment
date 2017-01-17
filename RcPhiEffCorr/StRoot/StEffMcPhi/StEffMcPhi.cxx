@@ -27,7 +27,7 @@ StEffMcPhi::StEffMcPhi(int Energy, long StartEvent, long StopEvent, int PID, int
   SetStartEvent(StartEvent); // set start event
   SetStopEvent(StopEvent); // set stop event
 
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Embedding/%s/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   SetOutPutFile(OutPutFile); // set output file
 
   mEffCut = new StEffCut();
@@ -206,6 +206,7 @@ void StEffMcPhi::Make()
     lMcKP.Boost(vMcPhiBeta);
     TVector3 vMcKP = lMcKP.Vect().Unit(); // direction of K+ momentum in phi-meson rest frame
     float Psi2 = gRandom->Uniform(-0.5*TMath::Pi(),0.5*TMath::Pi()); // random event plane angle
+    // float Psi2 = gRandom->Uniform(-TMath::Pi(),TMath::Pi()); // random event plane angle
     TVector3 QVector(TMath::Sin(Psi2),-1.0*TMath::Cos(Psi2),0.0);
     TVector3 nQ = QVector.Unit(); // direction of QVector
     float McCosThetaStar = vMcKP.Dot(nQ);

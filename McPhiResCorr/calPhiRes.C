@@ -20,6 +20,10 @@ using namespace std;
 // typedef std::map<TString,TProfile*> TProMap;
 // typedef std::map<string,std::vector<float> > vecFMap;
 
+#ifndef _PlotQA_
+#define _PlotQA_ 0
+#endif
+
 void calPhiRes(int energy = 6, int pid = 0)
 {
   TGaxis::SetMaxDigits(4);
@@ -40,17 +44,17 @@ void calPhiRes(int energy = 6, int pid = 0)
       for(int i_sys = vmsa::Sys_start; i_sys < vmsa::Sys_stop; ++i_sys) // Systematic loop
       {
 	string KEY_Yield_SE = Form("Yields_Centrality_%d_EtaGap_%d_%s_SE_SysErrors_%d",i_cent,i_eta,vmsa::mPID[pid].c_str(),i_sys);
-	// h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(KEY_Yield_SE.c_str())->Clone(); // for 19.6, 27 and 62.4 GeV
-	string Name_Yield_SE = Form("Yields_Centrality_%d_EtaGap_%d_%s_SE",i_cent,i_eta,vmsa::mPID[pid].c_str());
-	h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(Name_Yield_SE.c_str())->Clone(); 
-	int Norm_bin_start = h_mYield_SE[KEY_Yield_SE]->FindBin(vmsa::Norm_Start[pid]);
-	int Norm_bin_stop  = h_mYield_SE[KEY_Yield_SE]->FindBin(vmsa::Norm_Stop[pid]);
+	h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(KEY_Yield_SE.c_str())->Clone(); // for 19.6, 27 and 62.4 GeV
+	// string Name_Yield_SE = Form("Yields_Centrality_%d_EtaGap_%d_%s_SE",i_cent,i_eta,vmsa::mPID[pid].c_str());
+	// h_mYield_SE[KEY_Yield_SE] = (TH1F*)File_SE->Get(Name_Yield_SE.c_str())->Clone(); 
+	int Norm_bin_start = h_mYield_SE[KEY_Yield_SE]->FindBin(vmsa::Norm_Start[pid][0]);
+	int Norm_bin_stop  = h_mYield_SE[KEY_Yield_SE]->FindBin(vmsa::Norm_Stop[pid][0]);
 	float Inte_SE = h_mYield_SE[KEY_Yield_SE]->Integral(Norm_bin_start,Norm_bin_stop);
 
 	string KEY_Yield_ME = Form("Yields_Centrality_%d_EtaGap_%d_%s_ME_SysErrors_%d",i_cent,i_eta,vmsa::mPID[pid].c_str(),i_sys);
-	// h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(KEY_Yield_ME.c_str())->Clone(); // for 19.6, 27 and 62.4 GeV
-	string Name_Yield_ME = Form("Yields_Centrality_%d_EtaGap_%d_%s_ME",i_cent,i_eta,vmsa::mPID[pid].c_str());
-	h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(Name_Yield_ME.c_str())->Clone(); 
+	h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(KEY_Yield_ME.c_str())->Clone(); // for 19.6, 27 and 62.4 GeV
+	// string Name_Yield_ME = Form("Yields_Centrality_%d_EtaGap_%d_%s_ME",i_cent,i_eta,vmsa::mPID[pid].c_str());
+	// h_mYield_ME[KEY_Yield_ME] = (TH1F*)File_ME->Get(Name_Yield_ME.c_str())->Clone(); 
 	float Inte_ME = h_mYield_ME[KEY_Yield_ME]->Integral(Norm_bin_start,Norm_bin_stop);
 	h_mYield_ME[KEY_Yield_ME]->Scale(Inte_SE/Inte_ME);
 
@@ -61,7 +65,7 @@ void calPhiRes(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if _PlotQA_
   TCanvas *c_RawYields = new TCanvas("c_RawYields","c_RawYields",10,10,900,900);
   c_RawYields->Divide(3,3);
   for(int i_pad = 0; i_pad < 9; ++i_pad)
@@ -102,7 +106,7 @@ void calPhiRes(int energy = 6, int pid = 0)
     h_mYield[KEY_Yield]->DrawCopy("h same");
     plotTopLegend((char*)vmsa::Centrality[i_pad].c_str(),0.65,0.80,0.06,1,0.0,42,1);
   }
-  */
+#endif
 
   // Poly + Breit Wignar fit to Yields
   TH1FMap h_mYield_SM; // for QA plot only
@@ -143,7 +147,7 @@ void calPhiRes(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if _PlotQA_
   //QA: Yields subtract linear background
   TCanvas *c_Yields = new TCanvas("c_Yields","c_Yields",10,10,900,900);
   c_Yields->Divide(3,3);
@@ -203,7 +207,7 @@ void calPhiRes(int energy = 6, int pid = 0)
     f_poly->DrawCopy("l same");
     plotTopLegend((char*)vmsa::Centrality[i_cent].c_str(),0.65,0.80,0.06,1,0.0,42,1);
   }
-  */
+#endif
 
   // calculate total yields for each centrality bin via gaussian and breit wigner fits
   vecFMap ParYield_BW;
@@ -255,7 +259,7 @@ void calPhiRes(int energy = 6, int pid = 0)
     }
   }
 
-  /*
+#if _PlotQA_
   // QA: different counting method: bin counting vs breit wigner integrating
   TCanvas *c_Yields_counts = new TCanvas("c_Yields_counts","c_Yields_counts",10,10,900,900);
   c_Yields_counts->Divide(3,3);
@@ -299,17 +303,18 @@ void calPhiRes(int energy = 6, int pid = 0)
     PlotLine(x2,x2,0,y,4,2,2);
     plotTopLegend((char*)vmsa::Centrality[i_cent].c_str(),0.65,0.80,0.06,1,0.0,42,1);
   }
-  */
+#endif
 
   // calculate final resolution correction factors and correct flow
-  string InPutFile_Res = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_Res = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Resolution/file_%s_Resolution.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Res = TFile::Open(InPutFile_Res.c_str());
   TProMap p_mRes;
   vecFMap ResValue;
   TH1FMap h_mRes;
   for(int i_eta = vmsa::Eta_start; i_eta < vmsa::Eta_stop; ++i_eta) // eta_gap loop
   {
-    string KEY_eta = Form("Res2_EtaGap_%d_EP",i_eta);
+    // string KEY_eta = Form("Res2_EtaGap_%d_EP",i_eta);
+    string KEY_eta = "p_mRes2_Sub";
     p_mRes[KEY_eta] = (TProfile*)File_Res->Get(KEY_eta.c_str()); // read in resolution file
     for(int i_sys = vmsa::Sys_start; i_sys < vmsa::Sys_stop; i_sys++) // Systematic errors loop
     {

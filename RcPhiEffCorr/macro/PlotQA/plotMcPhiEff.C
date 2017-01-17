@@ -14,7 +14,7 @@ float pos_y[8] = {0.95,0.95,0.90,0.90,0.85,0.85,0.80,0.80};
 void plotMcPhiEff(int energy = 6, int cent = 9)
 {
   gStyle->SetOptDate(0);
-  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/Embedding/Phi/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/Efficiency/Eff_%s_SingleKaon.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
   TH1D *h_mEff[vmsa::pt_rebin];
   for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; ++i_pt)
@@ -34,6 +34,7 @@ void plotMcPhiEff(int energy = 6, int cent = 9)
     h_frame->SetBinContent(i_bin+1,-10);
     h_frame->SetBinError(i_bin+1,1);
   }
+  string legEnergy = Form("AuAu %s 20%%-60%%",vmsa::mBeamEnergy[energy].c_str());
   h_frame->SetTitle("");
   h_frame->SetStats(0);
   h_frame->GetXaxis()->SetTitle("cos(#theta^{*})");
@@ -52,12 +53,13 @@ void plotMcPhiEff(int energy = 6, int cent = 9)
   {
     h_mEff[i_pt]->SetMarkerStyle(vmsa::Style[i_pt]);
     h_mEff[i_pt]->SetMarkerColor(vmsa::Color[i_pt]);
-    h_mEff[i_pt]->SetMarkerSize(1.1);
+    h_mEff[i_pt]->SetMarkerSize(1.4);
     h_mEff[i_pt]->Draw("pEX0 same");
     string pt_range = Form("p_{T} = %1.1f-%1.1f GeV/c",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
     Draw_TGAE_Point_new_Symbol(pos_x[i_pt],pos_y[i_pt]-0.05,0.0,0.0,0.0,0.0,vmsa::Style[i_pt],vmsa::Color[i_pt],1.0);
-    plotTopLegend(pt_range.c_str(),pos_x[i_pt]+0.03,pos_y[i_pt]-0.055,0.03,1,0.0,42,0,1);
+    plotTopLegend((char*)pt_range.c_str(),pos_x[i_pt]+0.03,pos_y[i_pt]-0.055,0.03,1,0.0,42,0,1);
   }
+  plotTopLegend((char*)legEnergy.c_str(),0.2,0.95,0.06,1,0.0,42,0,1);
 
   c_eff->SaveAs("../../../figures/effPt.eps");
 }

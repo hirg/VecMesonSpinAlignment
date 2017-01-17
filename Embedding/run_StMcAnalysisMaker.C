@@ -10,11 +10,11 @@ void run_StMcAnalysisMaker(const char* file = "/projecta/projectdirs/starprod/em
   //Check STAR Library. Please set SL_version to the original star library used
   // in the production from http://www.star.bnl.gov/devcgi/dbProdOptionRetrv.pl
 
-  string SL_version = "SL11d_embed"; // 200 GeV
-  // string SL_version = "SL11d"; // 62.4 GeV
+  // string SL_version = "SL11d_embed"; // 200 GeV
+  string SL_version = "SL10k_embed"; // 62.4 GeV
   // string SL_version = "SL10k_embed"; // 39 GeV
-  // string SL_version = "SL11d"; // 27 GeV
-  // string SL_version = "SL11d"; // 19.6 GeV
+  // string SL_version = "SL11d_embed"; // 27 GeV
+  // string SL_version = "SL11d_embed"; // 19.6 GeV
   string env_SL = getenv("STAR");
   // cout << env_SL << endl;
 

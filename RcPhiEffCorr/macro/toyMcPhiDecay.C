@@ -13,7 +13,7 @@
 #include "TMath.h"
 #include "TClonesArray.h"
 #include "TNtuple.h"
-#include "../../Utility/StSpinAlignmentCons.h"
+#include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/StSpinAlignmentCons.h"
 
 using namespace std;
 
@@ -38,7 +38,7 @@ TH1D *h_FramePhi[2];
 
 TFile *File_OutPut;
 
-void toyMcPhiDecay(const int energy = 4, const int pid = 0, const int year = 1, const int cut = 0, const int NMax = 100000, const int jobID = 3)
+void toyMcPhiDecay(const int energy = 3, const int pid = 0, const int year = 0, const int cut = 0, const int NMax = 2000000, const int jobID = 9)
 {
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
