@@ -7,20 +7,21 @@ date
 if [ $# -eq 0 ]
 then
   PID="Phi"
-  Energy="62GeV"
+  Energy="39GeV"
   Name="toyMcPhiDecay"$Energy
-  for((counter=11;counter<13;counter=counter+1))
+  for((counter=0;counter<100;counter=counter+1))
   do
     cp ./run.csh ./$Name${counter}.csh
 
+    echo "cd ./AuAu$Energy/SpinAlignment/Phi/Efficiency/" >> ./$Name${counter}.csh
     echo "mkdir $Name$counter" >> ./$Name${counter}.csh
-    echo "cp toyMcPhiDecay.C $Name$counter" >> ./$Name${counter}.csh
+    echo "cp /global/homes/x/xusun/STAR/VecMesonSpinAlignment/RcPhiEffCorr/macro/toyMcPhiDecay.C $Name$counter" >> ./$Name${counter}.csh
     echo "cd $Name$counter" >> ./$Name${counter}.csh
 
-    echo "root4star -b -q -x toyMcPhiDecay.C++'('5','0','1','0','2000000','$counter')'" >> ./$Name${counter}.csh
+    echo "root4star -b -q -x toyMcPhiDecay.C++'('4','0','1','0','1000000','$counter')'" >> ./$Name${counter}.csh
     echo "cd .." >> ./$Name${counter}.csh
     echo "rm -rf $Name$counter" >> ./$Name${counter}.csh
-    qsub -hard -l scratchfree=500,h_cpu=1:30:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.err ./$Name$counter.csh
+    qsub -hard -l scratchfree=500,h_cpu=00:30:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.err ./$Name$counter.csh
     mv ./$Name${counter}.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Script/
   done
 else

@@ -134,8 +134,12 @@ void calSysError(Int_t energy = 6, Int_t pid = 0)
   c_rho_SysError->cd()->SetGrid(0,0);
   h_frame->Draw("pE");
   g_StatErrors->SetMarkerStyle(20);
+  g_StatErrors->SetMarkerColor(kGray+2);
+  g_StatErrors->SetLineColor(2);
+  g_StatErrors->Draw("pE same");
   g_SysErrors->SetMarkerStyle(20);
   g_SysErrors->SetMarkerColor(kGray+2);
+  g_SysErrors->SetLineColor(kGray+2);
   g_SysErrors->Draw("pE same");
   PlotLine(0.0,5.0,1.0/3.0,1.0/3.0,1,2,2);
 

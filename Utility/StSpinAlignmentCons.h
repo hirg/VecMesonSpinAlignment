@@ -142,7 +142,7 @@ namespace vmsa
 
   int const Norm_start = 0;
   int const Norm_stop  = 3;
-  int const Norm_QA    = 1;
+  int const Norm_QA    = 0;
 
   std::string const mInteMethod[2] = {"Count","Inte"};
   int const Method_start = 0;
@@ -154,6 +154,13 @@ namespace vmsa
   int const Sig_stop  = 3;
   int const Sig_QA    = 2;
 
+  // used for systematic errors
+  int const FuncParNum[4] = {5,6,7,6};
+  int const Func_start = 1;
+  int const Func_stop  = 2;
+  int const Func_QA    = 1;
+  float const FuncPar[4][4] = {{0,100,0.0,0.0},{0,1000,-1.05,0.0},{0,0.5,0.2,0.2},{0,1.5,0.2,0.0}};
+
   // shared constant
   std::string const mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
   float const mEnergyValue[NumBeamEnergy] = {7.7,11.5,19.6,27.0,39.0,62.4,200.0};
@@ -162,27 +169,21 @@ namespace vmsa
   std::string const mPID[3]   = {"Phi","KStar","K0S"};
   float const Norm_Start[3][2]  = {{1.04,0.99},{0.41,0.30},{0.41,0.30}}; // normalise to right and left
   float const Norm_Stop[3][2]   = {{1.05,1.00},{0.46,0.31},{0.46,0.31}};
-  float const BW_Start[3]     = {0.994,1.0,1.0};
-  float const BW_Stop[3]      = {1.050,1.0,1.0};
+  // float const BW_Start[3]     = {0.994,1.0,1.0};
+  float const BW_Start[3]     = {0.996,1.0,1.0};
+  float const BW_Stop[3]      = {1.046,1.0,1.0};
   float const Width[3]        = {0.00426,0.0487,0.0487};
   float const InvMass_low[3]  = {0.98,0.4,0.4};
   float const InvMass_high[3] = {1.05,0.6,0.6};
   float const nSigVec = 2.0;
 
-  // used for systematic errors
-  int const FuncParNum[4] = {5,6,7,6};
-  int const Func_start = 0;
-  int const Func_stop  = 1;
-  int const Func_QA    = 0;
-  float const FuncPar[4][4] = {{0,100,0.0,0.0},{0,0.5,0.5,0.0},{0,0.5,0.2,0.2},{0,1.5,0.2,0.0}};
-
   float const ptEffMax = 8.0;
   float const ptMin = 0.2;
   float const ptMax = 5.0;
-  int const BinPt  = 20;
+  int const BinPt  = 80;
   int const BinEta = 10;
   int const BinY = 20;
-  int const BinPhi = 36;
+  int const BinPhi = 24;
   int const BinCos = 7;
 
   // used in McPhiResCorr

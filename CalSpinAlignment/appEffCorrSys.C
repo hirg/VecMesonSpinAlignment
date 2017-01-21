@@ -91,7 +91,10 @@ void appEffCorrSys(int energy = 6, int pid = 0)
 		h_mCounts[KEY_counts] = (TH1F*)File_Rho->Get(KEY_counts.c_str());
 		string KEY_Eff = Form("h_mEffCos_Cent_9_Pt_%d",i_pt); // 20%-60%
 		h_mEff[KEY_Eff] = (TH1D*)File_Eff->Get(KEY_Eff.c_str());
-		h_mCountsEff[KEY_counts] = CalEffCorr(h_mCounts[KEY_counts],h_mEff[KEY_Eff],KEY_counts);
+		TF1 *f_poly = new TF1("f_poly","pol0",0.0,1.0);
+		h_mEff[KEY_Eff]->Fit(f_poly,"NQ");
+		// h_mCountsEff[KEY_counts] = CalEffCorr(h_mCounts[KEY_counts],h_mEff[KEY_Eff],KEY_counts);
+		h_mCountsEff[KEY_counts] = CalEffCorr(h_mCounts[KEY_counts],f_poly,KEY_counts);
 
 		float pt_mean = (vmsa::pt_low[energy][i_pt]+vmsa::pt_up[energy][i_pt])/2.0;
 

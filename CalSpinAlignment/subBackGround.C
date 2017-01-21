@@ -263,10 +263,10 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 		f_sg->SetParameter(i_par,vmsa::FuncPar[i_func][i_par]);
 	      }
 	      f_sg->SetParameter(2,h_mMass_theta[KEY_theta]->GetMaximum()/f_sg->GetMaximum());
-	      // f_sg->SetParameter(3,h_mMass_theta[KEY_theta]->GetMinimum());
+	      f_sg->SetParameter(3,h_mMass_theta[KEY_theta]->GetBinContent(h_mMass_theta[KEY_theta]->FindBin(vmsa::BW_Start[pid])));
 	      f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
-	      // cout << "i_pt = " << i_pt << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
-	      h_mMass_theta[KEY_theta]->Fit(f_sg,"MQNR");
+	      cout << "i_pt = " << i_pt << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
+	      h_mMass_theta[KEY_theta]->Fit(f_sg,"MNR");
 
 	      ParFit_theta[KEY_theta].clear();
 	      for(int i_par = 0; i_par < vmsa::FuncParNum[i_func]; ++i_par)
@@ -347,12 +347,12 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 		f_sg->SetParameter(2,ParFit_theta[KEY_theta][2]/7.0);
 		for(int i_par = 3; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 		{
-		  // f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
-		  f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
+		  f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
+		  // f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
 		}
 		f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
-		cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
-		h_mMass_func[KEY_func]->Fit(f_sg,"MNR");
+		// cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
+		h_mMass_func[KEY_func]->Fit(f_sg,"MQNR");
 		ParFit[KEY_func].clear();
 		for(int i_par = 0; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 		{

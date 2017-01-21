@@ -3,6 +3,7 @@
 #include "TH1D.h"
 #include "TCanvas.h"
 #include "TStyle.h"
+#include "TF1.h"
 #include "../../../Utility/StSpinAlignmentCons.h"
 #include "../../../Utility/draw.h"
 
@@ -55,6 +56,12 @@ void plotMcPhiEff(int energy = 6, int cent = 9)
     h_mEff[i_pt]->SetMarkerColor(vmsa::Color[i_pt]);
     h_mEff[i_pt]->SetMarkerSize(1.4);
     h_mEff[i_pt]->Draw("pEX0 same");
+    TF1 *f_poly = new TF1("f_poly","pol1",0.0,1.0);
+    h_mEff[i_pt]->Fit(f_poly,"N");
+    f_poly->SetLineColor(vmsa::Color[i_pt]);
+    f_poly->SetLineStyle(2);
+    f_poly->SetLineWidth(2);
+    f_poly->Draw("l same");
     string pt_range = Form("p_{T} = %1.1f-%1.1f GeV/c",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
     Draw_TGAE_Point_new_Symbol(pos_x[i_pt],pos_y[i_pt]-0.05,0.0,0.0,0.0,0.0,vmsa::Style[i_pt],vmsa::Color[i_pt],1.0);
     plotTopLegend((char*)pt_range.c_str(),pos_x[i_pt]+0.03,pos_y[i_pt]-0.055,0.03,1,0.0,42,0,1);

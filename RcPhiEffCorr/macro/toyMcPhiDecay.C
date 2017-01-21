@@ -38,7 +38,7 @@ TH1D *h_FramePhi[2];
 
 TFile *File_OutPut;
 
-void toyMcPhiDecay(const int energy = 3, const int pid = 0, const int year = 0, const int cut = 0, const int NMax = 2000000, const int jobID = 9)
+void toyMcPhiDecay(const int energy = 6, const int pid = 0, const int year = 0, const int cut = 0, const int NMax = 500000, const int jobID = 9)
 {
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
