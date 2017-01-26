@@ -181,7 +181,7 @@ double Poly(double *x_val, double *par)
   return y;
 }
 
-double ParaBreitWigner(double *x_val, double *par)
+double LegeBreitWigner(double *x_val, double *par)
 {
   double x = x_val[0];
   double m0 = par[0];
@@ -191,17 +191,54 @@ double ParaBreitWigner(double *x_val, double *par)
   double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
   double BW = Norm*Gamma/denom;
 
-  double Para = par[3] + par[4]*x + par[5]*x*x;
+  double p1 = x;
+  double p2 = 0.5*(3.0*x*x-1.0);
+  // double Para = par[3] + par[4]*p1 + par[5]*p2;
+  double Para = par[3]*(1.0 + par[4]*p1 + par[5]*p2);
 
   double y = BW + Para;
 
   return y;
 }
 
-double Para(double *x_val, double *par)
+double Lege(double *x_val, double *par)
 {
   double x = x_val[0];
-  double y = par[0] + par[1]*x + par[2]*x*x;
+  double p1 = x;
+  double p2 = 0.5*(3.0*x*x-1.0);
+  // double y = par[0] + par[1]*p1 + par[2]*p2;
+  double y = par[0]*(1.0 + par[1]*p1 + par[2]*p2);
+
+  return y;
+}
+
+double ChebBreitWigner(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double m0 = par[0];
+  double Gamma = par[1];
+  double Norm = par[2];
+
+  double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
+  double BW = Norm*Gamma/denom;
+
+  double t1 = x;
+  double t2 = 2.0*x*x-1.0;
+  // double Cheb = par[3] + par[4]*t1 + par[5]*t2;
+  double Cheb = par[3]*(1.0 + par[4]*t1 + par[5]*t2);
+
+  double y = BW + Cheb;
+
+  return y;
+}
+
+double Cheb(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double t1 = x;
+  double t2 = 2.0*x*x-1.0;
+  // double y = par[0] + par[1]*t1 + par[2]*t2;
+  double y = par[0]*(1.0 + par[1]*t1 + par[2]*t2);
 
   return y;
 }
