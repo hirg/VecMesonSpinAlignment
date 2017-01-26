@@ -142,7 +142,7 @@ namespace vmsa
 
   int const Norm_start = 0;
   int const Norm_stop  = 3;
-  int const Norm_QA    = 2;
+  int const Norm_QA    = 0;
 
   std::string const mInteMethod[2] = {"Count","Inte"};
   int const Method_start = 0;
@@ -156,9 +156,9 @@ namespace vmsa
 
   // used for systematic errors
   int const FuncParNum[4] = {5,6,6,6};
-  int const Func_start = 0;
-  int const Func_stop  = 1;
-  int const Func_QA    = 0;
+  int const Func_start = 1;
+  int const Func_stop  = 2;
+  int const Func_QA    = 1;
 
   // shared constant
   std::string const mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};

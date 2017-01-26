@@ -30,26 +30,28 @@ static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for para
   {{-1,1,0.0},{0.0,-1.0,1.5},{0,-1,1},{0,1.5,0.2}}  // both
 }; // 19GeV
 // static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
-//   {{1000,1,0.0},{0.0,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}, // left
-//   {{1000,1,0.0},{0.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}, // right
-//   {{1000,1,0.0},{1.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}  // both
+//   {{-1,1,0.0},{0.0,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}, // left
+//   {{-1,1,0.0},{0.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}, // right
+//   {{-1,1,0.0},{1.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}  // both
 // }; // 27GeV
 // static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
-//   {{ 2.5,2.5,0.0},{0.2,-1.45,1.35},{0,-1,1},{0,1.5,0.2}}, // left
-//   {{-1.0,1.0,0.0},{0.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}, // right
-//   {{-1.0,2.0,0.0},{1.0,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}  // both
+//   {{-1,1,0.0},{0.2,-1.45,1.35},{0,-1,1},{0,1.5,0.2}}, // left
+//   {{-1,1,0.0},{0.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}, // right
+//   {{-1,1,0.0},{1.0,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}  // both
 // }; // 39GeV
 // static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
 //   {{-1,1,0.0},{0.0,-1.40,1.5},{0,-1,1},{0,1.5,0.2}}, // left
 //   {{-1,1,0.0},{0.0,-1.50,1.5},{0,-1,1},{0,1.5,0.2}}, // right
-//   {{-2,0,0.0},{0.0,-1.45,1.6},{0,-1,1},{0,1.5,0.2}}  // both
+//   {{-1,1,0.0},{0.0,-1.45,1.6},{0,-1,1},{0,1.5,0.2}}  // both
 // }; // 62GeV
 // static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
 //   {{-1,1,0.0},{0.1,-1.6,1.3},{0,-1,1},{0,1.5,0.2}}, // left
 //   {{-1,1,0.0},{0.2,-1.6,1.3},{0,-1,1},{0,1.5,0.2}}, // right
-//   {{-2,0,0.0},{0.0,-1.6,1.9},{0,-1,1},{0,1.5,0.2}}  // both
+//   {{-1,1,0.0},{0.0,-1.6,1.9},{0,-1,1},{0,1.5,0.2}}  // both
 // }; // 200GeV
 
+static float const normL = 5.0;
+static float const normR = 5.0;
 void subBackGround(int energy = 3, int pid = 0, int year = 0)
 {
   TGaxis::SetMaxDigits(4);
@@ -298,8 +300,8 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 	      // if(energy == 4 && i_pt == 2 && i_norm == 0 && i_func == 1) f_sg->SetParameter(3,0.0);
 	      // if(energy == 6 && i_pt > 0 && i_pt < 3 && i_norm == 0 && i_func == 1) f_sg->SetParameter(4,-1.5);
 	      // if(energy == 6 && i_pt > 0 && i_pt < 3 && i_norm == 0 && i_func == 1) f_sg->SetParameter(5,1.5);
-	      float Fit_start = vmsa::InvMass[pid]-5.0*vmsa::Width[pid];
-	      float Fit_stop  = vmsa::InvMass[pid]+5.0*vmsa::Width[pid];
+	      float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
+	      float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
 	      f_sg->SetRange(Fit_start,Fit_stop);
 	      // f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
 	      cout << "i_pt = " << i_pt << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
@@ -333,8 +335,8 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
       h_mMass_theta[KEY_theta_QA]->SetMarkerSize(0.8);
       h_mMass_theta[KEY_theta_QA]->DrawCopy("PE");
 
-      float Fit_start = vmsa::InvMass[pid]-5.0*vmsa::Width[pid];
-      float Fit_stop  = vmsa::InvMass[pid]+5.0*vmsa::Width[pid];
+      float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
+      float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
       TF1 *f_sg = getSgFunc(vmsa::Func_QA,pid);
       for(int i_par = 0; i_par < vmsa::FuncParNum[vmsa::Func_QA]; ++i_par)
       {
@@ -391,12 +393,12 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 		  f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
 		  // f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
 		}
-		float Fit_start = vmsa::InvMass[pid]-5.0*vmsa::Width[pid];
-		float Fit_stop  = vmsa::InvMass[pid]+5.0*vmsa::Width[pid];
+		float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
+		float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
 		f_sg->SetRange(Fit_start,Fit_stop);
 		// f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
-		cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
-		h_mMass_func[KEY_func]->Fit(f_sg,"LNRI");
+		// cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
+		h_mMass_func[KEY_func]->Fit(f_sg,"LNQRI");
 		ParFit[KEY_func].clear();
 		for(int i_par = 0; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 		{
