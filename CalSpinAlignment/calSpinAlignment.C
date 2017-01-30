@@ -12,18 +12,20 @@
 #include "TProfile.h"
 #include "TGraphAsymmErrors.h"
 #include "TProfile2D.h"
+#include "TStyle.h"
 #include "../Utility/functions.h"
 #include "../Utility/draw.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/type.h"
 
 #ifndef _PlotQA_
-#define _PlotQA_  1
+#define _PlotQA_  0
 #endif
 
-void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
+void calSpinAlignment(int energy = 6, int pid = 0, int year = 0)
 {
   TGaxis::SetMaxDigits(4);
+  gStyle->SetOptDate(0);
 
   string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
   
@@ -44,8 +46,8 @@ void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
 	{
 	  string KEY_SE = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SE",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
 	  h_mMass_SE[KEY_SE] = (TH1F*)File_SE->Get(KEY_SE.c_str())->Clone(); 
-	  int Norm_bin_start = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Start[pid]);
-	  int Norm_bin_stop  = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Stop[pid]);
+	  int Norm_bin_start = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Start[pid][0]);
+	  int Norm_bin_stop  = h_mMass_SE[KEY_SE]->FindBin(vmsa::Norm_Stop[pid][0]);
 	  float Inte_SE = h_mMass_SE[KEY_SE]->Integral(Norm_bin_start,Norm_bin_stop);
 
 	  string KEY_ME = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_ME",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str());
@@ -437,7 +439,7 @@ void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
     }
   }
 
-#if 0
+#if _PlotQA_
   // QA InvMass vs. phi for gaussian and breit wigner fits
   string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   TCanvas *c_mMass_psi = new TCanvas("c_mMass_psi","c_mMass_psi",10,10,800,800);
@@ -451,21 +453,24 @@ void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
     c_mMass_psi->cd(i_theta-1)->SetGrid(0,0);
     c_mMass_psi->cd(i_theta-1);
     string KEY_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,i_theta,vmsa::mPID[pid].c_str());
-    h_mMass[KEY_QA]->SetTitle(Title_CosThetaStar[i_theta-2].c_str());
+    // h_mMass[KEY_QA]->SetTitle(Title_CosThetaStar[i_theta-2].c_str());
+    h_mMass[KEY_QA]->SetTitle("");
     h_mMass[KEY_QA]->SetStats(0);
     h_mMass[KEY_QA]->GetXaxis()->SetRangeUser(0.0,5.0);
     h_mMass[KEY_QA]->GetXaxis()->SetNdivisions(505,'N');
     h_mMass[KEY_QA]->GetXaxis()->SetLabelSize(0.03);
-    h_mMass[KEY_QA]->GetXaxis()->SetTitle("M(K^{+},K^{-})");
-    h_mMass[KEY_QA]->GetXaxis()->SetTitleSize(0.05);
+    h_mMass[KEY_QA]->GetXaxis()->SetTitle("InvMass(K^{+},K^{-}) (GeV/c^{2})");
+    h_mMass[KEY_QA]->GetXaxis()->SetTitleSize(0.06);
     h_mMass[KEY_QA]->GetXaxis()->SetTitleOffset(1.2);
+    h_mMass[KEY_QA]->GetXaxis()->SetLabelSize(0.05);
     h_mMass[KEY_QA]->GetXaxis()->CenterTitle();
 
     h_mMass[KEY_QA]->GetYaxis()->SetRangeUser(0.0,1.1*h_mMass[KEY_QA]->GetMaximum());
     h_mMass[KEY_QA]->GetYaxis()->SetNdivisions(505,'N');
-    h_mMass[KEY_QA]->GetYaxis()->SetTitle("Yields");
-    h_mMass[KEY_QA]->GetYaxis()->SetTitleSize(0.05);
-    h_mMass[KEY_QA]->GetYaxis()->SetLabelSize(0.03);
+    h_mMass[KEY_QA]->GetYaxis()->SetTitle("Counts");
+    h_mMass[KEY_QA]->GetYaxis()->SetTitleOffset(1.2);
+    h_mMass[KEY_QA]->GetYaxis()->SetTitleSize(0.06);
+    h_mMass[KEY_QA]->GetYaxis()->SetLabelSize(0.04);
     h_mMass[KEY_QA]->GetYaxis()->CenterTitle();
     h_mMass[KEY_QA]->SetMarkerColor(1);
     h_mMass[KEY_QA]->SetMarkerStyle(24);
@@ -490,17 +495,30 @@ void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
   }
 
   c_mMass_psi->cd(4);
+  c_mMass_psi->cd(4)->SetLeftMargin(0.15);
+  c_mMass_psi->cd(4)->SetBottomMargin(0.15);
+  c_mMass_psi->cd(4)->SetTicks(1,1);
+  c_mMass_psi->cd(4)->SetGrid(0,0);
   string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str());
   h_mCounts[KEY_Count]->SetStats(0);
-  h_mCounts[KEY_Count]->SetTitle("20-60%");
+  // h_mCounts[KEY_Count]->SetTitle("20-60%");
+  h_mCounts[KEY_Count]->SetTitle("");
   h_mCounts[KEY_Count]->SetTitleSize(0.08);
+  h_mCounts[KEY_Count]->GetXaxis()->SetTitle("cos(#theta*) (w.r.t. 2^{nd} event plane)");
+  h_mCounts[KEY_Count]->GetXaxis()->SetTitleSize(0.06);
+  h_mCounts[KEY_Count]->GetXaxis()->CenterTitle();
+  h_mCounts[KEY_Count]->GetXaxis()->SetNdivisions(505);
+  h_mCounts[KEY_Count]->GetXaxis()->SetLabelSize(0.05);
+
+  h_mCounts[KEY_Count]->GetYaxis()->SetTitle("Yields");
+  h_mCounts[KEY_Count]->GetYaxis()->SetTitleSize(0.06);
+  h_mCounts[KEY_Count]->GetYaxis()->CenterTitle();
+  h_mCounts[KEY_Count]->GetYaxis()->SetNdivisions(505);
+  h_mCounts[KEY_Count]->GetYaxis()->SetLabelSize(0.05);
   h_mCounts[KEY_Count]->SetLineColor(4);
   h_mCounts[KEY_Count]->SetMarkerColor(4);
   h_mCounts[KEY_Count]->SetMarkerStyle(24);
-  h_mCounts[KEY_Count]->SetMarkerSize(0.8);
-  h_mCounts[KEY_Count]->GetXaxis()->SetTitle("cos(#theta^{*}) (w.r.t. 2^{nd} event plane)");
-  h_mCounts[KEY_Count]->GetXaxis()->SetTitleSize(0.05);
-  h_mCounts[KEY_Count]->GetXaxis()->CenterTitle();
+  h_mCounts[KEY_Count]->SetMarkerSize(1.2);
   h_mCounts[KEY_Count]->DrawCopy("pE");
   TF1 *f_cos_count_QA = new TF1("f_cos_count_QA",SpinDensity,0.0,1.0,2);
   f_cos_count_QA->FixParameter(0,ParSpin_Count[KEY_Count][0]);
@@ -513,7 +531,7 @@ void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
   h_mCounts[KEY_BW]->SetLineColor(2);
   h_mCounts[KEY_BW]->SetMarkerColor(2);
   h_mCounts[KEY_BW]->SetMarkerStyle(24);
-  h_mCounts[KEY_BW]->SetMarkerSize(0.8);
+  h_mCounts[KEY_BW]->SetMarkerSize(1.2);
   h_mCounts[KEY_BW]->DrawCopy("pE same");
   TF1 *f_cos_bw_QA = new TF1("f_cos_bw_QA",SpinDensity,0.0,1.0,2);
   f_cos_bw_QA->FixParameter(0,ParSpin_BW[KEY_BW][0]);
@@ -522,13 +540,13 @@ void calSpinAlignment(int energy = 3, int pid = 0, int year = 0)
   f_cos_bw_QA->SetLineColor(2);
   f_cos_bw_QA->DrawCopy("l same");
 
-  TLegend *leg_temp = new TLegend(0.15,0.2,0.45,0.4);
+  TLegend *leg_temp = new TLegend(0.18,0.3,0.55,0.5);
   leg_temp->SetFillColor(10);
   leg_temp->SetBorderSize(0.0);
   leg_temp->AddEntry(h_mCounts[KEY_Count],"bin counting","p");
-  leg_temp->AddEntry(h_mCounts[KEY_BW],"breit wigner","p");
+  leg_temp->AddEntry(h_mCounts[KEY_BW],"Breit-Wigner","p");
   leg_temp->Draw("same");
-  // c_mMass_psi->SaveAs("./figures/phi_SpinAlighment.eps");
+  c_mMass_psi->SaveAs("./figures/phi_SpinAlighment.png");
 #endif
 
 #if _PlotQA_

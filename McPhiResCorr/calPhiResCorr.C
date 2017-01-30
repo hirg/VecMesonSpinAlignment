@@ -102,12 +102,16 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   TH1F *h_res = new TH1F("h_res","h_res",100,0.0,0.6);
   h_res->SetTitle("");
   h_res->SetStats(0);
+  h_res->GetXaxis()->SetLabelSize(0.05);
   h_res->GetXaxis()->SetTitle("#rho_{00}^{phy}");
   h_res->GetXaxis()->CenterTitle();
+  h_res->GetXaxis()->SetTitleSize(0.05);
   h_res->GetXaxis()->SetRangeUser(0.0,0.6);
   h_res->GetXaxis()->SetNdivisions(505);
 
+  h_res->GetYaxis()->SetLabelSize(0.05);
   h_res->GetYaxis()->SetTitle("#rho_{00}^{obs}");
+  h_res->GetYaxis()->SetTitleSize(0.05);
   h_res->GetYaxis()->CenterTitle();
   h_res->GetYaxis()->SetRangeUser(0.0,0.6);
   h_res->GetYaxis()->SetNdivisions(505);
@@ -116,8 +120,8 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   PlotLine(0.0,0.6,1.0/3.0,1.0/3.0,1,2,2);
 
   g_ResGaus->SetMarkerStyle(20);
-  g_ResGaus->SetMarkerColor(kGray+2);
-  g_ResGaus->SetMarkerSize(1.2);
+  g_ResGaus->SetMarkerColor(1);
+  g_ResGaus->SetMarkerSize(1.4);
   g_ResGaus->Draw("PE same");
   TF1 *f_ResGaus = new TF1("f_ResGaus",PolyRes,0.0,0.6,2);
   f_ResGaus->SetParameter(0,0.01);
@@ -127,16 +131,17 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   f_ResGaus->SetLineWidth(2);
   f_ResGaus->SetLineStyle(2);
   f_ResGaus->Draw("l same");
-  string leg_p0Gaus   = Form("p_{0}^{Gaussian} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(0),f_ResGaus->GetParError(0));
-  string leg_p1Gaus   = Form("p_{1}^{Gaussian} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(1),f_ResGaus->GetParError(1));
+  // string leg_p0Gaus   = Form("p_{0}^{Gaus} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(0),f_ResGaus->GetParError(0));
+  // string leg_p1Gaus   = Form("p_{1}^{Gaus} = %2.4f #pm %2.4f",f_ResGaus->GetParameter(1),f_ResGaus->GetParError(1));
+  string leg_p1Gaus   = Form("p_{1}^{Gaus} = %2.2f",f_ResGaus->GetParameter(1));
   string leg_chi2Gaus = Form("#chi^{2}/NDF = %2.2f/%d",f_ResGaus->GetChisquare(),f_ResGaus->GetNDF());
-  plotTopLegend((char*)leg_p0Gaus.c_str(),0.2,0.80,0.03,kGray+2,0.0,42,1);
-  plotTopLegend((char*)leg_p1Gaus.c_str(),0.2,0.74,0.03,kGray+2,0.0,42,1);
-  plotTopLegend((char*)leg_chi2Gaus.c_str(),0.2,0.68,0.03,kGray+2,0.0,42,1);
+  // plotTopLegend((char*)leg_p0Gaus.c_str(),0.2,0.80,0.03,1,0.0,42,1);
+  plotTopLegend((char*)leg_p1Gaus.c_str(),0.2,0.74,0.04,1,0.0,42,1);
+  plotTopLegend((char*)leg_chi2Gaus.c_str(),0.2,0.68,0.04,1,0.0,42,1);
 
   g_ResEP->SetMarkerStyle(24);
   g_ResEP->SetMarkerColor(kRed);
-  g_ResEP->SetMarkerSize(1.2);
+  g_ResEP->SetMarkerSize(1.4);
   g_ResEP->Draw("PE same");
   TF1 *f_ResEP = new TF1("f_ResEP",PolyRes,0.0,0.6,2);
   f_ResEP->SetParameter(0,0.01);
@@ -146,12 +151,13 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   f_ResEP->SetLineWidth(2);
   f_ResEP->SetLineStyle(2);
   f_ResEP->Draw("l same");
-  string leg_p0EP   = Form("p_{0}^{Sergei} = %2.4f #pm %2.4f",f_ResEP->GetParameter(0),f_ResEP->GetParError(0));
-  string leg_p1EP   = Form("p_{1}^{Sergei} = %2.4f #pm %2.4f",f_ResEP->GetParameter(1),f_ResEP->GetParError(1));
+  // string leg_p0EP   = Form("p_{0}^{EP} = %2.4f #pm %2.4f",f_ResEP->GetParameter(0),f_ResEP->GetParError(0));
+  // string leg_p1EP   = Form("p_{1}^{EP} = %2.4f #pm %2.4f",f_ResEP->GetParameter(1),f_ResEP->GetParError(1));
+  string leg_p1EP   = Form("p_{1}^{EP} = %2.2f",f_ResEP->GetParameter(1));
   string leg_chi2EP = Form("#chi^{2}/NDF = %2.2f/%d",f_ResEP->GetChisquare(),f_ResEP->GetNDF());
-  plotTopLegend((char*)leg_p0EP.c_str(),0.58,0.40,0.03,kRed,0.0,42,1);
-  plotTopLegend((char*)leg_p1EP.c_str(),0.58,0.34,0.03,kRed,0.0,42,1);
-  plotTopLegend((char*)leg_chi2EP.c_str(),0.58,0.28,0.03,kRed,0.0,42,1);
+  // plotTopLegend((char*)leg_p0EP.c_str(),0.58,0.40,0.03,kRed,0.0,42,1);
+  plotTopLegend((char*)leg_p1EP.c_str(),0.58,0.34,0.04,kRed,0.0,42,1);
+  plotTopLegend((char*)leg_chi2EP.c_str(),0.58,0.28,0.04,kRed,0.0,42,1);
 
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/McResCorr/Mc%sResCorrFactor.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
@@ -165,7 +171,7 @@ void calPhiResCorr(int energy = 6, int pid = 0, int centrality = 0)
   g_ResEP->Write();
   File_OutPut->Close();
 
-  string FigureName = Form("../figures/resCorrFactor%s.eps",vmsa::mBeamEnergy[energy].c_str());
+  string FigureName = Form("../figures/resCorrFactor%s.png",vmsa::mBeamEnergy[energy].c_str());
   c_res->SaveAs(FigureName.c_str());
 }
 

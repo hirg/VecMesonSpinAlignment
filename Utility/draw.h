@@ -468,7 +468,7 @@ void Draw_TGAE_new_Symbol(TGraphAsymmErrors* tgae, Int_t style, Int_t color, Flo
     ge_clone_C->SetMarkerStyle(style);
     ge_clone_C->SetMarkerColor(color);
     ge_clone_C->SetLineColor(1);
-    ge_clone_C->Draw("same PZ0");
+    ge_clone_C->Draw("same PE1");
 }
 //----------------------------------------------------------------------------------------
 

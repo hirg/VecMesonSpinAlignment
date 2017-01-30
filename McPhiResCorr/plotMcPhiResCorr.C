@@ -34,8 +34,8 @@ void plotMcPhiResCorr(int energy = 6)
   gStyle->SetOptDate(0);
   TGaxis::SetMaxDigits(4);
   gRandom->SetSeed();
-  // int const BinRho = floor(60 * gRandom->Rndm());
-  int const BinRho = 40; 
+  int const BinRho = floor(60 * gRandom->Rndm());
+  // int const BinRho = 40; 
   float const rhoInPut = 0.01*BinRho;
 
   string InPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_v2_1040.root",vmsa::mBeamEnergy[energy].c_str());
@@ -52,8 +52,8 @@ void plotMcPhiResCorr(int energy = 6)
   f_v2->SetLineStyle(2);
   g_v2->Fit(f_v2,"N");
 
-  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
-  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr_40.root",vmsa::mBeamEnergy[energy].c_str());
+  string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr.root",vmsa::mBeamEnergy[energy].c_str());
+  // string InPutHist = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiResCorr_40.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Hist = TFile::Open(InPutHist.c_str());
   string HistTracks = Form("h_Tracks_%d",BinRho);
   TH3F *h_Tracks = (TH3F*)File_Hist->Get(HistTracks.c_str());
@@ -132,16 +132,20 @@ void plotMcPhiResCorr(int energy = 6)
   c_Psi2->cd()->SetGrid(0,0);
   h_PsiEP->SetTitle("");
   h_PsiEP->SetStats(0);
+  h_PsiEP->GetXaxis()->SetLabelSize(0.05);
   h_PsiEP->GetXaxis()->SetTitle("#Psi_{2}-#Psi_{RP}");
   h_PsiEP->GetXaxis()->CenterTitle();
+  h_PsiEP->GetXaxis()->SetTitleSize(0.05);
   h_PsiEP->GetXaxis()->SetRangeUser(-TMath::PiOver2(),TMath::PiOver2());
-  h_PsiEP->GetYaxis()->SetTitle("Counts");
   h_PsiEP->GetXaxis()->SetNdivisions(505);
 
+  h_PsiEP->GetYaxis()->SetLabelSize(0.05);
+  h_PsiEP->GetYaxis()->SetTitle("Counts");
   h_PsiEP->GetYaxis()->CenterTitle();
+  h_PsiEP->GetYaxis()->SetTitleSize(0.05);
+  h_PsiEP->GetYaxis()->SetNdivisions(505);
   if(h_PsiEP->GetMaximum() > h_PsiGaus->GetMaximum()) h_PsiEP->GetYaxis()->SetRangeUser(0,1.2*h_PsiEP->GetMaximum());
   else h_PsiEP->GetYaxis()->SetRangeUser(0,1.2*h_PsiGaus->GetMaximum());
-  h_PsiEP->GetYaxis()->SetNdivisions(505);
   h_PsiEP->SetMarkerStyle(24);
   h_PsiEP->SetMarkerColor(2);
   h_PsiEP->SetMarkerSize(1.0);
@@ -157,11 +161,11 @@ void plotMcPhiResCorr(int energy = 6)
   float chi = f_EP->GetParameter(0);
   TF1 *f_res = new TF1("f_res",EventPlaneResolution,0,10,0);
   float resEP = f_res->Eval(chi);
-  string leg_PsiEP = Form("Sergei: #chi = %2.2f, resolution = %2.2f",chi,resEP);
-  plotTopLegend((char*)leg_PsiEP.c_str(),0.2,0.85,0.03,2,0.0,42,1);
+  string leg_PsiEP = Form("Event Plane: #chi = %2.2f, resolution = %2.2f",chi,resEP);
+  plotTopLegend((char*)leg_PsiEP.c_str(),0.2,0.85,0.04,2,0.0,42,1);
 
   h_PsiGaus->SetMarkerStyle(24);
-  h_PsiGaus->SetMarkerColor(kGray+2);
+  h_PsiGaus->SetMarkerColor(1);
   h_PsiGaus->SetMarkerSize(1.0);
   h_PsiGaus->Draw("pE same");
   TF1 *f_gaus = new TF1("f_gaus","gaus",-TMath::PiOver2(),TMath::PiOver2());
@@ -170,15 +174,15 @@ void plotMcPhiResCorr(int energy = 6)
   f_gaus->SetRange(-3.0*sig,3.0*sig);
   h_PsiGaus->Fit(f_gaus,"NR");
 
-  f_gaus->SetLineColor(kGray+2);
+  f_gaus->SetLineColor(1);
   f_gaus->SetLineWidth(4);
   f_gaus->SetLineStyle(2);
   f_gaus->Draw("l same");
 
   float sigma = f_gaus->GetParameter(2);
   float resGaus = cos(2.0*sigma);
-  string leg_PsiGaus = Form("Gaussian: #sigma = %2.2f, resolution = cos(2*#sigma) = %2.2f",sigma,resGaus);
-  plotTopLegend((char*)leg_PsiGaus.c_str(),0.2,0.8,0.03,kGray+2,0.0,42,1);
+  string leg_PsiGaus = Form("Gaussian: #sigma = %2.2f, resolution = %2.2f",sigma,resGaus);
+  plotTopLegend((char*)leg_PsiGaus.c_str(),0.2,0.8,0.04,1,0.0,42,1);
 
   TCanvas *c_v2fitQA = new TCanvas("c_v2fitQA","c_v2fitQA",10,10,1200,600);
   c_v2fitQA->Divide(2,1);
@@ -843,9 +847,9 @@ void plotMcPhiResCorr(int energy = 6)
   if(rhoInPut > 1.0/3.0) leg_rhoL->Draw("same");
   else leg_rhoH->Draw("same");
 
-  c_Track->SaveAs("../figures/TrackSampling.eps");
-  c_Psi2->SaveAs("../figures/EventPlaneSmearing.eps");
-  c_v2->SaveAs("../figures/McV2.eps");
+  // c_Track->SaveAs("../figures/TrackSampling.eps");
+  c_Psi2->SaveAs("../figures/EventPlaneSmearing.png");
+  // c_v2->SaveAs("../figures/McV2.eps");
   // c_v2fitQA->SaveAs("c_v2fitQA.eps");
   // c_v2fitRP->SaveAs("c_v2fitRP.eps");
   // c_v2fitEP->SaveAs("c_v2fitEP.eps");

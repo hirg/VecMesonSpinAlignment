@@ -4,11 +4,13 @@
 #include "TH1F.h"
 #include "../Utility/draw.h"
 #include "TCanvas.h"
+#include "TStyle.h"
 
 using namespace std;
 
 void plotRhoSys()
 {
+  gStyle->SetOptDate(0);
   string Energy[5] = {"19GeV","27GeV","39GeV","62GeV","200GeV"};
   int plot_style[5] = {20,29,34,22,24};
   int plot_color[5] = {kGray+3,kRed-4,kMagenta,kAzure+4,4};
@@ -54,10 +56,16 @@ void plotRhoSys()
   c_rho->SetTicks(1,1);
   c_rho->cd();
   h_frame->GetXaxis()->SetRangeUser(0.0,5.0);
+  h_frame->GetXaxis()->SetLabelSize(0.04);
+  h_frame->GetXaxis()->SetTitleSize(0.06);
+  h_frame->GetXaxis()->SetTitleOffset(1.1);
   h_frame->GetYaxis()->SetRangeUser(0.3,0.4);
+  h_frame->GetYaxis()->SetLabelSize(0.04);
+  h_frame->GetYaxis()->SetTitleSize(0.06);
   h_frame->Draw("pE");
   PlotLine(0.0,5.0,1.0/3.0,1.0/3.0,1,2,2);
-  plotTopLegend("20\%-60\%",1.0,0.385,0.04,1,0.0,42,0);
+  plotTopLegend((char*)"AuAu (20%-60\%)",0.6,0.390,0.04,1,0.0,42,0);
+  plotTopLegend((char*)"#phi-meson",1.0,0.383,0.04,1,0.0,42,0);
   for(int i_energy = 0; i_energy < 5; ++i_energy)
   {
     g_sys[i_energy]->SetLineColor(kGray);
@@ -69,5 +77,5 @@ void plotRhoSys()
     plotTopLegend((char*)Energy[i_energy].c_str(),3.65,0.385-i_energy*0.005-0.0014,0.04,1,0.0,42,0);
   }
 
-  c_rho->SaveAs("./figures/c_rhoSys.png");
+  c_rho->SaveAs("../figures/c_rhoSys.png");
 }

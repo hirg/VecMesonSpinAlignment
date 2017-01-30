@@ -19,10 +19,7 @@
 
 void calInteRho(int energy = 2, int pid = 0)
 {
-  TGraphAsymmErrors *g_rho_stat = new TGraphAsymmErrors();
-  TGraphAsymmErrors *g_rho_sys  = new TGraphAsymmErrors();
-
-  string inputspec = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Phi_Spec.root",vmsa::mBeamEnergy[energy].c_str());
+  string inputspec = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/Data/Phi_Spec.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   cout << "Open input spectra: " << inputspec.c_str() << endl;
   TFile *File_Spec = TFile::Open(inputspec.c_str());
 
@@ -70,26 +67,13 @@ void calInteRho(int energy = 2, int pid = 0)
   f_spec->Draw("l same");
 #endif
 
-  string inputrho = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Rho_SysErrors.root",vmsa::mBeamEnergy[energy].c_str());
+  string inputrho = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/Rho_SysErrors.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_Rho = TFile::Open(inputrho.c_str());
   TH1F *h_frame = (TH1F*)File_Rho->Get("h_frame");
   string StatErrorRho = Form("g_rho00_%s_%s_StatError",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TGraphAsymmErrors *g_StatErrors = (TGraphAsymmErrors*)File_Rho->Get(StatErrorRho.c_str());
   string SysErrorRho = Form("g_rho00_%s_%s_SysError",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TGraphAsymmErrors *g_SysErrors = (TGraphAsymmErrors*)File_Rho->Get(SysErrorRho.c_str());
-
-#if _PlotQA_
-  TCanvas *c_rho_SysError = new TCanvas("c_rho_SysError","c_rho_SysError",600,10,800,800);
-  c_rho_SysError->cd();
-  c_rho_SysError->cd()->SetLeftMargin(0.15);
-  c_rho_SysError->cd()->SetBottomMargin(0.15);
-  c_rho_SysError->cd()->SetTicks(1,1);
-  c_rho_SysError->cd()->SetGrid(0,0);
-  h_frame->Draw("pE");
-  // g_StatErrors->Draw("pE same");
-  g_SysErrors->Draw("pE same");
-  PlotLine(0.0,5.0,1.0/3.0,1.0/3.0,1,2,2);
-#endif
 
   // integration range 0.4-3.0 GeV/c
   int Nmax = 5;
@@ -103,32 +87,77 @@ void calInteRho(int energy = 2, int pid = 0)
     double pt, rho_pt;
     g_StatErrors->GetPoint(i_point,pt,rho_pt);
     double yields_pt = f_spec->Integral(vmsa::pt_low[energy][i_point],vmsa::pt_up[energy][i_point]);
-    rho += rho_pt*yields_pt/yields;
-    cout << "pt_bin: [" << vmsa::pt_low[energy][i_point] << "," << vmsa::pt_up[energy][i_point] << "]: yields_pt = " << yields_pt << ", ratio = " << 100.0*yields_pt/yields << "%"<< endl;
+    double weight = yields_pt/yields;
+    rho += rho_pt*weight;
+    cout << "pt_bin: [" << vmsa::pt_low[energy][i_point] << "," << vmsa::pt_up[energy][i_point] << "]: rho_pt = " << rho_pt << ", weight = " << 100.0*weight << "%"<< endl;
 
     double err_stat_pt = g_StatErrors->GetErrorYhigh(i_point);
-    double errStatAdd = ErrTimes(rho_pt,yields_pt/yields,err_stat_pt,0.0);
-    err_stat += errStatAdd*errStatAdd;
+    err_stat += weight*err_stat_pt*weight*err_stat_pt;
 
     double err_sys_pt = g_SysErrors->GetErrorYhigh(i_point);
-    double errSysAdd = ErrTimes(rho_pt,yields_pt/yields,err_sys_pt,0.0);
-    err_sys += errSysAdd*errSysAdd;
+    cout << "err_sys_pt = " << err_sys_pt << endl;
+    // err_sys += weight*err_sys_pt*weight*err_sys_pt;
+    err_sys += weight*err_sys_pt;
   }
-  cout << "integrated rho = " << rho << " +/- " << TMath::Sqrt(err_stat) << " +/- " << TMath::Sqrt(err_sys) << endl;
+  cout << "integrated rho = " << rho << " +/- " << TMath::Sqrt(err_stat) << " +/- " << err_sys << endl;
 
-  g_rho_stat->SetPoint(0,3.0,rho);
+#if _PlotQA_
+  TCanvas *c_rho_SysError = new TCanvas("c_rho_SysError","c_rho_SysError",600,10,800,800);
+  c_rho_SysError->cd();
+  c_rho_SysError->cd()->SetLeftMargin(0.15);
+  c_rho_SysError->cd()->SetBottomMargin(0.15);
+  c_rho_SysError->cd()->SetTicks(1,1);
+  c_rho_SysError->cd()->SetGrid(0,0);
+  h_frame->Draw("pE");
+  g_StatErrors->Draw("pE same");
+  g_SysErrors->Draw("pE same");
+  PlotLine(0.0,5.0,1.0/3.0,1.0/3.0,1,2,2);
+
+  TGraphAsymmErrors *g_temp_stat = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_temp_sys  = new TGraphAsymmErrors();
+
+  g_temp_stat->SetPoint(0,3.0,rho);
+  g_temp_stat->SetPointError(0,0.0,0.0,TMath::Sqrt(err_stat),TMath::Sqrt(err_stat));
+  g_temp_stat->SetMarkerStyle(29);
+  g_temp_stat->SetMarkerColor(2);
+  g_temp_stat->SetMarkerSize(2);
+  g_temp_stat->SetLineColor(2);
+  g_temp_stat->Draw("pE same");
+
+  g_temp_sys->SetPoint(0,3.0,rho);
+  // g_temp_sys->SetPointError(0,0.0,0.0,TMath::Sqrt(err_sys),TMath::Sqrt(err_sys));
+  g_temp_sys->SetPointError(0,0.0,0.0,err_sys,err_sys);
+  g_temp_sys->SetMarkerStyle(29);
+  g_temp_sys->SetMarkerColor(2);
+  g_temp_sys->SetMarkerSize(2);
+  g_temp_sys->SetLineColor(4);
+  g_temp_sys->Draw("pE same");
+#endif
+
+  float val_energy[7] = {7.7,11.5,19.6,27.0,39.0,62.4,200.0};
+  string outputfile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/InteRhoSys.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  cout << "OutPut file set to: " << outputfile.c_str() << endl;
+  TFile *File_Out = new TFile(outputfile.c_str(),"RECREATE");
+  File_Out->cd();
+  TGraphAsymmErrors *g_rho_stat = new TGraphAsymmErrors();
+  g_rho_stat->SetPoint(0,val_energy[energy],rho);
   g_rho_stat->SetPointError(0,0.0,0.0,TMath::Sqrt(err_stat),TMath::Sqrt(err_stat));
+  g_rho_stat->SetName("g_rho_stat");
   g_rho_stat->SetMarkerStyle(29);
   g_rho_stat->SetMarkerColor(2);
   g_rho_stat->SetMarkerSize(2);
   g_rho_stat->SetLineColor(2);
-  g_rho_stat->Draw("pE same");
+  g_rho_stat->Write();
 
-  g_rho_sys->SetPoint(0,3.0,rho);
-  g_rho_sys->SetPointError(0,0.0,0.0,TMath::Sqrt(err_sys),TMath::Sqrt(err_sys));
+  TGraphAsymmErrors *g_rho_sys  = new TGraphAsymmErrors();
+  g_rho_sys->SetPoint(0,val_energy[energy],rho);
+  // g_rho_sys->SetPointError(0,0.0,0.0,TMath::Sqrt(err_sys),TMath::Sqrt(err_sys));
+  g_rho_sys->SetPointError(0,0.0,0.0,err_sys,err_sys);
+  g_rho_sys->SetName("g_rho_sys");
   g_rho_sys->SetMarkerStyle(29);
-  g_rho_sys->SetMarkerColor(2);
+  g_rho_sys->SetMarkerColor(kGray+2);
   g_rho_sys->SetMarkerSize(2);
-  g_rho_sys->SetLineColor(4);
-  g_rho_sys->Draw("pE same");
+  g_rho_sys->SetLineColor(kGray+2);
+  g_rho_sys->Write();
+  File_Out->Close();
 }
