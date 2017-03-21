@@ -3,7 +3,7 @@
 
 #include <string>
 #include "TString.h"
-#include "StarClassLibrary/SystemOfUnits.h"
+// #include "StarClassLibrary/SystemOfUnits.h"
 
 namespace vmsa
 {
@@ -32,7 +32,7 @@ namespace vmsa
   float const mPrimPtWeight = 2.0;
   float const mPrimMomMax = 10.0; // also use for gMom
   float const mMass2Min = -10.0;
-  double const MAGFIELDFACTOR = kilogauss;
+  // double const MAGFIELDFACTOR = kilogauss;
   int const mTrackMin = 2;
   int const mTrackMin_Full = 4;
   float const mToFYLocalMax = 1.8;

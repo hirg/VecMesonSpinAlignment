@@ -19,7 +19,8 @@
 
 void calInteRho(int energy = 2, int pid = 0)
 {
-  string inputspec = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/Data/Phi_Spec.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  // string inputspec = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/MonteCarlo/Data/Phi_Spec.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  string inputspec = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Phi_Spec.root",vmsa::mBeamEnergy[energy].c_str());
   cout << "Open input spectra: " << inputspec.c_str() << endl;
   TFile *File_Spec = TFile::Open(inputspec.c_str());
 
@@ -28,18 +29,19 @@ void calInteRho(int energy = 2, int pid = 0)
   f_Levy->SetParameter(0,1);
   f_Levy->SetParameter(1,10);
   f_Levy->SetParameter(2,0.1);
-  f_Levy->SetLineStyle(2);
-  f_Levy->SetLineColor(4);
-  f_Levy->SetLineWidth(2);
   g_spec->Fit(f_Levy,"N");
 
   TF1 *f_spec = new TF1("f_spec",pTLevy,vmsa::ptMin,vmsa::ptMax,3);
   f_spec->SetParameter(0,f_Levy->GetParameter(0));
   f_spec->SetParameter(1,f_Levy->GetParameter(1));
   f_spec->SetParameter(2,f_Levy->GetParameter(2));
-  f_spec->SetLineStyle(2);
-  f_spec->SetLineColor(2);
-  f_spec->SetLineWidth(2);
+
+  TF1 *f_mean = new TF1("f_mean",meanLevy,vmsa::ptMin,vmsa::ptMax,3);
+  f_mean->SetParameter(0,f_Levy->GetParameter(0));
+  f_mean->SetParameter(1,f_Levy->GetParameter(1));
+  f_mean->SetParameter(2,f_Levy->GetParameter(2));
+  float meanPt = f_mean->Integral(0.4,3.0)/f_spec->Integral(0.4,3.0);;
+  cout << "mean pT = " << meanPt << endl;
 
 #if _PlotQA_
   TCanvas *c_spec = new TCanvas("c_spec","c_spec",10,10,800,800);
@@ -56,18 +58,37 @@ void calInteRho(int energy = 2, int pid = 0)
   }
   h_spec->SetTitle("");
   h_spec->SetStats(0);
+  h_spec->GetXaxis()->SetRangeUser(0.0,4.5);
   h_spec->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+  h_spec->GetXaxis()->SetTitleSize(0.05);
   h_spec->GetXaxis()->CenterTitle();
+  h_spec->GetXaxis()->SetLabelSize(0.03);
+  h_spec->GetXaxis()->SetNdivisions(505);
+
+  h_spec->GetYaxis()->SetRangeUser(1E-6,10);
   h_spec->GetYaxis()->SetTitle("dN/p_{T}dp_{T}");
   h_spec->GetYaxis()->CenterTitle();
-  h_spec->GetYaxis()->SetRangeUser(1E-6,10);
+  h_spec->GetYaxis()->SetTitleSize(0.05);
+  h_spec->GetYaxis()->CenterTitle();
+  h_spec->GetYaxis()->SetLabelSize(0.03);
+  h_spec->GetYaxis()->SetNdivisions(505);
   h_spec->Draw("pE");
   g_spec->Draw("pE same");
+  f_Levy->SetLineStyle(2);
+  f_Levy->SetLineColor(2);
+  f_Levy->SetLineWidth(3);
   f_Levy->Draw("l same");
-  f_spec->Draw("l same");
+
+  TLegend *leg = new TLegend(0.45,0.65,0.85,0.75);
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);
+  leg->AddEntry(g_spec,"STAR PRC 93 021903(R)","P");
+  leg->AddEntry(f_Levy,"Levy fit","l");
+  leg->Draw("same");
 #endif
 
-  string inputrho = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/Rho_SysErrors.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  // string inputrho = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/Rho_SysErrors.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  string inputrho = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Rho_SysErrors.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Rho = TFile::Open(inputrho.c_str());
   TH1F *h_frame = (TH1F*)File_Rho->Get("h_frame");
   string StatErrorRho = Form("g_rho00_%s_%s_StatError",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
@@ -108,34 +129,55 @@ void calInteRho(int energy = 2, int pid = 0)
   c_rho_SysError->cd()->SetBottomMargin(0.15);
   c_rho_SysError->cd()->SetTicks(1,1);
   c_rho_SysError->cd()->SetGrid(0,0);
+  h_frame->GetXaxis()->SetRangeUser(0.0,5.0);
   h_frame->Draw("pE");
-  g_StatErrors->Draw("pE same");
+  g_SysErrors->SetLineColor(kGray);
+  g_SysErrors->SetLineWidth(6);
+  g_SysErrors->SetMarkerColor(1);
+  g_SysErrors->SetMarkerSize(1.0);
   g_SysErrors->Draw("pE same");
+  g_StatErrors->SetLineColor(1);
+  g_StatErrors->SetLineWidth(1);
+  g_StatErrors->SetMarkerColor(1);
+  g_StatErrors->SetMarkerSize(1.2);
+  g_StatErrors->Draw("pE same");
   PlotLine(0.0,5.0,1.0/3.0,1.0/3.0,1,2,2);
 
   TGraphAsymmErrors *g_temp_stat = new TGraphAsymmErrors();
   TGraphAsymmErrors *g_temp_sys  = new TGraphAsymmErrors();
 
-  g_temp_stat->SetPoint(0,3.0,rho);
+  g_temp_sys->SetPoint(0,meanPt,rho);
+  g_temp_sys->SetPointError(0,0.0,0.0,err_sys,err_sys);
+  g_temp_sys->SetMarkerStyle(29);
+  g_temp_sys->SetMarkerColor(2);
+  g_temp_sys->SetMarkerSize(1);
+  g_temp_sys->SetLineColor(kGray);
+  g_temp_sys->SetLineWidth(6);
+  g_temp_sys->Draw("pE same");
+
+  g_temp_stat->SetPoint(0,meanPt,rho);
   g_temp_stat->SetPointError(0,0.0,0.0,TMath::Sqrt(err_stat),TMath::Sqrt(err_stat));
   g_temp_stat->SetMarkerStyle(29);
   g_temp_stat->SetMarkerColor(2);
   g_temp_stat->SetMarkerSize(2);
   g_temp_stat->SetLineColor(2);
+  g_temp_stat->SetLineWidth(2);
   g_temp_stat->Draw("pE same");
 
-  g_temp_sys->SetPoint(0,3.0,rho);
-  // g_temp_sys->SetPointError(0,0.0,0.0,TMath::Sqrt(err_sys),TMath::Sqrt(err_sys));
-  g_temp_sys->SetPointError(0,0.0,0.0,err_sys,err_sys);
-  g_temp_sys->SetMarkerStyle(29);
-  g_temp_sys->SetMarkerColor(2);
-  g_temp_sys->SetMarkerSize(2);
-  g_temp_sys->SetLineColor(4);
-  g_temp_sys->Draw("pE same");
+  plotTopLegend((char*)"AuAu 19GeV 20-60%",0.3,0.8,0.04,1,0.0,42,1);
+  PlotLine(0.4,0.4,0.2,0.4,2,2,2);
+  PlotLine(3.0,3.0,0.2,0.4,2,2,2);
+  TLegend *legRho = new TLegend(0.25,0.65,0.55,0.75);
+  legRho->SetFillColor(0);
+  legRho->SetBorderSize(0);
+  legRho->AddEntry(g_StatErrors,"differential #rho_{00}","P");
+  legRho->AddEntry(g_temp_stat,"integrated #rho_{00}","P");
+  legRho->Draw("same");
 #endif
 
   float val_energy[7] = {7.7,11.5,19.6,27.0,39.0,62.4,200.0};
-  string outputfile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/InteRhoSys.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  // string outputfile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/InteRhoSys.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  string outputfile = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/InteRhoSys.root",vmsa::mBeamEnergy[energy].c_str());
   cout << "OutPut file set to: " << outputfile.c_str() << endl;
   TFile *File_Out = new TFile(outputfile.c_str(),"RECREATE");
   File_Out->cd();
@@ -160,4 +202,6 @@ void calInteRho(int energy = 2, int pid = 0)
   g_rho_sys->SetLineColor(kGray+2);
   g_rho_sys->Write();
   File_Out->Close();
+  c_spec->SaveAs("../figures/c_spec.eps");
+  c_rho_SysError->SaveAs("../figures/c_rho_SysError.eps");
 }
