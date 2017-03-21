@@ -18,17 +18,21 @@
 #include "../Utility/type.h"
 
 #ifndef _PlotQA_
-#define _PlotQA_  1
+#define _PlotQA_  0
+#endif
+
+#ifndef _SaveQA_
+#define _SaveQA_  1
 #endif
 
 TF1* getSgFunc(int nFunc, int pid);
 TF1* getBgFunc(int nFunc, int pid);
 
-static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
-  {{-1,1,0.0},{0.1,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}, // left
-  {{-1,1,0.0},{0.0,-1.0,1.5},{0,-1,1},{0,1.5,0.2}}, // right
-  {{-1,1,0.0},{0.0,-1.0,1.5},{0,-1,1},{0,1.5,0.2}}  // both
-}; // 19GeV
+// static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
+//   {{-1,1,0.0},{0.1,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}, // left
+//   {{-1,1,0.0},{0.0,-1.0,1.5},{0,-1,1},{0,1.5,0.2}}, // right
+//   {{-1,1,0.0},{0.0,-1.0,1.5},{0,-1,1},{0,1.5,0.2}}  // both
+// }; // 19GeV
 // static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
 //   {{-1,1,0.0},{0.0,-1.4,1.4},{0,-1,1},{0,1.5,0.2}}, // left
 //   {{-1,1,0.0},{0.0,-1.5,1.5},{0,-1,1},{0,1.5,0.2}}, // right
@@ -44,11 +48,11 @@ static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for para
 //   {{-1,1,0.0},{0.0,-1.50,1.5},{0,-1,1},{0,1.5,0.2}}, // right
 //   {{-1,1,0.0},{0.0,-1.45,1.6},{0,-1,1},{0,1.5,0.2}}  // both
 // }; // 62GeV
-// static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
-//   {{-1,1,0.0},{0.1,-1.6,1.3},{0,-1,1},{0,1.5,0.2}}, // left
-//   {{-1,1,0.0},{0.2,-1.6,1.3},{0,-1,1},{0,1.5,0.2}}, // right
-//   {{-1,1,0.0},{0.0,-1.6,1.9},{0,-1,1},{0,1.5,0.2}}  // both
-// }; // 200GeV
+static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for parameters
+  {{-1,1,0.0},{0.1,-1.6,1.3},{0,-1,1},{0,1.5,0.2}}, // left
+  {{-1,1,0.0},{0.2,-1.6,1.3},{0,-1,1},{0,1.5,0.2}}, // right
+  {{-1,0,0.0},{0.0,-1.6,1.9},{0,-1,1},{0,1.5,0.2}}  // both
+}; // 200GeV
 
 static float const normL = 5.0;
 static float const normR = 5.0;
@@ -285,27 +289,24 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 	      f_sg->SetParameter(0,vmsa::InvMass[pid]);
 	      f_sg->SetParLimits(0,vmsa::InvMass[pid]-1.5*vmsa::Width[pid],vmsa::InvMass[pid]+1.5*vmsa::Width[pid]);
 	      f_sg->SetParameter(1,vmsa::Width[pid]);
-	      f_sg->SetParLimits(1,0.003,0.006);
-	      f_sg->SetParameter(2,1);
-	      for(int i_par = 3; i_par < vmsa::FuncParNum[i_func]; ++i_par)
-	      {
-		f_sg->SetParameter(i_par,0.0);
-	      }
-	      f_sg->SetParameter(2,h_mMass_theta[KEY_theta]->GetMaximum()/f_sg->GetMaximum());
+	      // f_sg->SetParameter(1,0.0055);
+	      f_sg->SetParLimits(1,0.004,0.070);
+	      f_sg->SetParameter(2,1.0);
 	      for(int i_par = 3; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 	      {
 		f_sg->SetParameter(i_par,FuncPar[i_norm][i_func][i_par-3]);
 		// cout << "i_par = " << i_par << ", FuncPar = " << FuncPar[i_norm][i_func][i_par-3] << endl;
 	      }
+	      f_sg->SetParameter(2,h_mMass_theta[KEY_theta]->GetMaximum()/f_sg->GetMaximum());
 	      // if(energy == 4 && i_pt == 2 && i_norm == 0 && i_func == 1) f_sg->SetParameter(3,0.0);
 	      // if(energy == 6 && i_pt > 0 && i_pt < 3 && i_norm == 0 && i_func == 1) f_sg->SetParameter(4,-1.5);
 	      // if(energy == 6 && i_pt > 0 && i_pt < 3 && i_norm == 0 && i_func == 1) f_sg->SetParameter(5,1.5);
-	      float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
-	      float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
-	      f_sg->SetRange(Fit_start,Fit_stop);
-	      // f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
+	      // float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
+	      // float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
+	      // f_sg->SetRange(Fit_start,Fit_stop);
+	      f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
 	      cout << "i_pt = " << i_pt << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
-	      h_mMass_theta[KEY_theta]->Fit(f_sg,"LNRI");
+	      h_mMass_theta[KEY_theta]->Fit(f_sg,"MNR");
 
 	      ParFit_theta[KEY_theta].clear();
 	      for(int i_par = 0; i_par < vmsa::FuncParNum[i_func]; ++i_par)
@@ -345,7 +346,7 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
       f_sg->SetLineColor(2);
       f_sg->SetLineStyle(1);
       f_sg->SetLineWidth(2);
-      f_sg->SetRange(Fit_start,Fit_stop);
+      // f_sg->SetRange(Fit_start,Fit_stop);
       f_sg->DrawCopy("l same");
 
       TF1 *f_bg = getBgFunc(vmsa::Func_QA,pid);
@@ -356,7 +357,7 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
       f_bg->SetLineColor(4);
       f_bg->SetLineStyle(2);
       f_bg->SetLineWidth(4);
-      f_bg->SetRange(Fit_start,Fit_stop);
+      // f_bg->SetRange(Fit_start,Fit_stop);
       f_bg->DrawCopy("l same");
 
       string pT_range = Form("[%.2f,%.2f]",vmsa::pt_low[energy][i_pt],vmsa::pt_up[energy][i_pt]);
@@ -367,6 +368,7 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 
     // Poly+bw fits for phi differential InvMass
     vecFMap ParFit;
+    TH1FMap h_mMass_QA;
     for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
     {
       for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // Centrality loop
@@ -382,23 +384,25 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 	      {
 		string KEY_func = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_Norm_%d_Func_%d",i_pt,i_cent,i_eta,i_theta,vmsa::mPID[pid].c_str(),i_norm,i_func);
 		h_mMass_func[KEY_func] = (TH1F*)h_mMass[KEY]->Clone(KEY_func.c_str());
+		h_mMass_QA[KEY_func] = (TH1F*)h_mMass[KEY]->Clone(KEY_func.c_str());
 
 		string KEY_theta = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_Norm_%d_Func_%d",i_pt,i_cent,i_eta,vmsa::mPID[pid].c_str(),i_norm,i_func);
 		TF1 *f_sg = getSgFunc(i_func,pid);
 		f_sg->FixParameter(0,ParFit_theta[KEY_theta][0]);
 		f_sg->FixParameter(1,ParFit_theta[KEY_theta][1]);
 		f_sg->SetParameter(2,ParFit_theta[KEY_theta][2]/7.0);
+		// f_sg->SetParameter(3,ParFit_theta[KEY_theta][3]/7.0);
 		for(int i_par = 3; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 		{
-		  f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
-		  // f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
+		  // f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
+		  f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
 		}
 		float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
 		float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
 		f_sg->SetRange(Fit_start,Fit_stop);
 		// f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
-		// cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
-		h_mMass_func[KEY_func]->Fit(f_sg,"LNQRI");
+		cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
+		h_mMass_func[KEY_func]->Fit(f_sg,"MNRI");
 		ParFit[KEY_func].clear();
 		for(int i_par = 0; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 		{
@@ -418,6 +422,72 @@ void subBackGround(int energy = 3, int pid = 0, int year = 0)
 	}
       }
     }
+
+#if _SaveQA_
+    TCanvas *c_QA[3];
+    for(int i_norm = vmsa::Norm_start; i_norm < vmsa::Norm_stop; ++i_norm)
+    {
+      string hist = Form("c_QA_%d",i_norm);
+      c_QA[i_norm] = new TCanvas(hist.c_str(),hist.c_str(),1600,800);
+      c_QA[i_norm]->Divide(4,2);
+      for(int i_theta = vmsa::CTS_start; i_theta < vmsa::CTS_stop; i_theta++) // cos(theta*) loop
+      {
+	c_QA[i_norm]->cd(i_theta+1);
+	c_QA[i_norm]->cd(i_theta+1)->SetLeftMargin(0.15);
+	c_QA[i_norm]->cd(i_theta+1)->SetBottomMargin(0.15);
+	c_QA[i_norm]->cd(i_theta+1)->SetTicks(1,1);
+	c_QA[i_norm]->cd(i_theta+1)->SetGrid(0,0);
+	for(int i_func = vmsa::Func_start; i_func < vmsa::Func_stop; ++i_func)
+	{
+	  string KEY_func_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_CosThetaStar_%d_2nd_%s_Norm_%d_Func_%d",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,i_theta,vmsa::mPID[pid].c_str(),i_norm,i_func);
+	  h_mMass_QA[KEY_func_QA]->SetTitle("");
+	  h_mMass_QA[KEY_func_QA]->SetStats(0);
+	  h_mMass_QA[KEY_func_QA]->SetMarkerStyle(24);
+	  h_mMass_QA[KEY_func_QA]->SetMarkerSize(1.2);
+	  h_mMass_QA[KEY_func_QA]->SetMarkerColor(kGray+2);
+	  h_mMass_QA[KEY_func_QA]->Draw("pE");
+	  PlotLine(vmsa::InvMass_low[pid],vmsa::InvMass_high[pid],0.0,0.0,1,2,2);
+	  TF1 *f_sg = getSgFunc(i_func,pid);
+	  for(int i_par = 0; i_par < vmsa::FuncParNum[i_func]; ++i_par) f_sg->SetParameter(i_par,ParFit[KEY_func_QA][i_par]);
+	  f_sg->SetLineColor(2);
+	  f_sg->SetLineWidth(2);
+	  f_sg->Draw("l same");
+	  TF1 *f_bg = getBgFunc(i_func,pid);
+	  for(int i_par = 0; i_par < vmsa::FuncParNum[vmsa::Func_QA]-3;++i_par) f_bg->SetParameter(i_par,ParFit[KEY_func_QA][i_par+3]);
+	  f_bg->SetLineColor(4);
+	  f_bg->SetLineWidth(2);
+	  f_bg->SetLineStyle(2);
+	  f_bg->Draw("l same");
+	}
+      }
+      c_QA[i_norm]->cd(8);
+      c_QA[i_norm]->cd(8)->SetLeftMargin(0.15);
+      c_QA[i_norm]->cd(8)->SetBottomMargin(0.15);
+      c_QA[i_norm]->cd(8)->SetTicks(1,1);
+      c_QA[i_norm]->cd(8)->SetGrid(0,0);
+      string KEY_theta_QA = Form("pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_Norm_%d_Func_0",vmsa::pt_QA[energy],vmsa::Cent_start,vmsa::Eta_start,vmsa::mPID[pid].c_str(),i_norm);
+      h_mMass_theta[KEY_theta_QA]->SetTitle("");
+      h_mMass_theta[KEY_theta_QA]->SetStats(0);
+      h_mMass_theta[KEY_theta_QA]->SetMarkerStyle(24);
+      h_mMass_theta[KEY_theta_QA]->SetMarkerSize(1.2);
+      h_mMass_theta[KEY_theta_QA]->SetMarkerColor(kGray+2);
+      h_mMass_theta[KEY_theta_QA]->Draw("pE");
+      PlotLine(vmsa::InvMass_low[pid],vmsa::InvMass_high[pid],0.0,0.0,1,2,2);
+      TF1 *f_sg = getSgFunc(0,pid);
+      for(int i_par = 0; i_par < vmsa::FuncParNum[0]; ++i_par) f_sg->SetParameter(i_par,ParFit_theta[KEY_theta_QA][i_par]);
+      f_sg->SetLineColor(2);
+      f_sg->SetLineWidth(2);
+      f_sg->Draw("l same");
+      TF1 *f_bg = getBgFunc(0,pid);
+      for(int i_par = 0; i_par < vmsa::FuncParNum[vmsa::Func_QA]-3;++i_par) f_bg->SetParameter(i_par,ParFit_theta[KEY_theta_QA][i_par+3]);
+      f_bg->SetLineColor(4);
+      f_bg->SetLineWidth(2);
+      f_bg->SetLineStyle(2);
+      f_bg->Draw("l same");
+      string outputeps = Form("../figures/c_QA_%d.eps",i_norm);
+      c_QA[i_norm]->SaveAs(outputeps.c_str());
+    }
+#endif
 
 #if _PlotQA_
     // QA plots for phi differential InvMass after linear background subtraction
