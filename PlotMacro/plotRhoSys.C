@@ -59,7 +59,7 @@ void plotRhoSys()
   h_frame->GetXaxis()->SetLabelSize(0.04);
   h_frame->GetXaxis()->SetTitleSize(0.06);
   h_frame->GetXaxis()->SetTitleOffset(1.1);
-  h_frame->GetYaxis()->SetRangeUser(0.3,0.4);
+  h_frame->GetYaxis()->SetRangeUser(0.301,0.4);
   h_frame->GetYaxis()->SetLabelSize(0.04);
   h_frame->GetYaxis()->SetTitleSize(0.06);
   h_frame->Draw("pE");
@@ -77,5 +77,5 @@ void plotRhoSys()
     plotTopLegend((char*)Energy[i_energy].c_str(),3.65,0.385-i_energy*0.005-0.0014,0.04,1,0.0,42,0);
   }
 
-  c_rho->SaveAs("../figures/c_rhoSys.png");
+  c_rho->SaveAs("../figures/c_rhoSys.eps");
 }

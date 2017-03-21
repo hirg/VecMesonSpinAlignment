@@ -301,6 +301,7 @@ void calSpinAlignmentSys(int energy = 3, int pid = 0, int year = 0)
       f_rho->Draw("l same");
     }
   }
+  c_diff->SaveAs("../figures/c_diff_2.eps");
 #endif
 
   TCanvas *c_rho = new TCanvas("c_rho","c_rho",10,10,800,800);

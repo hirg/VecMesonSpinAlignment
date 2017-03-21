@@ -37,10 +37,10 @@ void plotRho00Energy()
   c_rho00->cd()->SetBottomMargin(0.15);
   c_rho00->cd()->SetTicks(1,1);
   c_rho00->cd()->SetGrid(0,0);
-  c_rho00->cd()->SetLogx();
+  // c_rho00->cd()->SetLogx();
   h_frame->SetTitle("");
   h_frame->SetStats(0);
-  h_frame->GetXaxis()->SetRangeUser(6.0,400.0);
+  h_frame->GetXaxis()->SetRangeUser(0.0,220.0);
   h_frame->GetXaxis()->SetNdivisions(505,'N');
   h_frame->GetXaxis()->SetLabelSize(0.04);
   h_frame->GetXaxis()->SetTitle("#sqrt{s_{NN}}  (GeV)");
@@ -48,7 +48,7 @@ void plotRho00Energy()
   h_frame->GetXaxis()->SetTitleOffset(1.1);
   h_frame->GetXaxis()->CenterTitle();
 
-  h_frame->GetYaxis()->SetRangeUser(0.30,0.40);
+  h_frame->GetYaxis()->SetRangeUser(0.301,0.40);
   h_frame->GetYaxis()->SetNdivisions(505,'N');
   h_frame->GetYaxis()->SetTitle("#rho_{00}");
   h_frame->GetYaxis()->SetTitleSize(0.06);
@@ -56,8 +56,8 @@ void plotRho00Energy()
   h_frame->GetYaxis()->SetLabelSize(0.04);
   h_frame->GetYaxis()->CenterTitle();
   h_frame->DrawCopy("pE");
-  PlotLine(6.0,400.0,1.0/3.0,1.0/3.0,1,3,2);
-  plotTopLegend((char*)"#rho_{00} = 1/3",7,0.328,0.04,1,0.0,42,0);
+  PlotLine(0.0,220.0,1.0/3.0,1.0/3.0,1,3,2);
+  plotTopLegend((char*)"#rho_{00} = 1/3",100,0.328,0.04,1,0.0,42,0);
 
   // TBox *sysbox[5];
   TGraphAsymmErrors *g_rho = new TGraphAsymmErrors();
@@ -69,16 +69,22 @@ void plotRho00Energy()
     g_rho->SetPoint(i_energy,energy,rho);
     g_rho->SetPointError(i_energy,0.0,0.0,err_stat,err_stat);
   }
-  TF1 *f_pol = new TF1("f_pol","pol0",0,200);
+  TF1 *f_pol = new TF1("f_pol","pol1",0,300);
   f_pol->SetParameter(0,0.35);
-  f_pol->SetRange(18,70);
+  f_pol->SetParameter(1,-1);
+  f_pol->SetRange(18,200);
   g_rho->Fit(f_pol,"MFNR");
-  float mean_rho = f_pol->GetParameter(0);
-  float mean_err = f_pol->GetParError(0);
-  TBox *statbox = new TBox(18,mean_rho-mean_err,70,mean_rho+mean_err);
-  statbox->SetFillColor(kYellow);
-  statbox->SetFillStyle(3001);
-  statbox->Draw("same");
+  double mean_err = f_pol->GetParError(0);
+  TGraphAsymmErrors *g_band = new TGraphAsymmErrors();
+  g_band->SetPoint(0,19.6,f_pol->Eval(19.6));
+  g_band->SetPointError(0,0.0,0.0,mean_err,mean_err);
+  g_band->SetPoint(1,200.0,f_pol->Eval(200.0));
+  g_band->SetPointError(1,0.0,0.0,mean_err,mean_err);
+  g_band->SetMarkerColor(kYellow);
+  g_band->SetLineColor(kYellow);
+  g_band->SetFillColor(kYellow);
+  g_band->SetFillStyle(3001);
+  g_band->Draw("pE3 same");
 
   for(int i_energy = 0; i_energy < 5; ++i_energy)
   {
@@ -92,27 +98,28 @@ void plotRho00Energy()
     // sysbox[i_energy]->Draw("same");
 
     Draw_TGAE_new_Symbol((TGraphAsymmErrors*)g_rho_stat[i_energy],29,kRed,1.8);
-    PlotLine(energy*0.95,energy*1.05,rho+err,rho+err,kGray+2,2,1);
-    PlotLine(energy*0.95,energy*0.95,rho+err-0.001,rho+err,kGray+2,2,1);
-    PlotLine(energy*1.05,energy*1.05,rho+err-0.001,rho+err,kGray+2,2,1);
-    PlotLine(energy*0.95,energy*1.05,rho-err,rho-err,kGray+2,2,1);
-    PlotLine(energy*0.95,energy*0.95,rho-err+0.001,rho-err,kGray+2,2,1);
-    PlotLine(energy*1.05,energy*1.05,rho-err+0.001,rho-err,kGray+2,2,1);
+    PlotLine(energy-2,energy+2,rho+err,rho+err,kGray+2,2,1);
+    PlotLine(energy-2,energy-2,rho+err-0.001,rho+err,kGray+2,2,1);
+    PlotLine(energy+2,energy+2,rho+err-0.001,rho+err,kGray+2,2,1);
+    PlotLine(energy-2,energy+2,rho-err,rho-err,kGray+2,2,1);
+    PlotLine(energy-2,energy-2,rho-err+0.001,rho-err,kGray+2,2,1);
+    PlotLine(energy+2,energy+2,rho-err+0.001,rho-err,kGray+2,2,1);
   }
-  plotTopLegend((char*)"Au+Au (20-60\%)",10,0.39,0.04,1,0.0,42,0);
-  plotTopLegend((char*)"|#eta| < 1",100,0.39,0.04,1,0.0,42,0);
-  Draw_TGAE_Point_new_Symbol(8,0.38,0.0,0.0,0.0,0.0,29,kRed,1.8);
-  plotTopLegend((char*)"#phi-meson (0.4 < p_{T}< 3.0 GeV/c)",10,0.379,0.04,1,0.0,42,0);
-  TBox *avebox = new TBox(6.9,0.370,9.1,0.373);
+  plotTopLegend((char*)"Au+Au (20-60\%)",14,0.39,0.04,1,0.0,42,0);
+  plotTopLegend((char*)"|#eta| < 1",150,0.39,0.04,1,0.0,42,0);
+  Draw_TGAE_Point_new_Symbol(14,0.38,0.0,0.0,0.0,0.0,29,kRed,1.8);
+  plotTopLegend((char*)"#phi-meson (0.4 < p_{T}< 3.0 GeV/c)",20,0.379,0.04,1,0.0,42,0);
+  TBox *avebox = new TBox(6,0.370,18,0.373);
   avebox->SetFillColor(kYellow);
   avebox->SetFillStyle(3001);
   avebox->Draw("same");
-  plotTopLegend((char*)"averaged #rho_{00} (19.6-62.4 GeV)",10,0.37,0.04,1,0.0,42,0);
+  // plotTopLegend((char*)"averaged #rho_{00} (statistical errors)",20,0.37,0.04,1,0.0,42,0);
+  plotTopLegend((char*)"pol1 fit (statistical errors)",20,0.37,0.04,1,0.0,42,0);
 
-  f_pol->SetLineColor(kAzure);
+  f_pol->SetLineColor(kYellow);
   f_pol->SetLineWidth(3);
   f_pol->SetLineStyle(2);
-  // f_pol->Draw("l same");
+  // f_pol->Draw("lf same");
 
   // plotTopLegend((char*)"STAR Preliminary",60,0.325,0.04,1,0.0,42,0);
 
