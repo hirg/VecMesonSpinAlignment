@@ -310,6 +310,44 @@ double SqRt(double *x_val, double *par)
   return y;
 }
 
+double DELPHIBreitWigner(double *var, double *par)
+{
+  double x = var[0];
+  double m0 = par[0];
+  double Gamma = par[1];
+  double nsig = par[2];
+  double denom = 2.0*TMath::Pi()*((x-m0)*(x-m0)+Gamma*Gamma/4.0);
+  double sig = nsig*Gamma/denom;
+
+  double mMassKaon = 0.49368;
+  double c0 = par[3];
+  double c1 = par[4];
+  double c2 = par[5];
+  double c3 = par[6];
+  double c4 = par[7];
+  double nbkg = par[8];
+  double x_var = x-mMassKaon*2.0;
+  double bkg = nbkg*TMath::Power(x_var,c0)*TMath::Exp(c1*x+c2*x*x+c3*x*x*x+c4*x*x*x*x);
+
+  return sig+bkg;
+}
+
+double DELPHI(double *var, double *par)
+{
+  double mMassKaon = 0.49368;
+  double x = var[0];
+  double c0 = par[0];
+  double c1 = par[1];
+  double c2 = par[2];
+  double c3 = par[3];
+  double c4 = par[4];
+  double nbkg = par[5];
+  double x_var = x-mMassKaon*2.0;
+  double bkg = nbkg*TMath::Power(x_var,c0)*TMath::Exp(c1*x+c2*x*x+c3*x*x*x+c4*x*x*x*x);
+
+  return bkg;
+}
+
 //---------------Back Ground Subtraction-----------------------
 
 float ErrorAdd(float x, float y)
@@ -326,3 +364,5 @@ float ErrDiv(float x, float y, float dx, float dy)
 {
   return x/y*ErrorAdd(dx/x,dy/y);
 }
+
+
