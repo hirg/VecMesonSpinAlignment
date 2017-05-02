@@ -17,7 +17,7 @@ class StZdcSmdHistoManger
     void WriteQA();
 
     void InitGainCorr();
-    void FillGainCorr(int i_eastwest, int i_verthori, int i_slat, float zdcsmd);
+    void FillGainCorr(int i_eastwest, int i_verthori, int i_slat, int runId, float zdcsmd);
     void WriteGainCorr();
     
   private:

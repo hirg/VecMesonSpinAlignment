@@ -1,4 +1,5 @@
 #include "StRoot/StZdcSmdMaker/StZdcSmdHistoManger.h"
+#include "../Utility/StSpinAlignmentCons.h"
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TMath.h"
@@ -54,9 +55,9 @@ void StZdcSmdHistoManger::InitGainCorr()
   }
 }
 
-void StZdcSmdHistoManger::FillGainCorr(int i_eastwest, int i_verthori, int i_slat, const float zdcsmd)
+void StZdcSmdHistoManger::FillGainCorr(int i_eastwest, int i_verthori, int i_slat, int runId, float zdcsmd)
 {
-  h_mGainCorr[i_eastwest][i_verthori][i_slat]->Fill(zdcsmd);
+  h_mGainCorr[i_eastwest][i_verthori][i_slat]->Fill((float)runId,zdcsmd);
 }
 
 void StZdcSmdHistoManger::WriteGainCorr()
