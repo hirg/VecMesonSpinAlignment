@@ -26,7 +26,7 @@ class StZdcSmdHistoManger
     TH1F *h_mVz;
     TH1F *h_mRefMult;
 
-    TH2F *h_mGainCorr[2][2][8] // 0: east/west | 1: vertical(x)/horizontal(y) | 2: 7 slats(x)/8 slats(y); | x-axis: runId | y-axis: ADC
+    TH2F *h_mGainCorr[2][2][8]; // 0: east/west | 1: vertical(x)/horizontal(y) | 2: 7 slats(x)/8 slats(y); | x-axis: runId | y-axis: ADC
 
   ClassDef(StZdcSmdHistoManger,1)
 };
