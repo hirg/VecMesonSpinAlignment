@@ -163,7 +163,7 @@ Int_t StZdcSmdMaker::Make()
 	{
 	  for(int i_slat = 0; i_slat < 8; ++i_slat)
 	  {
-	    mZdcSmdHistoManger->FillGainCorr(i_eastwest,i_verthori,i_slat,mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat));
+	    mZdcSmdHistoManger->FillGainCorr(i_eastwest,i_verthori,i_slat,runIndex,mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat));
 	  }
 	}
       }
