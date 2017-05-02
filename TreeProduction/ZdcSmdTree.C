@@ -14,8 +14,7 @@ void ZdcSmdTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xusun
   // flag_ME: 0 for Same Event, 1 for Mixed Event
 
   // Int_t nEvents = 10000000;
-  // Int_t nEvents = 50000;
-  Int_t nEvents = 500;
+  Int_t nEvents = 50000;
 
   gROOT->LoadMacro("$STAR/StRoot/StMuDSTMaker/COMMON/macros/loadSharedLibraries.C");
   loadSharedLibraries();

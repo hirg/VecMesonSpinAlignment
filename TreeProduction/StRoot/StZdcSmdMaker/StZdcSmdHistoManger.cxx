@@ -68,7 +68,6 @@ void StZdcSmdHistoManger::WriteGainCorr()
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
-	cout << h_mGainCorr[i_eastwest][i_verthori][i_slat] << endl;
 	h_mGainCorr[i_eastwest][i_verthori][i_slat]->Write();
       }
     }

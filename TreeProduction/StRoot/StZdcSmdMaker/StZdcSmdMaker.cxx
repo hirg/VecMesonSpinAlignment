@@ -73,7 +73,7 @@ Int_t StZdcSmdMaker::Finish()
 {
   if(mMode == 0)
   {
-    if(mOutPut_ReCenterPar != "")
+    if(mOutPut_GainCorrPar != "")
     {
       mFile_GainCorrPar->cd();
       mZdcSmdHistoManger->WriteQA();
