@@ -147,6 +147,7 @@ Int_t StZdcSmdMaker::Make()
     const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
 
 
+    mZdcSmdHistoManger->FillQA_Event(vz,refMult);
     for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
     {
       mZdcSmdCorrection->SetZdcSmd(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
