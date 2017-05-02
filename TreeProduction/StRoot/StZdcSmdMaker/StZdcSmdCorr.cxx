@@ -48,7 +48,7 @@ void StZdcSmdCorrection::clear()
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
-	mZdcSmd[eastwest][verthori][strip] = 0.0;
+	mZdcSmd[i_eastwest][i_verthori][i_slat] = 0.0;
       }
     }
   }
@@ -56,14 +56,14 @@ void StZdcSmdCorrection::clear()
 
 //---------------------------------------------------------------------------------
 
-void StZdcSmdCorrection::SetZdcSmd(int eastwest,int verthori,int strip,const Float_t zdcsmd) 
+void StZdcSmdCorrection::SetZdcSmd(int i_eastwest,int i_verthori,int i_slat,const Float_t zdcsmd) 
 {
-  mZdcSmd[eastwest][verthori][strip] = (zdcsmd > 0.) ? zdcsmd : 0.;
+  mZdcSmd[i_eastwest][i_verthori][i_slat] = (zdcsmd > 0.) ? zdcsmd : 0.;
 }
 
-float StZdcSmdCorrection::GetZdcSmd(int eastwest,int verthori,int strip)
+float StZdcSmdCorrection::GetZdcSmd(int i_eastwest,int i_verthori,int i_slat)
 {
-  return mZdcSmd[eastwest][verthori][strip];
+  return mZdcSmd[i_eastwest][i_verthori][i_slat];
 }
 
 //---------------------------------------------------------------------------------

@@ -22,6 +22,8 @@ class StZdcSmdCorrection : public TObject
 
   private:
 
+    int mEnergy;
+
     float mZdcSmd[2][2][8]; // 0: east/west | 1: vertical(x)/horizontal(y) | 2: 7 slats(x)/8 slats(y);
 
   ClassDef(StZdcSmdCorrection,1)
