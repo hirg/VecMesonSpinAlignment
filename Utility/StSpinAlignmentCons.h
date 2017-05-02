@@ -204,6 +204,10 @@ namespace vmsa
   // plotting
   int const Color[pt_rebin] = {kGray+2,kBlack,kRed,kCyan,kMagenta,kAzure,kViolet,kBlue,kRed};
   int const Style[pt_rebin] = {20,21,22,23,24,25,26,28,29};
+
+  // ZDC-SMD constant
+  std::string const mEastWest[2] = {"East","West"};
+  std::string const mVertHori[2] = {"Vertical","Horizontal"};
 }
 
 #endif
