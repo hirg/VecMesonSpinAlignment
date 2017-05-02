@@ -57,7 +57,7 @@ void StZdcSmdHistoManger::InitGainCorr()
 
 void StZdcSmdHistoManger::FillGainCorr(int i_eastwest, int i_verthori, int i_slat, int runIndex, float zdcsmd)
 {
-  h_mGainCorr[i_eastwest][i_verthori][i_slat]->Fill((float)runId,zdcsmd);
+  h_mGainCorr[i_eastwest][i_verthori][i_slat]->Fill((float)runIndex,zdcsmd);
 }
 
 void StZdcSmdHistoManger::WriteGainCorr()
