@@ -164,7 +164,7 @@ Int_t StZdcSmdMaker::Make()
 	  for(int i_slat = 0; i_slat < 8; ++i_slat)
 	  {
 	    mZdcSmdHistoManger->FillGainCorr(i_eastwest,i_verthori,i_slat,runIndex,mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat));
-	    cout << "i_eastwest = " << i_eastwest << ", i_verthori = " << i_verthori << ", i_slat = " << i_slat << ", zdc = " << mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat) << endl;
+	    // cout << "i_eastwest = " << i_eastwest << ", i_verthori = " << i_verthori << ", i_slat = " << i_slat << ", zdc = " << mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat) << endl;
 	  }
 	}
       }

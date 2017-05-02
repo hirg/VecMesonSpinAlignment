@@ -13,7 +13,7 @@ class StZdcSmdHistoManger
     virtual ~StZdcSmdHistoManger();
 
     void InitQA();
-    void FillQA_Event(Float_t vz, Float_t refMult);
+    void FillQA_Event(float vz, float refMult);
     void WriteQA();
 
     void InitGainCorr();
