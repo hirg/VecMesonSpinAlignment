@@ -49,7 +49,6 @@ void StZdcSmdHistoManger::InitGainCorr()
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
 	string HistName = Form("h_mGainCorr%s%s_%d",vmsa::mEastWest[i_eastwest].c_str(),vmsa::mVertHori[i_verthori].c_str(),i_slat);
-	cout << HistName.c_str() << endl;
 	h_mGainCorr[i_eastwest][i_verthori][i_slat] = new TH2F(HistName.c_str(),HistName.c_str(),2000,-0.5,1999.5,1000,-5.0,995.0);
       }
     }
@@ -69,6 +68,7 @@ void StZdcSmdHistoManger::WriteGainCorr()
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
+	cout << h_mGainCorr[i_eastwest][i_verthori][i_slat] << endl;
 	h_mGainCorr[i_eastwest][i_verthori][i_slat]->Write();
       }
     }
