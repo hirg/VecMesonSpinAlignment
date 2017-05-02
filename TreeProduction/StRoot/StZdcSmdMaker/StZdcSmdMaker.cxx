@@ -138,38 +138,39 @@ Int_t StZdcSmdMaker::Make()
 //  cout << runIndex << endl;
 //  cout << mRunIdEventsDb->getTotalNrRunIds() << endl;
 
-  if(!mZdcSmdCut->passEventCut(mPicoDst)) continue; // event cut
-
-  const Int_t nTracks = mPicoDst->numberOfTracks();
-  const Int_t cent9 = mRefMultCorr->getCentralityBin9();
-  //    if(cent9 < 0) cout << cent9 << endl;
-  const Double_t reweight = mRefMultCorr->getWeight();
-  const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
-
-  
-  for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
+  if(mZdcSmdCut->passEventCut(mPicoDst)) // event cut
   {
-    mZdcSmdCorrection->SetZdcSmd(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-    mZdcSmdCorrection->SetZdcSmd(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-    mZdcSmdCorrection->SetZdcSmd(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-    mZdcSmdCorrection->SetZdcSmd(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-  }
+    const Int_t nTracks = mPicoDst->numberOfTracks();
+    const Int_t cent9 = mRefMultCorr->getCentralityBin9();
+    //    if(cent9 < 0) cout << cent9 << endl;
+    const Double_t reweight = mRefMultCorr->getWeight();
+    const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
 
-  if(mMode == 0) // fill zdc-smd QA and gain correction fator
-  {
-    for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
+
+    for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
     {
-      for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
+      mZdcSmdCorrection->SetZdcSmd(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
+      mZdcSmdCorrection->SetZdcSmd(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
+      mZdcSmdCorrection->SetZdcSmd(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
+      mZdcSmdCorrection->SetZdcSmd(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
+    }
+
+    if(mMode == 0) // fill zdc-smd QA and gain correction fator
+    {
+      for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
       {
-	for(int i_slat = 0; i_slat < 8; ++i_slat)
+	for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
 	{
-	  mZdcSmdHistoManger->FillGainCorr(i_eastwest,i_verthori,i_slat,mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat));
+	  for(int i_slat = 0; i_slat < 8; ++i_slat)
+	  {
+	    mZdcSmdHistoManger->FillGainCorr(i_eastwest,i_verthori,i_slat,mZdcSmdCorrection->GetZdcSmd(i_eastwest,i_verthori,i_slat));
+	  }
 	}
       }
     }
-  }
 
-  mZdcSmdCorrection->clear();
+    mZdcSmdCorrection->clear();
+  }
 
   return kStOK;
 }
