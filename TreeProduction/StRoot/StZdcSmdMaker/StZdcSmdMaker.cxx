@@ -1,6 +1,6 @@
 #include "StRoot/StZdcSmdMaker/StZdcSmdMaker.h"
 #include "StRoot/StZdcSmdMaker/StZdcSmdCut.h"
-// #include "StRoot/StZdcSmdMaker/StZdcSmdProManger.h"
+#include "StRoot/StZdcSmdMaker/StZdcSmdProManger.h"
 #include "StRoot/StZdcSmdMaker/StZdcSmdCorr.h"
 #include "StRoot/StZdcSmdMaker/StZdcSmdHistoManger.h"
 // #include "StRoot/StZdcSmdMaker/StZdcSmdTree.h"
