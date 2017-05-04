@@ -157,7 +157,7 @@ TVector2 StZdcSmdCorrection::GetQEast(int mode)
     qYwgt += GetZdcSmdGainCorr(0,1,i_hori);
   }
 
-  if(eXwgt > 0.0 && eYwgt > 0.0)
+  if(qXwgt > 0.0 && qYwgt > 0.0)
     qVector.Set(qXsum/qXwgt,qYsum/qYwgt);
 
   return qVector;
@@ -180,7 +180,7 @@ TVector2 StZdcSmdCorrection::GetQWest(int mode)
     qYwgt += GetZdcSmdGainCorr(1,1,i_hori);
   }
 
-  if(eXwgt > 0.0 && eYwgt > 0.0)
+  if(qXwgt > 0.0 && qYwgt > 0.0)
     qVector.Set(qXsum/qXwgt,qYsum/qYwgt);
 
   return qVector;
