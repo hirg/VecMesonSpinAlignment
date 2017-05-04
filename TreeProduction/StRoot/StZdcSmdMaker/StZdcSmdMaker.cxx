@@ -18,6 +18,7 @@
 #include "TH2F.h"
 #include "TFile.h"
 #include "TVector3.h"
+#include "TVector2.h"
 #include "TMath.h"
 #include "StMessMgr.h"
 #include <algorithm>
@@ -198,8 +199,14 @@ Int_t StZdcSmdMaker::Make()
 	mZdcSmdCorrection->SetZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
 	mZdcSmdCorrection->SetZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
       }
-      mZdcSmdProManger->FillReCenterEast(mZdcSmdCorrection->GetQEast(mMode),cent9,runIndex,vz_sign);
-      mZdcSmdProManger->FillReCenterWest(mZdcSmdCorrection->GetQWest(mMode),cent9,runIndex,vz_sign);
+      TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
+      TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
+      TVector2 QFull = QWest-QEast;
+      if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
+      {
+	mZdcSmdProManger->FillReCenterEast(QEast,cent9,runIndex,vz_sign);
+	mZdcSmdProManger->FillReCenterWest(QWest,cent9,runIndex,vz_sign);
+      }
     }
 
     mZdcSmdCorrection->clear();
