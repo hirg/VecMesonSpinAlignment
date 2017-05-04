@@ -39,6 +39,10 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
   { // fill zdc-smd QA and gain correction factor
     mOutPut_GainCorrPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/GainCorrPar/file_%s_GainCorrPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
+  if(mMode == 1)
+  { // fill zdc-smd QA and gain correction factor
+    mOutPut_ReCenterPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ReCenterPar/file_%s_ReCenterPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+  }
 }
 
 //----------------------------------------------------------------------------- 
@@ -55,7 +59,7 @@ Int_t StZdcSmdMaker::Init()
   mZdcSmdCut = new StZdcSmdCut(mEnergy);
   mZdcSmdCorrection = new StZdcSmdCorrection(mEnergy);
   mZdcSmdHistoManger = new StZdcSmdHistoManger();
-  // mZdcSmdProManger = new StZdcSmdProManger();
+  mZdcSmdProManger = new StZdcSmdProManger();
 
   if(mMode == 0)
   {
@@ -63,6 +67,13 @@ Int_t StZdcSmdMaker::Init()
     mFile_GainCorrPar->cd();
     mZdcSmdHistoManger->InitQA();
     mZdcSmdHistoManger->InitGainCorr();
+  }
+  if(mMode == 1)
+  {
+    mFile_ReCenterPar= new TFile(mOutPut_ReCenterPar.Data(),"RECREATE");
+    mZdcSmdProManger->InitReCenter();
+    mZdcSmdCorrection->InitGainCorr();
+    mFile_ReCenterPar->cd();
   }
 
   return kStOK;
@@ -79,6 +90,15 @@ Int_t StZdcSmdMaker::Finish()
       mZdcSmdHistoManger->WriteQA();
       mZdcSmdHistoManger->WriteGainCorr();
       mFile_GainCorrPar->Close();
+    }
+  }
+  if(mMode == 1)
+  {
+    if(mOutPut_ReCenterPar != "")
+    {
+      mFile_ReCenterPar->cd();
+      mZdcSmdProManger->WriteReCenter();
+      mFile_ReCenterPar->Close();
     }
   }
 
@@ -146,18 +166,17 @@ Int_t StZdcSmdMaker::Make()
     const Double_t reweight = mRefMultCorr->getWeight();
     const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
 
-
-    mZdcSmdHistoManger->FillQA_Event(vz,refMult);
-    for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
-    {
-      mZdcSmdCorrection->SetZdcSmd(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-      mZdcSmdCorrection->SetZdcSmd(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-      mZdcSmdCorrection->SetZdcSmd(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-      mZdcSmdCorrection->SetZdcSmd(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-    }
-
     if(mMode == 0) // fill zdc-smd QA and gain correction fator
     {
+      mZdcSmdHistoManger->FillQA_Event(vz,refMult);
+      for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
+      {
+	mZdcSmdCorrection->SetZdcSmd(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
+	mZdcSmdCorrection->SetZdcSmd(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
+	mZdcSmdCorrection->SetZdcSmd(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
+	mZdcSmdCorrection->SetZdcSmd(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
+      }
+
       for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
       {
 	for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
@@ -169,6 +188,18 @@ Int_t StZdcSmdMaker::Make()
 	  }
 	}
       }
+    }
+    if(mMode == 1) // apply gain correction and fill recenter correction parameter
+    {
+      for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
+      {
+	mZdcSmdCorrection->SetZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
+	mZdcSmdCorrection->SetZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
+	mZdcSmdCorrection->SetZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
+	mZdcSmdCorrection->SetZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
+      }
+      mZdcSmdProManger->FillReCenterEast(mZdcSmdCorrection->GetQEast(mMode),cent9,runIndex,vz_sign);
+      mZdcSmdProManger->FillReCenterWest(mZdcSmdCorrection->GetQWest(mMode),cent9,runIndex,vz_sign);
     }
 
     mZdcSmdCorrection->clear();
