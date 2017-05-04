@@ -200,7 +200,6 @@ Int_t StZdcSmdMaker::Make()
 	mZdcSmdCorrection->SetZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
       }
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
-      cout << "QEast.Mod = " << QEast.Mod() << endl;
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
       TVector2 QFull = QWest-QEast;
       if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )

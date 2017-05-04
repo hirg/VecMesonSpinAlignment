@@ -61,7 +61,7 @@ void StZdcSmdCorrection::clear()
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
 	mZdcSmd[i_eastwest][i_verthori][i_slat] = 0.0;
-	mGainCorrFactor[i_eastwest][i_verthori][i_slat] = 0.0;
+	// mGainCorrFactor[i_eastwest][i_verthori][i_slat] = 0.0;
       }
     }
   }
@@ -94,7 +94,7 @@ void StZdcSmdCorrection::InitGainCorr()
 	string HistName = Form("h_mGainCorrFactor%s%s_%d",vmsa::mEastWest[i_eastwest].c_str(),vmsa::mVertHori[i_verthori].c_str(),i_slat);
 	TH1F *h_GainCorrFac = (TH1F*)mFile_GainCorrPar->Get(HistName.c_str());
 	mGainCorrFactor[i_eastwest][i_verthori][i_slat] = h_GainCorrFac->GetBinContent(1);
-	cout << "i_eastwest = " << i_eastwest << ", i_verthori = " << i_verthori << ", i_slat = " << i_slat << ", mGainCorrFactor = " << mGainCorrFactor[i_eastwest][i_verthori][i_slat] << endl;
+	// cout << "i_eastwest = " << i_eastwest << ", i_verthori = " << i_verthori << ", i_slat = " << i_slat << ", mGainCorrFactor = " << mGainCorrFactor[i_eastwest][i_verthori][i_slat] << endl;
       }
     }
   }
