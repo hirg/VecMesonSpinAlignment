@@ -29,15 +29,15 @@ void StZdcSmdProManger::InitReCenter()
   {
     string ProName;
 
-    ProName = Form("p_mQEastVertical_%s",mVStr[i].c_str());
-    p_mQEastVertical[i] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);// neg eta || x axis is RunIndex, y axis is Centrality
-    ProName = Form("p_mQEastHorizontal_%s",mVStr[i].c_str());
-    p_mQEastHorizontal[i] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+    ProName = Form("p_mQEastVertical_%s",mVStr[i_vz].c_str());
+    p_mQEastVertical[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);// neg eta || x axis is RunIndex, y axis is Centrality
+    ProName = Form("p_mQEastHorizontal_%s",mVStr[i_vz].c_str());
+    p_mQEastHorizontal[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
 
-    ProName = Form("p_mQWestVertical_%s",mVStr[i].c_str());
-    p_mQWestVertical[i] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
-    ProName = Form("p_mQWestHorizontal_%s",mVStr[i].c_str());
-    p_mQWestHorizontal[i] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+    ProName = Form("p_mQWestVertical_%s",mVStr[i_vz].c_str());
+    p_mQWestVertical[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+    ProName = Form("p_mQWestHorizontal_%s",mVStr[i_vz].c_str());
+    p_mQWestHorizontal[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
   }
 }
 
