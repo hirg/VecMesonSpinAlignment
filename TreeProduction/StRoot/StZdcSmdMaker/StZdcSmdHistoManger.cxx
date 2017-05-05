@@ -4,6 +4,7 @@
 #include "TH1F.h"
 #include "TMath.h"
 #include "TString.h"
+#include "TMath.h"
 
 ClassImp(StZdcSmdHistoManger)
 
@@ -38,6 +39,7 @@ void StZdcSmdHistoManger::WriteQA()
   h_mVz->Write();
   h_mRefMult->Write();
 }
+
 //-------------------------------------------------------------------------------------------
 
 void StZdcSmdHistoManger::InitGainCorr()
@@ -73,3 +75,34 @@ void StZdcSmdHistoManger::WriteGainCorr()
     }
   }
 }
+
+//-------------------------------------------------------------------------------------------
+
+void StZdcSmdHistoManger::InitRawEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mRawEast_%d",i_cent);
+    h_mRawEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+    HistName = Form("h_mRawWest_%d",i_cent);
+    h_mRawWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+    HistName = Form("h_mRawFull_%d",i_cent);
+    h_mRawFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+  }
+}
+
+void StZdcSmdHistoManger::FillRawEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex)
+{
+  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mRawEast[Cent9]->Fill(PsiEast,runIndex);
+  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mRawWest[Cent9]->Fill(PsiWest,runIndex);
+  float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mRawFull[Cent9]->Fill(PsiFull,runIndex);
+}
+
+void StZdcSmdHistoManger::WriteRawEP()
+{
+  h_mRawEast[Cent9]->Write();
+  h_mRawWest[Cent9]->Write();
+  h_mRawFull[Cent9]->Write();
+}
+//-------------------------------------------------------------------------------------------
+

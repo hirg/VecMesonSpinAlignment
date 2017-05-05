@@ -74,6 +74,7 @@ Int_t StZdcSmdMaker::Init()
     mFile_ReCenterPar= new TFile(mOutPut_ReCenterPar.Data(),"RECREATE");
     mZdcSmdProManger->InitReCenter();
     mZdcSmdCorrection->InitGainCorr();
+    mZdcSmdHistoManger->InitRawEP();
     mFile_ReCenterPar->cd();
   }
 
@@ -99,6 +100,7 @@ Int_t StZdcSmdMaker::Finish()
     {
       mFile_ReCenterPar->cd();
       mZdcSmdProManger->WriteReCenter();
+      mZdcSmdHistoManger->WriteRawEP();
       mFile_ReCenterPar->Close();
     }
   }
@@ -206,6 +208,7 @@ Int_t StZdcSmdMaker::Make()
       {
 	mZdcSmdProManger->FillReCenterEast(QEast,cent9,runIndex,vz_sign);
 	mZdcSmdProManger->FillReCenterWest(QWest,cent9,runIndex,vz_sign);
+	mZdcSmdHistoManger->FillRawEP(QEast,QWest,QFull,cent9,runIndex);
       }
     }
 
