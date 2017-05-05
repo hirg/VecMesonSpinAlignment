@@ -94,7 +94,6 @@ void StZdcSmdHistoManger::InitRawEP()
 void StZdcSmdHistoManger::FillRawEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex)
 {
   float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mRawEast[Cent9]->Fill(PsiEast,runIndex);
-  cout << "PsiEast = " << PsiEast << ", QEast.Phi = " << QEast.Phi() << endl;
   float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mRawWest[Cent9]->Fill(PsiWest,runIndex);
   float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mRawFull[Cent9]->Fill(PsiFull,runIndex);
 }

@@ -204,12 +204,12 @@ Int_t StZdcSmdMaker::Make()
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
       TVector2 QFull = QWest-QEast;
-      // if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
-      // {
+      if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
+      {
 	mZdcSmdProManger->FillReCenterEast(QEast,cent9,runIndex,vz_sign);
 	mZdcSmdProManger->FillReCenterWest(QWest,cent9,runIndex,vz_sign);
 	mZdcSmdHistoManger->FillRawEP(QEast,QWest,QFull,cent9,runIndex);
-      // }
+      }
     }
 
     mZdcSmdCorrection->clear();
