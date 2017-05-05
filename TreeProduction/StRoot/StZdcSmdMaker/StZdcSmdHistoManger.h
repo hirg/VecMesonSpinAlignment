@@ -2,6 +2,7 @@
 #define StZdcSmdHistoManger_h
 
 #include "StMessMgr.h"
+#include "TVector2.h"
 
 class TH1F;
 class TH2F;
