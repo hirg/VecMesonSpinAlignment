@@ -103,6 +103,7 @@ void StZdcSmdCorrection::InitGainCorr()
 void StZdcSmdCorrection::SetZdcSmdGainCorr(int eastwest, int verthori, int slat, const float zdcsmd)
 {
   mZdcSmd[eastwest][verthori][slat] = (zdcsmd > 0.) ? zdcsmd/mGainCorrFactor[eastwest][verthori][slat] : 0.;
+  cout << "input zdc = " << zdcsmd << endl;
 }
 
 float StZdcSmdCorrection::GetZdcSmdGainCorr(int eastwest, int verthori, int slat)
