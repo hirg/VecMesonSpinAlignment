@@ -244,7 +244,7 @@ Int_t StZdcSmdMaker::Make()
     }
     if(mMode == 2) // apply gain and re-center correction and fill shift correction parameter
     {
-      mZdcSmdCorrection->SetZdcSmdCenter(center,runIndex,vz_sign);
+      mZdcSmdCorrection->SetZdcSmdCenter(cent9,runIndex,vz_sign);
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
       TVector2 QFull = QWest-QEast;
