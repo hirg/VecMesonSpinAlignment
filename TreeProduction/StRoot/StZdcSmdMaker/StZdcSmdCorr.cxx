@@ -201,6 +201,7 @@ void StZdcSmdCorrection::ReadReCenterCorr()
   string InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ReCenterPar/merged_file/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mFile_ReCenterPar = TFile::Open(InPutFile.c_str());
 
+  string mVStr[2] = {"pos","neg"};
   for(Int_t i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
   {
     string ProName;
