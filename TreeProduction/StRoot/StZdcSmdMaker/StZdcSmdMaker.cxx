@@ -46,7 +46,7 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
   }
   if(mMode == 2)
   { // apply gian and re-center correction and fill shift parameter for East/West
-    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/Shift/file_%s_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/file_%s_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
 }
 
@@ -244,6 +244,7 @@ Int_t StZdcSmdMaker::Make()
     }
     if(mMode == 2) // apply gain and re-center correction and fill shift correction parameter
     {
+      mZdcSmdCorrection->SetZdcSmdCenter(center,runIndex,vz_sign);
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
       TVector2 QFull = QWest-QEast;
