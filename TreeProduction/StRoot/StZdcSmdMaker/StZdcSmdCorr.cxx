@@ -103,7 +103,7 @@ void StZdcSmdCorrection::InitGainCorr()
 void StZdcSmdCorrection::SetZdcSmdGainCorr(int eastwest, int verthori, int slat, const float zdcsmd)
 {
   mZdcSmd[eastwest][verthori][slat] = (zdcsmd > 0.) ? zdcsmd/mGainCorrFactor[eastwest][verthori][slat] : 0.;
-  cout << "input zdc = " << zdcsmd << endl;
+  cout << "input zdc = " << zdcsmd << ", mGainCorrFactor = " << mGainCorrFactor[eastwest][verthori][slat] << ", GainCorred = " << mZdcSmd[eastwest][verthori][slat] << endl;
 }
 
 float StZdcSmdCorrection::GetZdcSmdGainCorr(int eastwest, int verthori, int slat)
@@ -162,6 +162,7 @@ TVector2 StZdcSmdCorrection::GetQEast(int mode)
   if(qXwgt > 0.0 && qYwgt > 0.0)
     qVector.Set(qXsum/qXwgt,qYsum/qYwgt);
 
+  cout << "qVector.Phi = " << qVector.Phi() << endl;
   return qVector;
 }
 
