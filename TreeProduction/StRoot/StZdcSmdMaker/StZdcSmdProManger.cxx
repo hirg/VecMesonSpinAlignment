@@ -70,3 +70,61 @@ void StZdcSmdProManger::WriteReCenter()
     p_mQWestHorizontal[i_vz]->Write();
   }
 }
+
+//---------------------------------------------------------------------------------
+
+void StZdcSmdProManger::InitShift()
+{
+  for(int i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
+  {
+    for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+    {
+      string ProName;
+
+      ProName = Form("p_mQEastCos_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQEastCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5); // x axis is RunIndex, y axis is Centrality
+      ProName = Form("p_mQEastSin_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQEastSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+
+      ProName = Form("p_mQWestCos_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQWestCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+      ProName = Form("p_mQWestSin_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQWestSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+    }
+  }
+}
+
+void StZdcSmdProManger::FillShiftEast(TVector2 qVector, int Cent9, int RunIndex, int vz_sign)
+{
+  float Psi = TMath::ATan2(qVector.Y(),qVector.X());
+  for(int i_shift = 0; i_shift < 20; ++i_shift)
+  {
+    p_mQEastCos[vz_sign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos((i_shift+1)*Psi));
+    p_mQEastSin[vz_sign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin((i_shift+1)*Psi));
+  }
+}
+
+void StZdcSmdProManger::FillShiftWest(TVector2 qVector, int Cent9, int RunIndex, int vz_sign)
+{
+  float Psi = TMath::ATan2(qVector.Y(),qVector.X());
+  for(int i_shift = 0; i_shift < 20; ++i_shift)
+  {
+    p_mQWestCos[vz_sign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos((i_shift+1)*Psi));
+    p_mQWestSin[vz_sign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin((i_shift+1)*Psi));
+  }
+}
+
+void StZdcSmdProManger::WriteShift()
+{
+  for(int i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
+  {
+    for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+    {
+      p_mQEastCos[i_vz][i_shift]->Write();
+      p_mQEastSin[i_vz][i_shift]->Write();
+      p_mQWestCos[i_vz][i_shift]->Write();
+      p_mQWestSin[i_vz][i_shift]->Write();
+    }
+  }
+}
+//---------------------------------------------------------------------------------

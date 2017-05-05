@@ -107,5 +107,38 @@ void StZdcSmdHistoManger::WriteRawEP()
     h_mRawFull[i_cent]->Write();
   }
 }
+
+//-------------------------------------------------------------------------------------------
+
+void StZdcSmdHistoManger::InitReCenterEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mReCenterEast_%d",i_cent);
+    h_mReCenterEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+    HistName = Form("h_mReCenterWest_%d",i_cent);
+    h_mReCenterWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+    HistName = Form("h_mReCenterFull_%d",i_cent);
+    h_mReCenterFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+  }
+}
+
+void StZdcSmdHistoManger::FillReCenterEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex)
+{
+  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mReCenterEast[Cent9]->Fill(PsiEast,runIndex);
+  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mReCenterWest[Cent9]->Fill(PsiWest,runIndex);
+  float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mReCenterFull[Cent9]->Fill(PsiFull,runIndex);
+}
+
+void StZdcSmdHistoManger::WriteReCenterEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mReCenterEast[i_cent]->Write();
+    h_mReCenterWest[i_cent]->Write();
+    h_mReCenterFull[i_cent]->Write();
+  }
+}
+
 //-------------------------------------------------------------------------------------------
 

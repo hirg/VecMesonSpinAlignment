@@ -41,8 +41,12 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
     mOutPut_GainCorrPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/GainCorrPar/file_%s_GainCorrPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
   if(mMode == 1)
-  { // fill zdc-smd QA and gain correction factor
+  { // apply gain correction and fill re-center parameter
     mOutPut_ReCenterPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ReCenterPar/file_%s_ReCenterPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+  }
+  if(mMode == 2)
+  { // apply gian and re-center correction and fill shift parameter for East/West
+    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/Shift/file_%s_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
 }
 
@@ -73,9 +77,18 @@ Int_t StZdcSmdMaker::Init()
   {
     mFile_ReCenterPar= new TFile(mOutPut_ReCenterPar.Data(),"RECREATE");
     mZdcSmdProManger->InitReCenter();
-    mZdcSmdCorrection->InitGainCorr();
+    mZdcSmdCorrection->ReadGainCorr();
     mZdcSmdHistoManger->InitRawEP();
     mFile_ReCenterPar->cd();
+  }
+  if(mMode == 2)
+  {
+    mFile_ShiftPar = new TFile(mOutPut_ShiftPar.Data(),"RECREATE");
+    mZdcSmdProManger->InitShift();
+    mZdcSmdCorrection->ReadGainCorr();
+    mZdcSmdCorrection->ReadReCenterCorr();
+    mZdcSmdHistoManger->InitReCenterEP();
+    mFile_ShiftPar->cd();
   }
 
   return kStOK;
@@ -102,6 +115,16 @@ Int_t StZdcSmdMaker::Finish()
       mZdcSmdProManger->WriteReCenter();
       mZdcSmdHistoManger->WriteRawEP();
       mFile_ReCenterPar->Close();
+    }
+  }
+  if(mMode == 2)
+  {
+    if(mOutPut_ShiftPar != "")
+    {
+      mFile_ShiftPar->cd();
+      mZdcSmdProManger->WriteShift();
+      mZdcSmdHistoManger->WriteReCenterEP();
+      mFile_ShiftPar->Close();
     }
   }
 
@@ -169,9 +192,9 @@ Int_t StZdcSmdMaker::Make()
     const Double_t reweight = mRefMultCorr->getWeight();
     const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
 
-    if(mMode == 0) // fill zdc-smd QA and gain correction fator
+    // set ADC for each slats
+    if(mMode == 0)
     {
-      mZdcSmdHistoManger->FillQA_Event(vz,refMult);
       for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
       {
 	mZdcSmdCorrection->SetZdcSmd(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
@@ -179,6 +202,21 @@ Int_t StZdcSmdMaker::Make()
 	mZdcSmdCorrection->SetZdcSmd(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
 	mZdcSmdCorrection->SetZdcSmd(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
       }
+    }
+    if(mMode > 0)
+    {
+      for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
+      {
+	mZdcSmdCorrection->SetZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
+	mZdcSmdCorrection->SetZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
+	mZdcSmdCorrection->SetZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
+	mZdcSmdCorrection->SetZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
+      }
+    }
+
+    if(mMode == 0) // fill zdc-smd QA and gain correction fator
+    {
+      mZdcSmdHistoManger->FillQA_Event(vz,refMult);
 
       for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
       {
@@ -194,13 +232,6 @@ Int_t StZdcSmdMaker::Make()
     }
     if(mMode == 1) // apply gain correction and fill recenter correction parameter
     {
-      for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
-      {
-	mZdcSmdCorrection->SetZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-	mZdcSmdCorrection->SetZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-	mZdcSmdCorrection->SetZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-	mZdcSmdCorrection->SetZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-      }
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
       TVector2 QFull = QWest-QEast;
@@ -209,6 +240,18 @@ Int_t StZdcSmdMaker::Make()
 	mZdcSmdProManger->FillReCenterEast(QEast,cent9,runIndex,vz_sign);
 	mZdcSmdProManger->FillReCenterWest(QWest,cent9,runIndex,vz_sign);
 	mZdcSmdHistoManger->FillRawEP(QEast,QWest,QFull,cent9,runIndex);
+      }
+    }
+    if(mMode == 2) // apply gain and re-center correction and fill shift correction parameter
+    {
+      TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
+      TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
+      TVector2 QFull = QWest-QEast;
+      if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
+      {
+	mZdcSmdProManger->FillShiftEast(QEast,cent9,runIndex,vz_sign);
+	mZdcSmdProManger->FillShiftWest(QWest,cent9,runIndex,vz_sign);
+	mZdcSmdHistoManger->FillReCenterEP(QEast,QWest,QFull,cent9,runIndex);
       }
     }
 

@@ -45,6 +45,10 @@ StZdcSmdCorrection::StZdcSmdCorrection(int energy)
       }
     }
   }
+  mCenterEastVertical   = -999.9;
+  mCenterEastHorizontal = -999.9;
+  mCenterWestVertical   = -999.9;
+  mCenterWestHorizontal = -999.9;
 }
 
 StZdcSmdCorrection::~StZdcSmdCorrection()
@@ -61,10 +65,13 @@ void StZdcSmdCorrection::clear()
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
 	mZdcSmd[i_eastwest][i_verthori][i_slat] = 0.0;
-	// mGainCorrFactor[i_eastwest][i_verthori][i_slat] = 0.0;
       }
     }
   }
+  mCenterEastVertical   = -999.9;
+  mCenterEastHorizontal = -999.9;
+  mCenterWestVertical   = -999.9;
+  mCenterWestHorizontal = -999.9;
 }
 
 //---------------------------------------------------------------------------------
@@ -81,7 +88,7 @@ float StZdcSmdCorrection::GetZdcSmd(int eastwest, int verthori, int slat)
 
 //---------------------------------------------------------------------------------
 
-void StZdcSmdCorrection::InitGainCorr()
+void StZdcSmdCorrection::ReadGainCorr()
 {
   string InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/GainCorrPar/merged_file/file_%s_GainCorrFac.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mFile_GainCorrPar = TFile::Open(InPutFile.c_str());
@@ -118,18 +125,17 @@ float StZdcSmdCorrection::GetPosition(int eastwest, int verthori, int slat, int 
   float zdcsmd_vert[7] = {0.5,2,3.5,5,6.5,8,9.5};
   float zdcsmd_hori[8] = {1.25,3.25,5.25,7.25,9.25,11.25,13.25,15.25};
 
-  double mZDCSMDCenterEastX = 0.0;
-  double mZDCSMDCenterEastY = 0.0;
-  double mZDCSMDCenterWestX = 0.0;
-  double mZDCSMDCenterWestY = 0.0;
-
-
   if(mode > 1) // with beam center corrected
   {
-    if(eastwest == 0 && verthori == 0) return zdcsmd_vert[slat]-mZDCSMDCenterEastX;
-    if(eastwest == 1 && verthori == 0) return mZDCSMDCenterWestX-zdcsmd_vert[slat];
-    if(eastwest == 0 && verthori == 1) return zdcsmd_hori[slat]/sqrt(2.)-mZDCSMDCenterEastY;
-    if(eastwest == 1 && verthori == 1) return zdcsmd_hori[slat]/sqrt(2.)-mZDCSMDCenterWestY;
+    if(mCenterEastVertical < -100.0 || mCenterEastHorizontal < -100.0 || mCenterWestVertical < -100.0 || mCenterWestHorizontal < -100.0) 
+    {
+      cout << "Forgot Re-Center!!!!" << endl;
+      return 0;
+    }
+    if(eastwest == 0 && verthori == 0) return zdcsmd_vert[slat]-mCenterEastVertical;
+    if(eastwest == 1 && verthori == 0) return mCenterWestVertical-zdcsmd_vert[slat];
+    if(eastwest == 0 && verthori == 1) return zdcsmd_hori[slat]/sqrt(2.)-mCenterEastHorizontal;
+    if(eastwest == 1 && verthori == 1) return zdcsmd_hori[slat]/sqrt(2.)-mCenterWestHorizontal;
   }
   else // raw beam center returned
   {
@@ -187,4 +193,43 @@ TVector2 StZdcSmdCorrection::GetQWest(int mode)
 
   return qVector;
 }
+
+//---------------------------------------------------------------------------------
+
+void StZdcSmdCorrection::ReadReCenterCorr()
+{
+  string InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ReCenterPar/merged_file/file_%s_ReCenterPar.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  mFile_ReCenterPar = TFile::Open(InPutFile.c_str());
+
+  for(Int_t i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
+  {
+    string ProName;
+
+    ProName = Form("p_mQEastVertical_%s",mVStr[i_vz].c_str());
+    p_mQEastVertical[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+    ProName = Form("p_mQEastHorizontal_%s",mVStr[i_vz].c_str());
+    p_mQEastHorizontal[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+
+    ProName = Form("p_mQWestVertical_%s",mVStr[i_vz].c_str());
+    p_mQWestVertical[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+    ProName = Form("p_mQWestHorizontal_%s",mVStr[i_vz].c_str());
+    p_mQWestHorizontal[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+  }
+}
+
+void StZdcSmdCorrection::SetZdcSmdCenter(int Cent9, int RunIndex, int vz_sign)
+{
+  int binEastVertical = p_mQEastVertical[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
+  mCenterEastVertical = p_mQEastVertical[vz_sign]->GetBinContent(binEastVertical);
+
+  int binEastHorizontal = p_mQEastHorizontal[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
+  mCenterEastHorizontal = p_mQEastHorizontal[vz_sign]->GetBinContent(binEastHorizontal);
+
+  int binWestVertical = p_mQWestVertical[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
+  mCenterWestVertical = p_mQWestVertical[vz_sign]->GetBinContent(binWestVertical);
+
+  int binWestHorizontal = p_mQWestHorizontal[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
+  mCenterWestHorizontal = p_mQWestHorizontal[vz_sign]->GetBinContent(binWestHorizontal);
+}
+
 //---------------------------------------------------------------------------------
