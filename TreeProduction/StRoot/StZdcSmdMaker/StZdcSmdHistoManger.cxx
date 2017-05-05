@@ -100,9 +100,12 @@ void StZdcSmdHistoManger::FillRawEP(TVector2 QEast, TVector2 QWest, TVector2 QFu
 
 void StZdcSmdHistoManger::WriteRawEP()
 {
-  h_mRawEast[Cent9]->Write();
-  h_mRawWest[Cent9]->Write();
-  h_mRawFull[Cent9]->Write();
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mRawEast[i_cent]->Write();
+    h_mRawWest[i_cent]->Write();
+    h_mRawFull[i_cent]->Write();
+  }
 }
 //-------------------------------------------------------------------------------------------
 
