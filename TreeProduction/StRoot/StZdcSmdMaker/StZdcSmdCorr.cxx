@@ -227,7 +227,7 @@ void StZdcSmdCorrection::SetZdcSmdCenter(int Cent9, int RunIndex, int vz_sign)
   mCenterEastHorizontal = p_mQEastHorizontal[vz_sign]->GetBinContent(binEastHorizontal);
 
   int binWestVertical = p_mQWestVertical[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
-  mCenterWestVertical = p_mQWestVertical[vz_sign]->GetBinContent(binWestVertical);
+  mCenterWestVertical = -1.0*p_mQWestVertical[vz_sign]->GetBinContent(binWestVertical);
 
   int binWestHorizontal = p_mQWestHorizontal[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
   mCenterWestHorizontal = p_mQWestHorizontal[vz_sign]->GetBinContent(binWestHorizontal);
