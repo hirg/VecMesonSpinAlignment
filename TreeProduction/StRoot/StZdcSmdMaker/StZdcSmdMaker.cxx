@@ -247,7 +247,7 @@ Int_t StZdcSmdMaker::Make()
       mZdcSmdCorrection->SetZdcSmdCenter(cent9,runIndex,vz_sign);
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
-      cout << "QWest.Phi = " << QWest.Phi() << endl;
+      cout << "QEast.Phi = " << QEast.Phi() << ", QWest.Phi = " << QWest.Phi() << endl;
       TVector2 QFull = QWest-QEast;
       if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
       {
