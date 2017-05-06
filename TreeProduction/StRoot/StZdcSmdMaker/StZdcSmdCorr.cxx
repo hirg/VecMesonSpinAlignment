@@ -231,7 +231,7 @@ void StZdcSmdCorrection::SetZdcSmdCenter(int Cent9, int RunIndex, int vz_sign)
 
   int binWestHorizontal = p_mQWestHorizontal[vz_sign]->FindBin((double)RunIndex,(double)Cent9);
   mCenterWestHorizontal = p_mQWestHorizontal[vz_sign]->GetBinContent(binWestHorizontal);
-  cout << "mCenterEastVertical = " << mCenterEastVertical << ", mCenterEastHorizontal = " << mCenterEastHorizontal << ", mCenterWestVertical = " << mCenterWestVertical << ", mCenterWestHorizontal = " << mCenterWestHorizontal << endl;
+  // cout << "mCenterEastVertical = " << mCenterEastVertical << ", mCenterEastHorizontal = " << mCenterEastHorizontal << ", mCenterWestVertical = " << mCenterWestVertical << ", mCenterWestHorizontal = " << mCenterWestHorizontal << endl;
 }
 
 //---------------------------------------------------------------------------------
