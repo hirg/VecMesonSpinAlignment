@@ -327,7 +327,7 @@ TVector2 StZdcSmdCorrection::ApplyZdcSmdShiftCorrWest(TVector2 qVector)
   return qVecShift;
 }
 
-float StVecMesonCorrection::AngleShift(float Psi_raw)
+float StZdcSmdCorrection::AngleShift(float Psi_raw)
 {
   float Psi_Corr = Psi_raw;
   if(Psi_raw > 1.0*TMath::Pi())
