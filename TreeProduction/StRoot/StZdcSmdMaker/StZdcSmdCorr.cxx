@@ -284,10 +284,10 @@ TVector2 StZdcSmdCorrection::ApplyZdcSmdShiftCorrEast(TVector2 qVector)
 
   for(Int_t i_shift = 0; i_shift < 20; ++i_shift) // Shift Order loop
   {
-    int bin_Cos = p_mQEastCos[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9)
+    int bin_Cos = p_mQEastCos[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
     float mean_Cos = p_mQEastCos[mVz_sign][i_shift]->GetBinContent(bin_Cos);
 
-    int bin_Sin = p_mQEastSin[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9)
+    int bin_Sin = p_mQEastSin[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
     float mean_Sin = p_mQEastSin[mVz_sign][i_shift]->GetBinContent(bin_Sin);
 
     delta_Psi += (2.0/((float)i_shift+1.0))*(-1.0*mean_Sin*TMath::Cos(((float)i_shift+1.0)*Psi_ReCenter)+mean_Cos*TMath::Sin(((float)i_shift+1.0)*Psi_ReCenter));
@@ -310,10 +310,10 @@ TVector2 StZdcSmdCorrection::ApplyZdcSmdShiftCorrWest(TVector2 qVector)
 
   for(Int_t i_shift = 0; i_shift < 20; ++i_shift) // Shift Order loop
   {
-    int bin_Cos = p_mQWestCos[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9)
+    int bin_Cos = p_mQWestCos[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
     float mean_Cos = p_mQWestCos[mVz_sign][i_shift]->GetBinContent(bin_Cos);
 
-    int bin_Sin = p_mQWestSin[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9)
+    int bin_Sin = p_mQWestSin[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
     float mean_Sin = p_mQWestSin[mVz_sign][i_shift]->GetBinContent(bin_Sin);
 
     delta_Psi += (2.0/((float)i_shift+1.0))*(-1.0*mean_Sin*TMath::Cos(((float)i_shift+1.0)*Psi_ReCenter)+mean_Cos*TMath::Sin(((float)i_shift+1.0)*Psi_ReCenter));
