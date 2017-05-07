@@ -31,6 +31,11 @@ class StZdcSmdHistoManger
     void InitReCenterEP();
     void FillReCenterEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex);
     void WriteReCenterEP();
+
+    // fill QA for shift event plane
+    void InitShiftEP();
+    void FillShiftEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex);
+    void WriteShiftEP();
     
   private:
 
@@ -47,6 +52,10 @@ class StZdcSmdHistoManger
     TH2F *h_mReCenterEast[9];
     TH2F *h_mReCenterWest[9];
     TH2F *h_mReCenterFull[9]; // Qwest-QEast
+
+    TH2F *h_mShiftEast[9];
+    TH2F *h_mShiftWest[9];
+    TH2F *h_mShiftFull[9]; // Qwest-QEast
 
   ClassDef(StZdcSmdHistoManger,1)
 };

@@ -46,7 +46,11 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
   }
   if(mMode == 2)
   { // apply gian and re-center correction and fill shift parameter for East/West
-    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/file_%s_Shift_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+    mOutPut_ShiftPar = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/file_%s_ShiftPar_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+  }
+  if(mMode == 3)
+  { // apply gian, re-center and shift correction and fill shift parameter for Full 
+    mOutPut_ShiftParFull = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/file_%s_ShiftParFull_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
 }
 
@@ -90,6 +94,16 @@ Int_t StZdcSmdMaker::Init()
     mZdcSmdHistoManger->InitReCenterEP();
     mFile_ShiftPar->cd();
   }
+  if(mMode == 3)
+  {
+    mFile_ShiftParFull = new TFile(mOutPut_ShiftParFull.Data(),"RECREATE");
+    mZdcSmdProManger->InitShiftFull();
+    mZdcSmdCorrection->ReadGainCorr();
+    mZdcSmdCorrection->ReadReCenterCorr();
+    mZdcSmdCorrection->ReadShiftCorr();
+    mZdcSmdHistoManger->InitShiftEP();
+    mFile_ShiftParFull->cd();
+  }
 
   return kStOK;
 }
@@ -125,6 +139,16 @@ Int_t StZdcSmdMaker::Finish()
       mZdcSmdProManger->WriteShift();
       mZdcSmdHistoManger->WriteReCenterEP();
       mFile_ShiftPar->Close();
+    }
+  }
+  if(mMode == 3)
+  {
+    if(mOutPut_ShiftParFull != "")
+    {
+      mFile_ShiftParFull->cd();
+      mZdcSmdProManger->WriteShiftFull();
+      mZdcSmdHistoManger->WriteShiftEP();
+      mFile_ShiftParFull->Close();
     }
   }
 
@@ -192,6 +216,8 @@ Int_t StZdcSmdMaker::Make()
     const Double_t reweight = mRefMultCorr->getWeight();
     const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
 
+    mZdcSmdCorrection->InitEvent(cent9,runIndex,vz_sign);
+
     // set ADC for each slats
     if(mMode == 0)
     {
@@ -244,7 +270,6 @@ Int_t StZdcSmdMaker::Make()
     }
     if(mMode == 2) // apply gain and re-center correction and fill shift correction parameter
     {
-      mZdcSmdCorrection->SetZdcSmdCenter(cent9,runIndex,vz_sign);
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
       TVector2 QFull = QWest-QEast;
@@ -253,6 +278,17 @@ Int_t StZdcSmdMaker::Make()
 	mZdcSmdProManger->FillShiftEast(QEast,cent9,runIndex,vz_sign);
 	mZdcSmdProManger->FillShiftWest(QWest,cent9,runIndex,vz_sign);
 	mZdcSmdHistoManger->FillReCenterEP(QEast,QWest,QFull,cent9,runIndex);
+      }
+    }
+    if(mMode == 3) // apply gain, re-center and shift correction and fill shift correction parameter for full event plane
+    {
+      TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
+      TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
+      TVector2 QFull = QWest-QEast;
+      if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
+      {
+	mZdcSmdProManger->FillShiftFull(QEast,cent9,runIndex,vz_sign);
+	mZdcSmdHistoManger->FillShiftEP(QEast,QWest,QFull,cent9,runIndex);
       }
     }
 

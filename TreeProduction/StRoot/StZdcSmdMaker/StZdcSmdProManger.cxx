@@ -127,4 +127,44 @@ void StZdcSmdProManger::WriteShift()
     }
   }
 }
+
+//---------------------------------------------------------------------------------
+
+void StZdcSmdProManger::InitShiftFull()
+{
+  for(int i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
+  {
+    for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+    {
+      string ProName;
+
+      ProName = Form("p_mQFullCos_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQFullCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5); // x axis is RunIndex, y axis is Centrality
+      ProName = Form("p_mQFullSin_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQFullSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),1600,-0.5,1599.5,9,-0.5,8.5);
+    }
+  }
+}
+
+void StZdcSmdProManger::FillShiftFull(TVector2 qVector, int Cent9, int RunIndex, int vz_sign)
+{
+  float Psi = TMath::ATan2(qVector.Y(),qVector.X());
+  for(int i_shift = 0; i_shift < 20; ++i_shift)
+  {
+    p_mQFullCos[vz_sign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos((i_shift+1)*Psi));
+    p_mQFullSin[vz_sign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin((i_shift+1)*Psi));
+  }
+}
+
+void StZdcSmdProManger::WriteShiftFull()
+{
+  for(int i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
+  {
+    for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+    {
+      p_mQFullCos[i_vz][i_shift]->Write();
+      p_mQFullSin[i_vz][i_shift]->Write();
+    }
+  }
+}
 //---------------------------------------------------------------------------------

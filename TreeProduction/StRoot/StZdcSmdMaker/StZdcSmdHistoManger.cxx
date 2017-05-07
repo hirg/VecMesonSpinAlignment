@@ -142,3 +142,34 @@ void StZdcSmdHistoManger::WriteReCenterEP()
 
 //-------------------------------------------------------------------------------------------
 
+void StZdcSmdHistoManger::InitShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mShiftEast_%d",i_cent);
+    h_mShiftEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+    HistName = Form("h_mShiftWest_%d",i_cent);
+    h_mShiftWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+    HistName = Form("h_mShiftFull_%d",i_cent);
+    h_mShiftFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+  }
+}
+
+void StZdcSmdHistoManger::FillShiftEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex)
+{
+  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mShiftEast[Cent9]->Fill(PsiEast,runIndex);
+  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mShiftWest[Cent9]->Fill(PsiWest,runIndex);
+  float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mShiftFull[Cent9]->Fill(PsiFull,runIndex);
+}
+
+void StZdcSmdHistoManger::WriteShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mShiftEast[i_cent]->Write();
+    h_mShiftWest[i_cent]->Write();
+    h_mShiftFull[i_cent]->Write();
+  }
+}
+
+//-------------------------------------------------------------------------------------------
