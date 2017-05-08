@@ -312,7 +312,7 @@ Int_t StZdcSmdMaker::Make()
       TVector2 QFull = QWest-QEast;
       if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
       {
-	mZdcSmdProManger->FillShiftFull(QEast,cent9,runIndex,vz_sign);
+	mZdcSmdProManger->FillShiftFull(QFull,cent9,runIndex,vz_sign);
 	mZdcSmdHistoManger->FillShiftEP(QEast,QWest,QFull,cent9,runIndex);
       }
     }
