@@ -7,10 +7,17 @@ class StPicoDstMaker;
 
 
 StChain *chain;
-void ZdcSmdTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu200GeV/List/run_list/200GeV_140.list", const Int_t jobCounter = 140, const Int_t Mode = 3, const Int_t energy = 6, const Int_t flag_ME = 0)
+void ZdcSmdTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu200GeV/List/run_list/200GeV_140.list", const Int_t jobCounter = 140, const Int_t Mode = 4, const Int_t energy = 6, const Int_t flag_ME = 0)
 {
   // mBeamEnergy[NumBeamEnergy] = {"7GeV","11GeV","19GeV","27GeV","39GeV","62GeV","200GeV"};
-  // Mode: 0 for re-center correction, 1 for shift correction, 2 for resolution calculation, 3 for phi meson
+  // Mode: 
+  //       0 = gain correction for East/West;
+  //       1 = re-center correction for East/West;
+  //       2 = shift correction for East/West;
+  //       3 = shift correction for Full;
+  //       4 = event plane resolution for East/West
+  //       5 = charge particle v1 w.r.t. full ZDCSMD event plane (QA)
+  //       6 = phi meson tree production w.r.t. full ZDCSMD event plane
   // flag_ME: 0 for Same Event, 1 for Mixed Event
 
   Int_t nEvents = 10000000;

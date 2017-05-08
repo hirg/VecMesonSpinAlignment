@@ -22,9 +22,10 @@ if [ $# -eq 0 ]
      # echo -n 0',' >> run$Name$counter.csh  # fill GainCorr mode
      # echo -n 1',' >> run$Name$counter.csh  # fill ReCenterCorr mode
      # echo -n 2',' >> run$Name$counter.csh  # fill ShiftCorr mode
-     echo -n 3',' >> run$Name$counter.csh  # fill ShiftCorrFull mode
-     # echo -n 4',' >> run$Name$counter.csh  # cal Resolution mode
-     # echo -n 5',' >> run$Name$counter.csh  # Phi mode
+     # echo -n 3',' >> run$Name$counter.csh  # fill ShiftCorrFull mode
+     echo -n 4',' >> run$Name$counter.csh  # cal Resolution mode
+     # echo -n 5',' >> run$Name$counter.csh  # v1 QA mode
+     # echo -n 6',' >> run$Name$counter.csh  # Phi mode
 ###############################mode###################################
 
 #############################energy###################################
