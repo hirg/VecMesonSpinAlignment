@@ -189,7 +189,7 @@ void StZdcSmdHistoManger::FillShiftEPFull(TVector2 QFull, int Cent9, int runInde
   h_mShiftFullCorr[Cent9]->Fill(PsiFull,runIndex);
 }
 
-void StZdcSmdHistoManger::WriteShiftEP()
+void StZdcSmdHistoManger::WriteShiftEPFull()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
