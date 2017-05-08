@@ -36,6 +36,10 @@ class StZdcSmdCorrection : public TObject
     TVector2 ApplyZdcSmdShiftCorrWest(TVector2 qVector);
     float AngleShift(float Psi_shifted);
 
+    void ReadShiftCorrFull();
+    TVector2 ApplyZdcSmdShiftCorrFull(TVector2 qVector);
+    TVector2 GetQFull(TVector2 QEast, TVector2 QWest);
+
   private:
 
     int mEnergy;
@@ -58,9 +62,14 @@ class StZdcSmdCorrection : public TObject
     TProfile2D *p_mQWestCos[2][20];
     TProfile2D *p_mQWestSin[2][20];
 
+    // Shift Correction for East/West
+    TProfile2D *p_mQFullCos[2][20]; // 0 = vertex pos/neg | 1 = shift correction harmonics
+    TProfile2D *p_mQFullSin[2][20];
+
     TFile *mFile_GainCorrPar;
     TFile *mFile_ReCenterPar;
     TFile *mFile_ShiftPar;
+    TFile *mFile_ShiftParFull;
 
   ClassDef(StZdcSmdCorrection,1)
 };

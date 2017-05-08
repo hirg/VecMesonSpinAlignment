@@ -36,6 +36,11 @@ class StZdcSmdHistoManger
     void InitShiftEP();
     void FillShiftEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex);
     void WriteShiftEP();
+
+    // fill QA for shift full event plane
+    void InitShiftEPFull();
+    void FillShiftEPFull(TVector2 QFull, int Cent9, int runIndex);
+    void WriteShiftEPFull();
     
   private:
 
@@ -56,6 +61,8 @@ class StZdcSmdHistoManger
     TH2F *h_mShiftEast[9];
     TH2F *h_mShiftWest[9];
     TH2F *h_mShiftFull[9]; // Qwest-QEast
+
+    TH2F *h_mShiftFullCorr[9]; // Qwest-QEast
 
   ClassDef(StZdcSmdHistoManger,1)
 };

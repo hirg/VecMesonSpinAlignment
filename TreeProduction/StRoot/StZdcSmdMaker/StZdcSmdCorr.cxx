@@ -343,3 +343,59 @@ float StZdcSmdCorrection::AngleShift(float Psi_raw)
 }
 
 //---------------------------------------------------------------------------------
+
+
+void StZdcSmdCorrection::ReadShiftCorrFull()
+{
+  string InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/merged_file/file_%s_ShiftParFull.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  mFile_ShiftPar = TFile::Open(InPutFile.c_str());
+
+  string mVStr[2] = {"pos","neg"};
+  for(int i_vz = 0; i_vz < 2; ++i_vz) // vertex pos/neg
+  {
+    for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+    {
+      string ProName;
+
+      ProName = Form("p_mQFullCos_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQFullCos[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+      ProName = Form("p_mQFullSin_%s_%d",mVStr[i_vz].c_str(),i_shift);
+      p_mQFullSin[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+    }
+  }
+}
+
+TVector2 StZdcSmdCorrection::ApplyZdcSmdShiftCorrFull(TVector2 qVector)
+{
+  TVector2 qVecShift(0.0,0.0);
+  float Psi_ReCenter = TMath::ATan2(qVector.Y(),qVector.X());
+  float delta_Psi = 0.0;
+  float Psi_Shift;
+
+  for(Int_t i_shift = 0; i_shift < 20; ++i_shift) // Shift Order loop
+  {
+    int bin_Cos = p_mQFullCos[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Cos = p_mQFullCos[mVz_sign][i_shift]->GetBinContent(bin_Cos);
+
+    int bin_Sin = p_mQFullSin[mVz_sign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Sin = p_mQFullSin[mVz_sign][i_shift]->GetBinContent(bin_Sin);
+
+    delta_Psi += (2.0/((float)i_shift+1.0))*(-1.0*mean_Sin*TMath::Cos(((float)i_shift+1.0)*Psi_ReCenter)+mean_Cos*TMath::Sin(((float)i_shift+1.0)*Psi_ReCenter));
+  }
+
+  float Psi_Shift_raw = Psi_ReCenter + delta_Psi;
+  Psi_Shift = AngleShift(Psi_Shift_raw);
+
+  qVecShift.Set(TMath::Cos(Psi_Shift),TMath::Sin(Psi_Shift));
+
+  return qVecShift;
+}
+
+TVector2 StZdcSmdCorrection::GetQFull(TVector2 QEast, TVector2 QWest)
+{
+  TVector2 qVector = QWest-QEast;
+  TVector2 qVecShift = ApplyZdcSmdShiftCorrFull(qVector);
+
+  return qVecShift;
+}
+//---------------------------------------------------------------------------------

@@ -173,3 +173,28 @@ void StZdcSmdHistoManger::WriteShiftEP()
 }
 
 //-------------------------------------------------------------------------------------------
+
+void StZdcSmdHistoManger::InitShiftEPFull()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mShiftFullCorr_%d",i_cent);
+    h_mShiftFullCorr[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),1600,-0.5,1599.5);
+  }
+}
+
+void StZdcSmdHistoManger::FillShiftEPFull(TVector2 QFull, int Cent9, int runIndex)
+{
+  float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); 
+  h_mShiftFullCorr[Cent9]->Fill(PsiFull,runIndex);
+}
+
+void StZdcSmdHistoManger::WriteShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mShiftFullCorr[i_cent]->Write();
+  }
+}
+
+//-------------------------------------------------------------------------------------------

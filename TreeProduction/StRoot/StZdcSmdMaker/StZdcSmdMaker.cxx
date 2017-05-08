@@ -52,6 +52,10 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
   { // apply gian, re-center and shift correction and fill shift parameter for Full 
     mOutPut_ShiftParFull = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/file_%s_ShiftParFull_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
   }
+  if(mMode == 4)
+  { // apply gian, re-center and shift correction and fill shift parameter for Full 
+    mOutPut_Resolution = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/Resolution/file_%s_Resolution_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+  }
 }
 
 //----------------------------------------------------------------------------- 
@@ -104,6 +108,17 @@ Int_t StZdcSmdMaker::Init()
     mZdcSmdHistoManger->InitShiftEP();
     mFile_ShiftParFull->cd();
   }
+  if(mMode == 4)
+  {
+    mFile_Resolution = new TFile(mOutPut_Resolution.Data(),"RECREATE");
+    mZdcSmdProManger->InitResolution();
+    mZdcSmdCorrection->ReadGainCorr();
+    mZdcSmdCorrection->ReadReCenterCorr();
+    mZdcSmdCorrection->ReadShiftCorr();
+    mZdcSmdCorrection->ReadShiftCorrFull();
+    mZdcSmdHistoManger->InitShiftEPFull();
+    mFile_Resolution->cd();
+  }
 
   return kStOK;
 }
@@ -149,6 +164,16 @@ Int_t StZdcSmdMaker::Finish()
       mZdcSmdProManger->WriteShiftFull();
       mZdcSmdHistoManger->WriteShiftEP();
       mFile_ShiftParFull->Close();
+    }
+  }
+  if(mMode == 4)
+  {
+    if(mOutPut_Resolution != "")
+    {
+      mFile_Resolution->cd();
+      mZdcSmdProManger->WriteResolution();
+      mZdcSmdHistoManger->WriteShiftEPFull();
+      mFile_Resolution->Close();
     }
   }
 
@@ -289,6 +314,17 @@ Int_t StZdcSmdMaker::Make()
       {
 	mZdcSmdProManger->FillShiftFull(QEast,cent9,runIndex,vz_sign);
 	mZdcSmdHistoManger->FillShiftEP(QEast,QWest,QFull,cent9,runIndex);
+      }
+    }
+    if(mMode == 4) // apply gain, re-center and shift correction and fill event plane resolution for East/West
+    {
+      TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
+      TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
+      TVector2 QFull = mZdcSmdCorrection->GetQFull(QEast,QWest);
+      if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
+      {
+	mZdcSmdProManger->FillResolution(QEast,QWest,cent9);
+	mZdcSmdHistoManger->FillShiftEPFull(QFull,cent9,runIndex);
       }
     }
 

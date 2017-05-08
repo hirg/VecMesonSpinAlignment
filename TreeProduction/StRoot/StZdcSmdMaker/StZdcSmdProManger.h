@@ -31,6 +31,11 @@ class StZdcSmdProManger
     void FillShiftFull(TVector2 qVector, int Cent9, int RunIndex, int vz_sign);
     void WriteShiftFull();
 
+    // Shift Correction for Full
+    void InitResolution();
+    void FillResolution(TVector2 QEast, TVector2 QWest, int Cent9);
+    void WriteResolution();
+
   private:
     // ReCenter Correction | x axis is RunIndex, y axis is Centrality
     TProfile2D *p_mQEastVertical[2]; // 0 = vertex pos/neg
@@ -47,6 +52,9 @@ class StZdcSmdProManger
     // Shift Correction for East/West
     TProfile2D *p_mQFullCos[2][20]; // 0 = vertex pos/neg | 1 = shift correction harmonics
     TProfile2D *p_mQFullSin[2][20];
+
+    // event plane resolution for East/West
+    TProfile *p_mResolution;
 
     static string mVStr[2];
 
