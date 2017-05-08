@@ -178,7 +178,7 @@ void StZdcSmdProManger::FillResolution(TVector2 QEast, TVector2 QWest, int Cent9
 {
   float Psi_East = TMath::ATan2(QEast.Y(),QEast.X());
   float Psi_West = TMath::ATan2(QWest.Y(),QWest.X());
-  float resolution = TMath::Cos(Psi_West-Psi_East);
+  float resolution = TMath::Cos(Psi_West-Psi_East+TMath::Pi());
   p_mResolution->Fill((double)Cent9,resolution);
 }
 
