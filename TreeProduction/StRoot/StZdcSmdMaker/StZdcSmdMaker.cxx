@@ -368,8 +368,8 @@ Int_t StZdcSmdMaker::Make()
 	  float pt  = track->pMom().perp();
 	  float phi = track->pMom().phi();
 	  float eta = track->pMom().pseudoRapidity();
-	  float v1 = TMath::Cos(phi_track-Psi);
-	  mZdcSmdCorrection->FillDirectedFlow(cent9,eta,pt,v1,resolution);
+	  float v1 = TMath::Cos(phi-Psi);
+	  mZdcSmdProManger->FillDirectedFlow(cent9,eta,pt,v1,resolution);
 	}
       }
     }

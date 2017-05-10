@@ -199,12 +199,12 @@ void StZdcSmdProManger::InitDirectedFlow()
   p_mDirectedFlowCom = new TProfile("p_mDirectedFlowCom","p_mDirectedFlowCom",10,-1.0,1.0);
 }
 
-void StZdcSmdProManger::FillDirectedFlow(int Cent9, float eta, float pt, float v1, float resolution)
+void StZdcSmdProManger::FillDirectedFlow(int Cent9, float eta, float pt, float v1, float resolution, float reweight)
 {
   if(pt > 0.15 && pt < 2.0)
   {
     p_mDirectedFlow[Cent9]->Fill(eta,v1/resolution);
-    if(Cent9 >= 2 && Cent9 <= 4) p_mDirectedFlowCom->Fill(eta,v1/resolution); // 30-60%
+    if(Cent9 >= 2 && Cent9 <= 4) p_mDirectedFlowCom->Fill(eta,v1/resolution,reweight); // 30-60%
   }
 }
 

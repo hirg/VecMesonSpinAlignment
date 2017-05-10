@@ -38,7 +38,7 @@ class StZdcSmdProManger
 
     //  Directed Flow QA
     void InitDirectedFlow();
-    void FillDirectedFlow(int Cent9, float eta, float pt, float v1, float resolution);
+    void FillDirectedFlow(int Cent9, float eta, float pt, float v1, float resolution, float reweight);
     void WriteDirectedFlow();
 
   private:
