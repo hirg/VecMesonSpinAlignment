@@ -260,11 +260,11 @@ Int_t StZdcSmdMaker::Make()
 
   if(mZdcSmdCut->passEventCut(mPicoDst)) // event cut
   {
-    const Int_t nTracks = mPicoDst->numberOfTracks();
-    const Int_t cent9 = mRefMultCorr->getCentralityBin9();
+    const int nTracks = mPicoDst->numberOfTracks();
+    const int cent9 = mRefMultCorr->getCentralityBin9();
     //    if(cent9 < 0) cout << cent9 << endl;
-    const Double_t reweight = mRefMultCorr->getWeight();
-    const Int_t nToFMatched = mZdcSmdCut->getMatchedToF();
+    const float reweight = mRefMultCorr->getWeight();
+    const int nToFMatched = mZdcSmdCut->getMatchedToF();
 
     mZdcSmdCorrection->InitEvent(cent9,runIndex,vz_sign);
 
@@ -369,7 +369,7 @@ Int_t StZdcSmdMaker::Make()
 	  float phi = track->pMom().phi();
 	  float eta = track->pMom().pseudoRapidity();
 	  float v1 = TMath::Cos(phi-Psi);
-	  mZdcSmdProManger->FillDirectedFlow(cent9,eta,pt,v1,resolution);
+	  mZdcSmdProManger->FillDirectedFlow(cent9,eta,pt,v1,resolution,reweight);
 	}
       }
     }
