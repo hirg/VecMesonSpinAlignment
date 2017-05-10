@@ -31,10 +31,15 @@ class StZdcSmdProManger
     void FillShiftFull(TVector2 qVector, int Cent9, int RunIndex, int vz_sign);
     void WriteShiftFull();
 
-    // Shift Correction for Full
+    // Event Plane Resolution for East/West
     void InitResolution();
     void FillResolution(TVector2 QEast, TVector2 QWest, int Cent9);
     void WriteResolution();
+
+    //  Directed Flow QA
+    void InitDirectedFlow();
+    void FillDirectedFlow(int Cent9, float eta, float pt, float v1, float resolution);
+    void WriteDirectedFlow();
 
   private:
     // ReCenter Correction | x axis is RunIndex, y axis is Centrality
@@ -55,6 +60,9 @@ class StZdcSmdProManger
 
     // event plane resolution for East/West
     TProfile *p_mResolution;
+
+    TProfile *p_mDirectedFlow[9];
+    TProfile *p_mDirectedFlowCom;
 
     static string mVStr[2];
 

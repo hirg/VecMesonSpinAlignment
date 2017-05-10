@@ -8,6 +8,7 @@
 class StPicoDst;
 class StPicoTrack;
 class TProfile2D;
+class TProfile;
 class TFile;
 
 class StZdcSmdCorrection : public TObject
@@ -40,6 +41,10 @@ class StZdcSmdCorrection : public TObject
     TVector2 ApplyZdcSmdShiftCorrFull(TVector2 qVector);
     TVector2 GetQFull(TVector2 QEast, TVector2 QWest);
 
+    void ReadResolution();
+    void CalResolution();
+    float GetResolution(int Cent9);
+
   private:
 
     int mEnergy;
@@ -48,13 +53,13 @@ class StZdcSmdCorrection : public TObject
     int mVz_sign;
     float mZdcSmd[2][2][8]; // 0: east/west | 1: vertical(x)/horizontal(y) | 2: 7 slats(x)/8 slats(y);
     float mGainCorrFactor[2][2][8];
-    float mCenterEastVertical, mCenterEastHorizontal, mCenterWestVertical, mCenterWestHorizontal;
 
     // ReCenter Correction | x axis is RunIndex, y axis is Centrality
     TProfile2D *p_mQEastVertical[2]; // vz_sign
     TProfile2D *p_mQEastHorizontal[2];
     TProfile2D *p_mQWestVertical[2];
     TProfile2D *p_mQWestHorizontal[2];
+    float mCenterEastVertical, mCenterEastHorizontal, mCenterWestVertical, mCenterWestHorizontal;
 
     // Shift Correction for East/West
     TProfile2D *p_mQEastCos[2][20]; // 0 = vertex pos/neg | 1 = shift correction harmonics
@@ -66,10 +71,15 @@ class StZdcSmdCorrection : public TObject
     TProfile2D *p_mQFullCos[2][20]; // 0 = vertex pos/neg | 1 = shift correction harmonics
     TProfile2D *p_mQFullSin[2][20];
 
+    // charged hadron v1 calculation
+    TProfile *p_mResolution;
+    float mResolution[9];
+
     TFile *mFile_GainCorrPar;
     TFile *mFile_ReCenterPar;
     TFile *mFile_ShiftPar;
     TFile *mFile_ShiftParFull;
+    TFile *mFile_Resolution;
 
   ClassDef(StZdcSmdCorrection,1)
 };

@@ -49,6 +49,7 @@ class StZdcSmdMaker : public StMaker {
     TString mOutPut_ShiftPar;
     TString mOutPut_ShiftParFull;
     TString mOutPut_Resolution;
+    TString mOutPut_DirectedFlow;
     TString mOutPut_Phi;
 
     TFile *mFile_GainCorrPar;
@@ -56,6 +57,7 @@ class StZdcSmdMaker : public StMaker {
     TFile *mFile_ShiftPar;
     TFile *mFile_ShiftParFull;
     TFile *mFile_Resolution;
+    TFile *mFile_DirectedFlow;
     TFile *mFile_Phi;
 
     Int_t mUsedTrackCounter;

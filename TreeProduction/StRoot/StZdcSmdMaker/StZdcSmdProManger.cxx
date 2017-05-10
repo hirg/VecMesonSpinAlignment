@@ -188,3 +188,29 @@ void StZdcSmdProManger::WriteResolution()
 }
 
 //---------------------------------------------------------------------------------
+
+void StZdcSmdProManger::InitDirectedFlow()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string ProName = Form("p_mDirectedFlow_%d",i_cent);
+    p_mDirectedFlow[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),10,-1.0,1.0);
+  }
+  p_mDirectedFlowCom = new TProfile("p_mDirectedFlowCom","p_mDirectedFlowCom",10,-1.0,1.0);
+}
+
+void StZdcSmdProManger::FillDirectedFlow(int Cent9, float eta, float pt, float v1, float resolution)
+{
+  if(pt > 0.15 && pt < 2.0)
+  {
+    p_mDirectedFlow[Cent9]->Fill(eta,v1/resolution);
+    if(Cent9 >= 2 && Cent9 <= 4) p_mDirectedFlowCom->Fill(eta,v1/resolution); // 30-60%
+  }
+}
+
+void StZdcSmdProManger::WriteDirectedFlow()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent) p_mDirectedFlow[i_cent]->Write();
+  p_mDirectedFlowCom->Write();
+}
+//---------------------------------------------------------------------------------

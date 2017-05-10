@@ -220,6 +220,7 @@ bool StZdcSmdCut::passTrackBasic(StPicoTrack *track)
 }
 
 //---------------------------------------------------------------------------------
+
 bool StZdcSmdCut::passTrackPhi(StPicoTrack *track)
 {
   if(!track) return kFALSE;
@@ -235,3 +236,23 @@ bool StZdcSmdCut::passTrackPhi(StPicoTrack *track)
 
   return kTRUE;
 }
+
+//---------------------------------------------------------------------------------
+
+bool StZdcSmdCut::passTrackV1(StPicoTrack *track)
+{
+  if(!track) return kFALSE;
+
+  if(!passTrackBasic(track)) return kFALSE;
+
+  // dca cut for flow analysis: 2.0
+  if(track->dca() > vmsa::mDcaTrMax_phi) return kFALSE;
+
+  // primary pt and momentum cut: PtMin = 0.1
+  if(!(track->pMom().perp() > vmsa::mGlobPtMin && track->pMom().mag() < vmsa::mPrimMomMax))
+    return kFALSE;
+
+  return kTRUE;
+}
+
+//---------------------------------------------------------------------------------
