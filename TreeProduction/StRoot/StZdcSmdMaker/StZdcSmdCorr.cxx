@@ -404,7 +404,7 @@ TVector2 StZdcSmdCorrection::GetQFull(TVector2 QEast, TVector2 QWest)
 
 void StZdcSmdCorrection::ReadResolution()
 {
-  string InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/ShiftPar/merged_file/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
+  string InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/Resolution/merged_file/file_%s_Resolution.root",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mBeamEnergy[mEnergy].c_str());
   mFile_Resolution = TFile::Open(InPutFile.c_str());
   p_mResolution = (TProfile*)mFile_Resolution->Get("p_mResolution");
 }
