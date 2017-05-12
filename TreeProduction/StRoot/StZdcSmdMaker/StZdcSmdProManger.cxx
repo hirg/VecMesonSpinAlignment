@@ -203,7 +203,7 @@ void StZdcSmdProManger::FillDirectedFlow(int Cent9, float eta, float pt, float v
 {
   if(pt > 0.15 && pt < 2.0)
   {
-    p_mDirectedFlow[Cent9]->Fill(eta,v1/resolution);
+    p_mDirectedFlow[Cent9]->Fill(eta,v1/resolution,reweight);
     if(Cent9 >= 2 && Cent9 <= 4) p_mDirectedFlowCom->Fill(eta,v1/resolution,reweight); // 30-60%
   }
 }

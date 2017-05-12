@@ -3,7 +3,7 @@
 #include "StRoot/StZdcSmdMaker/StZdcSmdProManger.h"
 #include "StRoot/StZdcSmdMaker/StZdcSmdCorr.h"
 #include "StRoot/StZdcSmdMaker/StZdcSmdHistoManger.h"
-// #include "StRoot/StZdcSmdMaker/StZdcSmdTree.h"
+#include "StRoot/StZdcSmdMaker/StZdcSmdTree.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "StRoot/StPicoDstMaker/StPicoDst.h"
 #include "StRoot/StPicoDstMaker/StPicoEvent.h"
@@ -59,6 +59,10 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
   if(mMode == 5)
   { // apply gian, re-center and shift correction and fill shift parameter for Full 
     mOutPut_DirectedFlow = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/DirectedFlow/file_%s_DirectedFlow_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),jobCounter);
+  }
+  if(mMode == 6)
+  { // apply gian, re-center and shift correction and fill shift parameter for Full 
+    mOutPut_Phi = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/Phi/Forest/file_%s_Phi_%s_%d.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str(),vmsa::MixEvent[mFlag_ME].Data(),jobCounter);
   }
 }
 
@@ -135,6 +139,17 @@ Int_t StZdcSmdMaker::Init()
     mZdcSmdProManger->InitDirectedFlow();
     mFile_DirectedFlow->cd();
   }
+  if(mMode == 6)
+  {
+    mZdcSmdTree = new StZdcSmdTree(mEnergy);
+    mFile_Phi = new TFile(mOutPut_Phi.Data(),"RECREATE");
+    mZdcSmdCorrection->ReadGainCorr();
+    mZdcSmdCorrection->ReadReCenterCorr();
+    mZdcSmdCorrection->ReadShiftCorr();
+    mZdcSmdCorrection->ReadShiftCorrFull();
+    mZdcSmdTree->InitPhi();
+    mFile_Phi->cd();
+  }
 
   return kStOK;
 }
@@ -201,6 +216,15 @@ Int_t StZdcSmdMaker::Finish()
       mFile_DirectedFlow->Close();
     }
   }
+  if(mMode == 6)
+  {
+    if(mOutPut_Phi != "")
+    {
+      mFile_Phi->cd();
+      mZdcSmdTree->WritePhiMass2();
+      mFile_Phi->Close();
+    }
+  }
 
   return kStOK;
 }
@@ -260,7 +284,7 @@ Int_t StZdcSmdMaker::Make()
 
   if(mZdcSmdCut->passEventCut(mPicoDst)) // event cut
   {
-    const int nTracks = mPicoDst->numberOfTracks();
+    const unsigned int nTracks = mPicoDst->numberOfTracks();
     const int cent9 = mRefMultCorr->getCentralityBin9();
     //    if(cent9 < 0) cout << cent9 << endl;
     const float reweight = mRefMultCorr->getWeight();
@@ -360,7 +384,7 @@ Int_t StZdcSmdMaker::Make()
       if(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) return kStOK;
       float resolution = mZdcSmdCorrection->GetResolution(cent9);
       float Psi = TMath::ATan2(QFull.Y(),QFull.X());
-      for(Int_t i_track = 0; i_track < nTracks; ++i_track) // track loop
+      for(unsigned int i_track = 0; i_track < nTracks; ++i_track) // track loop
       {
 	StPicoTrack *track = (StPicoTrack*)mPicoDst->track(i_track);
 	if(mZdcSmdCut->passTrackV1(track)) // track cut
@@ -372,6 +396,27 @@ Int_t StZdcSmdMaker::Make()
 	  mZdcSmdProManger->FillDirectedFlow(cent9,eta,pt,v1,resolution,reweight);
 	}
       }
+    }
+    if(mMode == 5) // calculate v1 vs. eta for charged hadrons
+    {
+      TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
+      TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
+      TVector2 QFull = mZdcSmdCorrection->GetQFull(QEast,QWest);
+      if(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) return kStOK;
+
+      // get N_prim, N_non_prim, N_Tof_match
+      int N_prim = mZdcSmdCut->getNpirm();
+      int N_non_prim = mZdcSmdCut->getNnonprim();
+      int N_Tof_match = mZdcSmdCut->getMatchedToF();
+
+      // pass the event information to StZdcSmdTree
+      mZdcSmdTree->clearEvent();
+      mZdcSmdTree->passEvent(N_prim,N_non_prim,N_Tof_match);
+
+      // pass shifted event plane to StZdcSmdTree
+      mZdcSmdTree->passEventPlane(QEast,QWest,QFull);
+
+      mZdcSmdTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2);
     }
 
     mZdcSmdCorrection->clear();
