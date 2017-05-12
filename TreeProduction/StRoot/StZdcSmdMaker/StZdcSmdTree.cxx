@@ -438,9 +438,9 @@ void StZdcSmdTree::clearEvent()
   mNumber_non_prim = 0;
   mNumber_Tof_match = 0;
 
-  mQVectorEast.Set(0.0);
-  mQVectorWest.Set(0.0);
-  mQVectorFull.Set(0.0);
+  mQVectorEast.Set(0.0,0.0);
+  mQVectorWest.Set(0.0,0.0);
+  mQVectorFull.Set(0.0,0.0);
 }
 
 void StZdcSmdTree::passEvent(int N_prim, int N_non_prim, int N_Tof_match)
