@@ -229,13 +229,13 @@ void StZdcSmdTree::doPhi(int Flag_ME, int cent9, int Bin_vz, int Bin_Psi) // 0: 
 
 	// start to mix events
 	// mix K+ candidates from A event with K- candidates from B event
-	for(int i_kplus = 0; i_kplus < mHelix_Kaon[key_A_plus].size(); i_kplus++) // first track loop over K+ candidates from event A
+	for(unsigned int i_kplus = 0; i_kplus < mHelix_Kaon[key_A_plus].size(); i_kplus++) // first track loop over K+ candidates from event A
 	{
 	  StThreeVectorF p_vecA(mHelix_Kaon[key_A_plus][i_kplus].cat(mHelix_Kaon[key_A_plus][i_kplus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi][i_event_A])));  // primary momentum
 	  p_vecA *= mMomentum[key_A_plus][i_kplus];
 	  ltrackA.SetXYZM(p_vecA.x(),p_vecA.y(),p_vecA.z(),vmsa::mMassKaon); // K+
 
-	  for(int i_kminus = 0; i_kminus < mHelix_Kaon[key_B_minus].size(); i_kminus++) // second track loop over K- candidates from event B
+	  for(unsigned int i_kminus = 0; i_kminus < mHelix_Kaon[key_B_minus].size(); i_kminus++) // second track loop over K- candidates from event B
 	  {
 	    StThreeVectorF p_vecB(mHelix_Kaon[key_B_minus][i_kminus].cat(mHelix_Kaon[key_B_minus][i_kminus].pathLength(mPrimaryvertex[cent9][Bin_vz][Bin_Psi][i_event_B])));  // primary momentum
 	    p_vecB *= mMomentum[key_B_minus][i_kminus];
@@ -438,9 +438,9 @@ void StZdcSmdTree::clearEvent()
   mNumber_non_prim = 0;
   mNumber_Tof_match = 0;
 
-  mQVector2East.Set(0.0);
-  mQVector2West.Set(0.0);
-  mQVector2Full.Set(0.0);
+  mQVectorEast.Set(0.0);
+  mQVectorWest.Set(0.0);
+  mQVectorFull.Set(0.0);
 }
 
 void StZdcSmdTree::passEvent(int N_prim, int N_non_prim, int N_Tof_match)
