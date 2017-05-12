@@ -416,7 +416,8 @@ Int_t StZdcSmdMaker::Make()
       // pass shifted event plane to StZdcSmdTree
       mZdcSmdTree->passEventPlane(QEast,QWest,QFull);
 
-      mZdcSmdTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi2);
+      float Psi = TMath::ATan2(QFull.Y(),QFull.X());
+      mZdcSmdTree->MixEvent_Phi(mFlag_ME,mPicoDst,cent9,vz,Psi);
     }
 
     mZdcSmdCorrection->clear();
