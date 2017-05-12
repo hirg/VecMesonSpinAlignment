@@ -145,11 +145,11 @@ Int_t StZdcSmdMaker::Init()
   {
     mZdcSmdTree = new StZdcSmdTree(mEnergy);
     mFile_Phi = new TFile(mOutPut_Phi.Data(),"RECREATE");
-    mFile_Phi->cd();
     mZdcSmdCorrection->ReadGainCorr();
     mZdcSmdCorrection->ReadReCenterCorr();
     mZdcSmdCorrection->ReadShiftCorr();
     mZdcSmdCorrection->ReadShiftCorrFull();
+    mFile_Phi->cd();
     mZdcSmdTree->InitPhi();
   }
 
