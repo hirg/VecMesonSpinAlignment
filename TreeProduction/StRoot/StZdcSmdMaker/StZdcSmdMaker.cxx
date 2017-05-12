@@ -402,7 +402,7 @@ Int_t StZdcSmdMaker::Make()
 	}
       }
     }
-    if(mMode == 5) // calculate v1 vs. eta for charged hadrons
+    if(mMode == 6) // calculate v1 vs. eta for charged hadrons
     {
       TVector2 QEast = mZdcSmdCorrection->GetQEast(mMode);
       TVector2 QWest = mZdcSmdCorrection->GetQWest(mMode);
