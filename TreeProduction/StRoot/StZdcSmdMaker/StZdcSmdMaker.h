@@ -16,6 +16,8 @@ class StZdcSmdCorrection;
 class StZdcSmdHistoManger;
 class StZdcSmdTree;
 
+class TStopwatch;
+
 class StZdcSmdMaker : public StMaker {
   public:
     StZdcSmdMaker(const char *name, StPicoDstMaker *picoMaker, const Int_t jobCounter, const Int_t Mode, const Int_t Energy, const Int_t Flag_ME);
@@ -61,6 +63,8 @@ class StZdcSmdMaker : public StMaker {
     TFile *mFile_Phi;
 
     Int_t mUsedTrackCounter;
+
+    TStopwatch *mStopWatch;
 
     ClassDef(StZdcSmdMaker, 1)
 };

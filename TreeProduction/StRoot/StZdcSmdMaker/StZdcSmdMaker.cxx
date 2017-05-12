@@ -35,6 +35,7 @@ StZdcSmdMaker::StZdcSmdMaker(const char* name, StPicoDstMaker *picoMaker, const 
   mMode = Mode;
   mEnergy = energy;
   mFlag_ME = flag_ME;
+  mStopWatch = new TStopwatch();
 
   if(mMode == 0)
   { // fill zdc-smd QA and gain correction factor
@@ -81,6 +82,7 @@ Int_t StZdcSmdMaker::Init()
   mZdcSmdCorrection = new StZdcSmdCorrection(mEnergy);
   mZdcSmdHistoManger = new StZdcSmdHistoManger();
   mZdcSmdProManger = new StZdcSmdProManger();
+  mStopWatch->Start();
 
   if(mMode == 0)
   {
@@ -225,6 +227,9 @@ Int_t StZdcSmdMaker::Finish()
       mFile_Phi->Close();
     }
   }
+
+  mStopWatch->Stop();
+  mStopWatch->Print();
 
   return kStOK;
 }
