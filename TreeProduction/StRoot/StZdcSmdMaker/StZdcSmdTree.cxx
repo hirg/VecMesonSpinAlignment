@@ -315,7 +315,7 @@ void StZdcSmdTree::MixEvent_Phi(int Flag_ME, StPicoDst *pico, int cent9, float v
 {
   StPicoEvent *event = (StPicoEvent*)pico->event();
 
-  int Bin_vz = -1;
+  int Bin_vz = 0;
   float vz_start = vmsa::mVzMaxMap[mEnergy];
   float vz_bin = 2*vz_start/vmsa::Bin_VertexZ;
   for(int i_vz = 0; i_vz < vmsa::Bin_VertexZ; ++i_vz)
@@ -326,7 +326,7 @@ void StZdcSmdTree::MixEvent_Phi(int Flag_ME, StPicoDst *pico, int cent9, float v
     }
   }
 
-  int Bin_Psi = -1;
+  int Bin_Psi = 0;
   float psi_start = TMath::Pi();
   float psi_bin = 2*psi_start/vmsa::Bin_Phi_Psi;
   for(int i_Psi = 0; i_Psi < vmsa::Bin_Phi_Psi; ++i_Psi)
@@ -337,9 +337,7 @@ void StZdcSmdTree::MixEvent_Phi(int Flag_ME, StPicoDst *pico, int cent9, float v
     }
   }
 
-  cout << "vz = " << vz << ", Bin_vz = " << Bin_vz << ", Psi = " << Psi << ", Bin_Psi = " << Bin_Psi << endl;
   int Bin_Event = mEventCounter[cent9][Bin_vz][Bin_Psi];
-  cout << "Bin_Event = " << Bin_Event <<endl;
 
   const double MAGFIELDFACTOR = kilogauss;
   const unsigned int nTracks = pico->numberOfTracks();
