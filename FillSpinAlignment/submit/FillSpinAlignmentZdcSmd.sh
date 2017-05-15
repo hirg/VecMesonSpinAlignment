@@ -42,8 +42,8 @@ if [ $# -eq 0 ]
 ############################start_event#################################
 
 #############################stop_event#################################
-      # echo -n 1000000000',' >> run$Name$counter.csh  # stop_event
-      echo -n 100024',' >> run$Name$counter.csh  # stop_event: test mode
+      echo -n 1000000000',' >> run$Name$counter.csh  # stop_event
+      # echo -n 100024',' >> run$Name$counter.csh  # stop_event: test mode
 #############################stop_event#################################
 
 ##############################Partilce##################################
@@ -52,7 +52,7 @@ if [ $# -eq 0 ]
       # echo 2')'"'" >> run$Name$counter.csh  # K0S
 ##############################Partilce##################################
 
-      qsub -hard -l scratchfree=500,h_cpu=4:00:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.err ./run$Name$counter.csh
+      qsub -hard -l scratchfree=500,h_cpu=8:00:00,h_vmem=1.8G,projectio=1 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log/job$Name$counter.err ./run$Name$counter.csh
 
       mv run$Name$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Script/
     done
