@@ -14,6 +14,8 @@ class StZdcSmdCorr;
 class StZdcSmdHistoManger;
 class StRunIdEventsDb;
 
+class TStopwatch;
+
 class StZdcSmdAna : public TObject
 {
   public:
@@ -60,6 +62,8 @@ class StZdcSmdAna : public TObject
     static int mInPut_flag;
     static char* VM_EVENT_TREE;
     static char* VM_EVENT_BRANCH;
+
+    TStopwatch *mStopWatch;
 
   ClassDef(StZdcSmdAna,1)
 };

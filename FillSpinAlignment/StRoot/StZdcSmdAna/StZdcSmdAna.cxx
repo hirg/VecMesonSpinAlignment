@@ -39,6 +39,7 @@ StZdcSmdAna::StZdcSmdAna(int energy, int X_flag, int List, Long64_t start_event,
   mZdcSmdCorr = new StZdcSmdCorr(mEnergy);
   // mZdcSmdCut = new StZdcSmdCut();
   mZdcSmdHistoManger = new StZdcSmdHistoManger();
+  mStopWatch = new TStopwatch();
 }
 
 StZdcSmdAna::~StZdcSmdAna()
@@ -76,6 +77,7 @@ void StZdcSmdAna::setStartEvent(const Long64_t StartEvent)
 // initial functions
 void StZdcSmdAna::Init()
 {
+  mStopWatch->Start();
   mZdcSmdCorr->ReadResolution();
   mZdcSmdCorr->CalResolution();
   mZdcSmdHistoManger->Init(mX_flag,mMode);
@@ -319,4 +321,6 @@ void StZdcSmdAna::Finish()
   mFile_OutPut->cd();
   mZdcSmdHistoManger->Write(mX_flag,mMode);
   mFile_OutPut->Close();
+  mStopWatch->Stop();
+  mStopWatch->Print();
 }

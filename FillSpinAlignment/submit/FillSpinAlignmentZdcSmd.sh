@@ -14,7 +14,8 @@ if [ $# -eq 0 ]
     suffix=".root"
     # for((counter=0;counter<3;counter=counter+1)) # 19GeV
     # for((counter=0;counter<5;counter=counter+1)) # 27GeV
-    for((counter=0;counter<7;counter=counter+1)) # 62GeV
+    # for((counter=0;counter<7;counter=counter+1)) # 62GeV
+    for((counter=0;counter<17;counter=counter+1)) # 200GeV
     do
       cp ./run.csh ./run$Name$counter.csh
 
@@ -41,8 +42,8 @@ if [ $# -eq 0 ]
 ############################start_event#################################
 
 #############################stop_event#################################
-      echo -n 1000000000',' >> run$Name$counter.csh  # stop_event
-      # echo -n 100024',' >> run$Name$counter.csh  # stop_event: test mode
+      # echo -n 1000000000',' >> run$Name$counter.csh  # stop_event
+      echo -n 100024',' >> run$Name$counter.csh  # stop_event: test mode
 #############################stop_event#################################
 
 ##############################Partilce##################################
