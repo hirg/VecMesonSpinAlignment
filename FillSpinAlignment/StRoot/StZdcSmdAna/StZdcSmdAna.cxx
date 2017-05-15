@@ -15,6 +15,7 @@
 #include "TVector3.h"
 #include "TLorentzVector.h"
 #include <fstream>
+#include "TStopwatch.h"
 
 ClassImp(StZdcSmdAna)
 
