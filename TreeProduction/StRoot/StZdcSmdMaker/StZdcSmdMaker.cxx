@@ -291,7 +291,7 @@ Int_t StZdcSmdMaker::Make()
   {
     const unsigned int nTracks = mPicoDst->numberOfTracks();
     const int cent9 = mRefMultCorr->getCentralityBin9();
-    if(cent9 < 0) cout << cent9 << endl;
+    // if(cent9 < 0) cout << cent9 << endl;
     const float reweight = mRefMultCorr->getWeight();
     const int nToFMatched = mZdcSmdCut->getMatchedToF();
 

@@ -337,7 +337,9 @@ void StZdcSmdTree::MixEvent_Phi(int Flag_ME, StPicoDst *pico, int cent9, float v
     }
   }
 
+  cout << "vz = " << vz << ", Bin_vz = " << Bin_vz << ", Psi = " << Psi << ", Bin_Psi = " << Bin_Psi << endl;
   int Bin_Event = mEventCounter[cent9][Bin_vz][Bin_Psi];
+  cout << "Bin_Event = " << Bin_Event <<endl;
 
   const double MAGFIELDFACTOR = kilogauss;
   const unsigned int nTracks = pico->numberOfTracks();
