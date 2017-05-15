@@ -5,6 +5,7 @@
 #include <string>
 
 class TFile;
+class TProfile;
 
 class StZdcSmdCorr : public TObject
 {

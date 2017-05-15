@@ -3,6 +3,7 @@
 #include "../Utility/funtions.h"
 #include "TMath.h"
 #include "TFile.h"
+#include "TProfile.h"
 #include "TF1.h"
 #include "StMessMgr.h"
 
