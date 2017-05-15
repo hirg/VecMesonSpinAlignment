@@ -1,6 +1,6 @@
 #include "StRoot/StZdcSmdAna/StZdcSmdCorr.h"
 #include "../Utility/StSpinAlignmentCons.h"
-#include "../Utility/funtions.h"
+#include "../Utility/functions.h"
 #include "TMath.h"
 #include "TFile.h"
 #include "TProfile.h"
