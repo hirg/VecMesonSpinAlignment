@@ -56,9 +56,9 @@ void StZdcSmdAna::setOutputfile(const TString outputfile)
   mOutputfile = outputfile.Copy();
   cout << "Output file was set to: " << mOutputfile.Data() << endl;
 }
-void StZdcSmdAna::setInPutList(const TString iInPutList)
+void StZdcSmdAna::setInPutList(const TString InPutList)
 {
-  mInPutList = iInPutList.Copy();
+  mInPutList = InPutList.Copy();
   TString InFo_InPutList = Form("InPut %s list was set to: %s",vmsa::MixEvent[mX_flag].Data(),mInPutList.Data());
   cout << InFo_InPutList.Data() << endl;
 }
