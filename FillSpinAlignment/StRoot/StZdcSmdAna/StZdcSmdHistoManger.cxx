@@ -97,7 +97,7 @@ void StZdcSmdHistoManger::Fill(float pt, int Cent9, float CosThetaStar, float Re
       }
     }
   }
-  TString KEY_Mass2_Yields = Form("Yields_Centrality_%d_%s_%s",i_cent,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
+  TString KEY_Mass2_Yields = Form("Yields_Centrality_%d_%s_%s",Cent9,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
   h_mMass_Yields[KEY_Mass2_Yields]->Fill(InvMass,reweight);
 }
 //-------------------------------------------------------------
