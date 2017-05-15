@@ -15,7 +15,7 @@ class StZdcSmdCorr : public TObject
 
     // Resolution Correction
     void ReadResolution();
-    float CalResolution();
+    void CalResolution();
     float GetResolution(int Cent9);
 
   private:
