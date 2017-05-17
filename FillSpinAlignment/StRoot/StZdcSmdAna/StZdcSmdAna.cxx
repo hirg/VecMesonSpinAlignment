@@ -303,7 +303,7 @@ void StZdcSmdAna::MakePhi()
 
 	float resolution = mZdcSmdCorr->GetResolution(cent9);
 	float Psi = TMath::ATan2(QFull.Y(),QFull.X());
-	TVector3 nQ_Full(TMath::Sin(Psi),-1.0*TMath::Cos(Psi),0.0); // normal vector of 2nd Event Plane
+	TVector3 nQ_Full(TMath::Sin(Psi),-1.0*TMath::Cos(Psi),0.0); // normal vector of 1st Event Plane
 	TVector3 nQ = nQ_Full.Unit();
 	Double_t CosThetaStar = vKpRest.Dot(nQ);
 	mZdcSmdHistoManger->Fill(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);

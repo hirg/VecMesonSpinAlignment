@@ -116,7 +116,7 @@ namespace vmsa
   std::string const Centrality[9] = {"70%-80%","60%-70%","50%-60%","40%-50%","30%-40%","20%-30%","10%-20%","5%-10%","0%-5%"}; // Centrality bin
   int const Cent_Total = 5;
   int const Cent_start = 0;
-  int const Cent_stop  = 1;
+  int const Cent_stop  = 5;
   int const cent_low[5] = {2,0,7,4,0}; // 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
   int const cent_up[5]  = {5,8,8,6,3}; // 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
   int const Cent_QA    = 0;
@@ -168,8 +168,9 @@ namespace vmsa
   std::string const mPID[3]   = {"Phi","KStar","K0S"};
   float const Norm_Start[3][2]  = {{1.04,0.99},{0.41,0.30},{0.41,0.30}}; // normalise to right and left
   float const Norm_Stop[3][2]   = {{1.05,1.00},{0.46,0.31},{0.46,0.31}};
-  float const BW_Start[3]     = {0.99,1.0,1.0};
-  float const BW_Stop[3]      = {1.05,1.0,1.0};
+  float const BW_Start[3]     = {0.994,1.0,1.0};
+  // float const BW_Start[3]     = {0.99,1.0,1.0}; // for RooFit
+  float const BW_Stop[3]      = {1.050,1.0,1.0};
   float const Width[3]        = {0.00426,0.0487,0.0487};
   float const InvMass_low[3]  = {0.98,0.4,0.4};
   float const InvMass_high[3] = {1.05,0.6,0.6};
