@@ -39,7 +39,7 @@ namespace vmsa
   float const mToFZLocalMax = 1.8;
   float const mNSigmaElectronMax = 2.5;
   float const mNSigmaPionMax = 2.5;
-  float const mNSigmaKaonMax = 2.5;
+  float const mNSigmaKaonMax = 2.0;
   float const mNSigmaProtonMax = 2.5;
   float const mMassPion = 0.13957;
   float const mMassKaon = 0.49368;
@@ -62,7 +62,7 @@ namespace vmsa
   int const Bin_Centrality = 9;
   int const Bin_VertexZ = 10;
   int const Bin_Phi_Psi = 5;
-  int const Buffer_depth = 5;
+  int const Buffer_depth = 3;
   TString const MixEvent[2] = {"SE","ME"};
 
   TString const vm_tree[2]  = {"PhiMesonEvent","KStarEvent"};
