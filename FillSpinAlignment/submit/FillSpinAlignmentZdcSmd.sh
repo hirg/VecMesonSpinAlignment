@@ -15,7 +15,7 @@ if [ $# -eq 0 ]
     # for((counter=0;counter<3;counter=counter+1)) # 19GeV
     # for((counter=0;counter<5;counter=counter+1)) # 27GeV
     # for((counter=0;counter<7;counter=counter+1)) # 62GeV
-    for((counter=0;counter<17;counter=counter+1)) # 200GeV
+    for((counter=0;counter<33;counter=counter+1)) # 200GeV
     do
       cp ./run.csh ./run$Name$counter.csh
 
