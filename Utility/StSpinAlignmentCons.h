@@ -67,7 +67,7 @@ namespace vmsa
 
   TString const vm_tree[2]  = {"PhiMesonEvent","KStarEvent"};
   TString const vm_branch[2] = {"phi_SpinAlignment_branch","KStar_SpinAlignment_branch"};
-  int const mList_Delta = 50;
+  int const mList_Delta = 10;
   //--------------------------------------------------
 
   // used in CalSpinAlginment
