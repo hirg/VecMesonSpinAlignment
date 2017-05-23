@@ -196,6 +196,7 @@ void StEffMcPhi::Make()
     if( !mEffCut->passTrackCutPhi(McPhi) ) continue; // eta cuts for McPhi 
     if( !mEffCut->passTrackCut(McKP) ) continue; // eta cut for McKplus
     if( !mEffCut->passTrackCut(McKM) ) continue; // eta cut for McKminus
+    if( !mEffCut->passDipAngleCut(McKP,McKM) ) continue; // eta cut for McKminus
 
     TLorentzVector lMcPhi;
     lMcPhi.SetPtEtaPhiM(McPhi.McPt,McPhi.McEta,McPhi.McPhi,vmsa::InvMass[pid]);
@@ -217,6 +218,7 @@ void StEffMcPhi::Make()
 
     if( !mEffCut->passTrackCut(RcKP) ) continue; // eta and TPC cuts for RcKplus
     if( !mEffCut->passTrackCut(RcKM) ) continue; // eta and TPC cuts for RcKminus
+    if( !mEffCut->passDipAngleCut(RcKP,RcKM) ) continue; // eta cut for McKminus
     if( !mEffCut->passTrackCutPhi(RcPhi) ) continue;  // eta cuts for RcPhi 
     mEffHistManger->FillHistRc(McPhi.Centrality,McPhi.McPt,McPhi.McEta,McPhi.McPhi,McCosThetaStar);
     // mEffHistManger->FillHistRc(McPhi.Centrality,McKP.McPt,McKP.McEta,McKP.McPhi,McCosThetaStar);

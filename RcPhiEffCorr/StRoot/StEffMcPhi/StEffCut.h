@@ -17,6 +17,9 @@ class StEffCut
     bool passTrackCut(McDecayDau);
     bool passTrackCut(RcDecayDau);
 
+    bool passDipAngleCut(McDecayDau,McDecayDau);
+    bool passDipAngleCut(RcDecayDau,RcDecayDau);
+
   private:
     int mEnergy;
 
