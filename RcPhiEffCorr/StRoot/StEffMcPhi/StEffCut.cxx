@@ -58,17 +58,13 @@ bool StEffCut::passTrackCut(RcDecayDau RcKaon)
 //-----------------------------------------------------------------------------------------------------
 bool StEffCut::passDipAngleCut(McDecayDau McKplus, McDecayDau McKminus)
 {
-  TLorentzVector lMcKplus;
-  lMcKplus.SetPtEtaPhiM(McKplus.McPt,McKplus.McEta,McKplus.McPhi,vmsa::mMassKaon);
-  double KplusPt = lMcKplus.Pt();
-  double KplusPz = lMcKplus.Pz();
-  double KplusP  = lMcKplus.P();
+  double KplusPt = McKplus.McPt;
+  double KplusPz = KplusPt*sinh(McKplus.McEta);
+  double KplusP  = sqrt(KplusPt*KplusPt+KplusPz*KplusPz);
 
-  TLorentzVector lMcKminus;
-  lMcKminus.SetPtEtaPhiM(McKminus.McPt,McKminus.McEta,McKminus.McPhi,vmsa::mMassKaon);
-  double KminusPt = lMcKminus.Pt();
-  double KminusPz = lMcKminus.Pz();
-  double KminusP  = lMcKminus.P();
+  double KminusPt = McKminus.McPt;
+  double KminusPz = KminusPz*sinh(McKminus.McEta);
+  double KminusP  = sqrt(KminusPt*KminusPt+KminusPz*KminusPz);
 
   double costheta = (KplusPt*KminusPt+KplusPz*KminusPz)/(KplusP*KminusP);
   double theta = acos(costheta);
@@ -79,17 +75,13 @@ bool StEffCut::passDipAngleCut(McDecayDau McKplus, McDecayDau McKminus)
 
 bool StEffCut::passDipAngleCut(RcDecayDau RcKplus, RcDecayDau RcKminus)
 {
-  TLorentzVector lRcKplus;
-  lRcKplus.SetPtEtaPhiM(RcKplus.RcPt,RcKplus.RcEta,RcKplus.RcPhi,vmsa::mMassKaon);
-  double KplusPt = lRcKplus.Pt();
-  double KplusPz = lRcKplus.Pz();
-  double KplusP  = lRcKplus.P();
+  double KplusPt = RcKplus.RcPt;
+  double KplusPz = KplusPt*sinh(RcKplus.RcEta);
+  double KplusP  = sqrt(KplusPt*KplusPt+KplusPz*KplusPz);
 
-  TLorentzVector lRcKminus;
-  lMcKminus.SetPtEtaPhiM(RcKminus.RcPt,RcKminus.RcEta,RcKminus.RcPhi,vmsa::mMassKaon);
-  double KminusPt = lRcKminus.Pt();
-  double KminusPz = lRcKminus.Pz();
-  double KminusP  = lRcKminus.P();
+  double KminusPt = RcKminus.RcPt;
+  double KminusPz = KminusPz*sinh(RcKminus.RcEta);
+  double KminusP  = sqrt(KminusPt*KminusPt+KminusPz*KminusPz);
 
   double costheta = (KplusPt*KminusPt+KplusPz*KminusPz)/(KplusP*KminusP);
   double theta = acos(costheta);
