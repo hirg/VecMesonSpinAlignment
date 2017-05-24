@@ -10,7 +10,7 @@ class TChain;
 class StAlexPhiMesonEvent;
 class StAlexPhiMesonTrack;
 class StZdcSmdCorr;
-// class StZdcSmdCut;
+class StZdcSmdCut;
 class StZdcSmdHistoManger;
 class StRunIdEventsDb;
 
