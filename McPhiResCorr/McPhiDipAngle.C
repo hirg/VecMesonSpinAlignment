@@ -34,6 +34,7 @@ void write(int energy);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 float getChi(float Resolution);
 float EventPlaneSmearing(TF1 *f_EP);
+bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 
 // histograms
 TH3F *h_Tracks;
@@ -292,6 +293,17 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   h_phiEP->Fill(lPhi->Pt(),phiSmear);
   h_cosEP->Fill(lPhi->Pt(),CosThetaStarEP);
   h_PsiEP->Fill(PsiEP);
+
+  if(passDipAngleCut(lKplus,lKminus))
+  {
+    h_phiDA->Fill(lPhi->Pt(),phiSmear);
+    h_cosDA->Fill(lPhi->Pt(),CosThetaStarEP);
+  }
+  else
+  {
+    h_phiDAoff->Fill(lPhi->Pt(),phiSmear);
+    h_cosDAoff->Fill(lPhi->Pt(),CosThetaStarEP);
+  }
 }
 
 float getChi(float Resolution)
@@ -319,6 +331,23 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
   return vMcDauStar;
 }
 
+bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus)
+{
+  double KplusPt = lKplus.Pt();
+  double KplusPz = lKplus.Pz();
+  double KplusP  = lKplus.P();
+
+  double KminusPt = lKminus.Pt(); 
+  double KminusPz = lKminus.Pz(); 
+  double KminusP  = lKminus.P();
+
+  double costheta = (KplusPt*KminusPt+KplusPz*KminusPz)/(KplusP*KminusP);
+  double theta = acos(costheta);
+  if(theta < 0.04) return kFALSE;
+
+  return kTRUE;
+}
+
 void write(int energy)
 {
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiDipAngle.root",vmsa::mBeamEnergy[energy].c_str());
@@ -332,6 +361,11 @@ void write(int energy)
   h_phiEP->Write();
   h_cosEP->Write();
   h_PsiEP->Write();
+
+  h_phiDA->Write();
+  h_cosDA->Write();
+  h_phiDAoff->Write();
+  h_cosDAoff->Write();
 
   File_OutPut->Close();
 }
