@@ -11,7 +11,8 @@ class StZdcSmdCut : public TObject
     StZdcSmdCut();
     ~StZdcSmdCut();
 
-    bool passPhiCut(TLorentzVector); // eta cut for Phi candidate
+    bool passPhiCut(TLorentzVector); // eta cut for phi-meson candidate
+    bool passDipAngleCut(TLorentzVector,TLorentzVector); // dip angle cut for phi-meson
 
   private:
 

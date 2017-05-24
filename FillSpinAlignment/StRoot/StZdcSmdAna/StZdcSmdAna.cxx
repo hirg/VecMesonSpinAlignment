@@ -1,5 +1,5 @@
 #include "StRoot/StZdcSmdAna/StZdcSmdAna.h"
-// #include "StRoot/StZdcSmdAna/StZdcSmdCut.h"
+#include "StRoot/StZdcSmdAna/StZdcSmdCut.h"
 #include "StRoot/StZdcSmdAna/StZdcSmdCorr.h"
 #include "StRoot/StZdcSmdAna/StZdcSmdHistoManger.h"
 #include "../Utility/StSpinAlignmentCons.h"
@@ -38,7 +38,7 @@ StZdcSmdAna::StZdcSmdAna(int energy, int X_flag, int List, Long64_t start_event,
     mRefMultCorr = CentralityMaker::instance()->getRefMultCorr();
   }
   mZdcSmdCorr = new StZdcSmdCorr(mEnergy);
-  // mZdcSmdCut = new StZdcSmdCut();
+  mZdcSmdCut = new StZdcSmdCut();
   mZdcSmdHistoManger = new StZdcSmdHistoManger();
   mStopWatch = new TStopwatch();
 }
@@ -282,19 +282,19 @@ void StZdcSmdAna::MakePhi()
       TLorentzVector lTrack = lTrackA + lTrackB; // phi-meson
       Float_t pt_lTrack = lTrack.Perp();
 
-      // if( // with TPC+ToF (if possible) at low momentum and TPC+ToF (always) at high momentum 
-	//   ((fabs(pA) <= 0.65 && m2A < -10) || (m2A > 0 && ((fabs(pA) < 1.5 && m2A > 0.16 && m2A < 0.36) || (fabs(pA) >= 1.5 && m2A > 0.125 && m2A < 0.36)) )) &&
-	//   ((fabs(pB) <= 0.65 && m2B < -10) || (m2B > 0 && ((fabs(pB) < 1.5 && m2B > 0.16 && m2B < 0.36) || (fabs(pB) >= 1.5 && m2B > 0.125 && m2B < 0.36)) )) &&
-	//   (pt_lTrack < 0.8 || (pt_lTrack >= 0.8 && ( (m2A > 0.16 && m2A < 0.36) || (m2B > 0.16 && m2B < 0.36)))) &&
-	//   (
-	//    ((m2A < -10 && nsA < 2.5 && nsA > -1.5) || (m2A > 0.16 && m2A < 0.36)) &&
-	//    ((m2B < -10 && nsB < 2.5 && nsB > -1.5) || (m2B > 0.16 && m2B < 0.36))
-	//   )
-	// )
-      if(fabs(nsA) < 2.0 && fabs(nsB) < 2.0)
+      // if(fabs(nsA) < 2.0 && fabs(nsB) < 2.0)
+      if( // with TPC+ToF (if possible) at low momentum and TPC+ToF (always) at high momentum 
+	  ((fabs(pA) <= 0.65 && m2A < -10) || (m2A > 0 && ((fabs(pA) < 1.5 && m2A > 0.16 && m2A < 0.36) || (fabs(pA) >= 1.5 && m2A > 0.125 && m2A < 0.36)) )) &&
+	  ((fabs(pB) <= 0.65 && m2B < -10) || (m2B > 0 && ((fabs(pB) < 1.5 && m2B > 0.16 && m2B < 0.36) || (fabs(pB) >= 1.5 && m2B > 0.125 && m2B < 0.36)) )) &&
+	  (pt_lTrack < 0.8 || (pt_lTrack >= 0.8 && ( (m2A > 0.16 && m2A < 0.36) || (m2B > 0.16 && m2B < 0.36)))) &&
+	  (
+	   ((m2A < -10 && nsA < 2.5 && nsA > -1.5) || (m2A > 0.16 && m2A < 0.36)) &&
+	   ((m2B < -10 && nsB < 2.5 && nsB > -1.5) || (m2B > 0.16 && m2B < 0.36))
+	  )
+	)
       {
-	Float_t eta_lTrack = lTrack.Eta();
-	if(TMath::Abs(eta_lTrack) > 1.0) continue;
+	if( !(mZdcSmdCut->passPhiCut(lTrack)) ) continue;
+	if( !(mZdcSmdCut->passDipAngleCut(lTrackA,lTrackB)) ) continue;
 
 	Float_t InvMass_lTrack = lTrack.M();
 	TVector3 vBetaPhi = -1.0*lTrack.BoostVector(); // get phi beta
