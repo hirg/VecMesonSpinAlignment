@@ -54,7 +54,7 @@ class StZdcSmdAna : public TObject
     StAlexPhiMesonEvent *mPhiMeson_event;
     StAlexPhiMesonTrack *mPhiMeson_track;
     StZdcSmdCorr *mZdcSmdCorr;
-    // StZdcSmdCut *mZdcSmdCut;
+    StZdcSmdCut *mZdcSmdCut;
     StZdcSmdHistoManger *mZdcSmdHistoManger;
     StRunIdEventsDb *mRunIdEventsDb;
 
