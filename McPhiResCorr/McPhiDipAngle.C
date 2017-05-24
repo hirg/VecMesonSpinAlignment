@@ -71,6 +71,8 @@ void McPhiDipAngle(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
   f_spec = readspec(energy,pid,cent);
 
   // float const Resolution = 0.81; // xin's resolution
+  float const Resolution = readRes(energy,pid,cent);
+  cout << "InPut Resolution = " << Resolution << endl;
   float const chi = getChi(Resolution);
   f_EP = new TF1("f_EP",EventPlaneDist,-TMath::PiOver2(),TMath::PiOver2(),2);
   f_EP->FixParameter(0,chi);
