@@ -17,11 +17,9 @@ temp_gccflags.c
 */*_C.*
 */macro/*_C.*
 
-McPhiResCorr/McPhi*
 McPhiResCorr/*_C.*
 McPhiResCorr/*.pdf
 McPhiResCorr/*.eps
-!McPhiResCorr/McPhiResCorr.C
 
 CalSpinAlignment/figures/*.eps
 CalSpinAlignment/figures/*.pdf
