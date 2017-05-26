@@ -217,15 +217,15 @@ TF1* readspec(int energy, int pid, int centrality)
 
 void getKinematics(TLorentzVector& lPhi, double const mass)
 {
-  f_flow->ReleaseParameter(0);
   double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
   double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
-  f_flow->SetParameter(0,f_v2->Eval(pt));
-  double const phi = f_flow->GetRandom();
+  // f_flow->ReleaseParameter(0);
+  // f_flow->SetParameter(0,f_v2->Eval(pt));
+  // double const phi = f_flow->GetRandom();
 
   // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
   // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
-  // double const phi = TMath::TwoPi() * gRandom->Rndm();
+  double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   double const mT = sqrt(mass * mass + pt * pt);
   double const pz = mT * sinh(y);

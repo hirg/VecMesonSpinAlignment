@@ -394,19 +394,19 @@ void StZdcSmdTree::MixEvent_Phi(int Flag_ME, StPicoDst *pico, int cent9, float v
 
       if(mZdcSmdCut->passSigKaonCut(track,scale_nSigma_factor))
       {
-	// if(
-	//     (momentum < 0.65 && ((Mass2 > Mass2_low && Mass2 < Mass2_up) || Mass2 < -10.0)) // dE/dx + ToF
-	//     || (momentum >= 0.65 && (Mass2 > Mass2_low && Mass2 < Mass2_up)) // dE/dx + ToF(always)
-	//   )
-	// {
-	MEKey key = MEKey(cent9,Bin_vz,Bin_Psi,Bin_Event,charge);
-	mMass2[key].push_back(static_cast<float>(mZdcSmdCut->getMass2(track))); // mass2
-	mDca[key].push_back(static_cast<float>(track->dca()*track->charge())); // dca*charge 
-	mNHitsFit[key].push_back(static_cast<float>(track->nHitsFit())); // nHitsFit
-	mNSigmaKaon[key].push_back(static_cast<float>((track->nSigmaKaon())*scale_nSigma_factor)); // nSigmaKaon
-	mHelix_Kaon[key].push_back(static_cast<StPhysicalHelixD>(StPhysicalHelixD(track->pMom(),event->primaryVertex(),event->bField()*MAGFIELDFACTOR,track->charge())));// get helix from the pMom 
-	mMomentum[key].push_back(static_cast<float>(track->pMom().mag()));// get helix from the pMom 
-	// }
+	if(
+	    (momentum < 0.65 && ((Mass2 > Mass2_low && Mass2 < Mass2_up) || Mass2 < -10.0)) // dE/dx + ToF
+	    || (momentum >= 0.65 && (Mass2 > Mass2_low && Mass2 < Mass2_up)) // dE/dx + ToF(always)
+	  )
+	{
+	  MEKey key = MEKey(cent9,Bin_vz,Bin_Psi,Bin_Event,charge);
+	  mMass2[key].push_back(static_cast<float>(mZdcSmdCut->getMass2(track))); // mass2
+	  mDca[key].push_back(static_cast<float>(track->dca()*track->charge())); // dca*charge 
+	  mNHitsFit[key].push_back(static_cast<float>(track->nHitsFit())); // nHitsFit
+	  mNSigmaKaon[key].push_back(static_cast<float>((track->nSigmaKaon())*scale_nSigma_factor)); // nSigmaKaon
+	  mHelix_Kaon[key].push_back(static_cast<StPhysicalHelixD>(StPhysicalHelixD(track->pMom(),event->primaryVertex(),event->bField()*MAGFIELDFACTOR,track->charge())));// get helix from the pMom 
+	  mMomentum[key].push_back(static_cast<float>(track->pMom().mag()));// get helix from the pMom 
+	}
       }
     }
   }
