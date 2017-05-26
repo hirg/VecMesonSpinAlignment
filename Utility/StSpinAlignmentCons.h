@@ -62,7 +62,7 @@ namespace vmsa
   int const Bin_Centrality = 9;
   int const Bin_VertexZ = 10;
   int const Bin_Phi_Psi = 5;
-  int const Buffer_depth = 3;
+  int const Buffer_depth = 5;
   TString const MixEvent[2] = {"SE","ME"};
 
   TString const vm_tree[2]  = {"PhiMesonEvent","KStarEvent"};
