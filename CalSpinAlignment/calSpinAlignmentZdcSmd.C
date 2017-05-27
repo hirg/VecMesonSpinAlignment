@@ -27,11 +27,11 @@ void calSpinAlignmentZdcSmd(int energy = 6, int pid = 0, int year = 0)
   TGaxis::SetMaxDigits(4);
   gStyle->SetOptDate(0);
 
-  // string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/%s/Yields/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
-  string InPutFile_SE = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/%s/Yields/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  // string InPutFile_SE = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_SE = TFile::Open(InPutFile_SE.c_str());
-  // string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/%s/Yields/merged_file/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
-  string InPutFile_ME = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/%s/Yields/merged_file/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  // string InPutFile_ME = Form("/Users/xusun/Data/SpinAlignment/AuAu%s/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
   TFile *File_ME = TFile::Open(InPutFile_ME.c_str());
 
   // read in histogram for same event and mixed event
@@ -605,28 +605,23 @@ void calSpinAlignmentZdcSmd(int energy = 6, int pid = 0, int year = 0)
   c_Rho00_pT->SaveAs(figure_name.c_str());
 
   
-#if 0
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/RawRhoPt.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/%s/rho00/RawRhoPt.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
   h_play->Write();
   for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // Centrality loop
   {
-    for(int i_eta = vmsa::Eta_start; i_eta < vmsa::Eta_stop; i_eta++) // EtaGap loop
+    string KEY_Rho00_Count = Form("Rho00_Count_Centrality_%d_%s",i_cent,vmsa::mPID[pid].c_str()); // bin counting
+    g_mRho00[KEY_Rho00_Count]->Write();
+    string KEY_Rho00_BW = Form("Rho00_BW_Centrality_%d_%s",i_cent,vmsa::mPID[pid].c_str()); // breit wigner fits
+    g_mRho00[KEY_Rho00_BW]->Write();
+    for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
     {
-      string KEY_Rho00_Count = Form("Rho00_Count_Centrality_%d_EtaGap_%d_%s",i_cent,i_eta,vmsa::mPID[pid].c_str()); // bin counting
-      g_mRho00[KEY_Rho00_Count]->Write();
-      string KEY_Rho00_BW = Form("Rho00_BW_Centrality_%d_EtaGap_%d_%s",i_cent,i_eta,vmsa::mPID[pid].c_str()); // breit wigner fits
-      g_mRho00[KEY_Rho00_BW]->Write();
-      for(int i_pt = vmsa::pt_rebin_first[energy]; i_pt < vmsa::pt_rebin_last[energy]; i_pt++) // pt loop
-      {
-	string KEY_Count = Form("Count_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,i_cent,i_eta,vmsa::mPID[pid].c_str());
-	h_mCounts[KEY_Count]->Write();
-	string KEY_BW = Form("BW_pt_%d_Centrality_%d_EtaGap_%d_2nd_%s_SM",i_pt,i_cent,i_eta,vmsa::mPID[pid].c_str());
-	h_mCounts[KEY_BW]->Write();
-      }
+      string KEY_Count = Form("Count_pt_%d_Centrality_%d_1st_%s_SM",i_pt,i_cent,vmsa::mPID[pid].c_str());
+      h_mCounts[KEY_Count]->Write();
+      string KEY_BW = Form("BW_pt_%d_Centrality_%d_1st_%s_SM",i_pt,i_cent,vmsa::mPID[pid].c_str());
+      h_mCounts[KEY_BW]->Write();
     }
   }
   File_OutPut->Close();
-#endif
 }
