@@ -39,7 +39,7 @@ namespace vmsa
   float const mToFZLocalMax = 1.8;
   float const mNSigmaElectronMax = 2.5;
   float const mNSigmaPionMax = 2.5;
-  float const mNSigmaKaonMax = 2.0;
+  float const mNSigmaKaonMax = 2.5;
   float const mNSigmaProtonMax = 2.5;
   float const mMassPion = 0.13957;
   float const mMassKaon = 0.49368;
