@@ -393,6 +393,9 @@ void write(int energy)
   h_phiDAoff->Write();
   h_cosDAoff->Write();
 
+  h_DA_cos->Write();
+  h_DA_EP->Write();
+
   File_OutPut->Close();
 }
 
