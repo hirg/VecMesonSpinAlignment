@@ -72,7 +72,7 @@ void McPhiDipAngle(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
 
   // QA for dip angle cut
   h_DA_cos = new TH3F("h_DA_cos","h_DA_cos",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,100,0.0,TMath::Pi());
-  h_DA_EP = new TH3F("h_DA_EP","h_DA_EP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi*10,-TMath::PiOver2(),TMath::PiOver2(),100,0.0,TMath::Pi());
+  h_DA_EP = new TH3F("h_DA_EP","h_DA_EP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi*10,-TMath::Pi(),TMath::Pi(),100,0.0,TMath::Pi());
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
   f_v2   = readv2(energy,pid,cent);
@@ -226,13 +226,13 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
 {
   double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
   double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
-  // f_flow->ReleaseParameter(0);
-  // f_flow->SetParameter(0,f_v2->Eval(pt));
-  // double const phi = f_flow->GetRandom();
+  f_flow->ReleaseParameter(0);
+  f_flow->SetParameter(0,f_v2->Eval(pt));
+  double const phi = f_flow->GetRandom();
 
   // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
   // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
-  double const phi = TMath::TwoPi() * gRandom->Rndm();
+  // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   double const mT = sqrt(mass * mass + pt * pt);
   double const pz = mT * sinh(y);
