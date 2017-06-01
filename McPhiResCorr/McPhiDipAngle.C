@@ -42,6 +42,8 @@ TH2F *h_phiRP, *h_phiEP, *h_phiDA, *h_phiDAoff;
 TH2F *h_cosRP, *h_cosEP, *h_cosDA, *h_cosDAoff;
 TH1F *h_PsiEP;
 
+TH3F *h_DA_cos, *h_DA_EP;
+
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
 
@@ -66,6 +68,9 @@ void McPhiDipAngle(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
   h_cosDAoff = new TH2F("h_cosDAoff","h_cosDAoff",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
 
   h_PsiEP = new TH1F("h_PsiEP","h_PsiEP",BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
+
+  // QA for dip angle cut
+  h_DA_cos = new TH3F("h_DA_cos","h_DA_cos",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,100,0,TMath::Pi());
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
   f_v2   = readv2(energy,pid,cent);

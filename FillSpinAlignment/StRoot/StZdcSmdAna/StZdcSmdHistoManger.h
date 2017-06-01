@@ -20,7 +20,6 @@ class StZdcSmdHistoManger
 
     void InitSub(int X_flag, int mode);
     void FillKstar(float pt, int Cent9, float CosThetaStar, float Res, float Mass2, double reweight, int X_flag, int mode);
-    void FillK0S(float pt, int Cent9, float CosThetaStar, float Res, float Mass2, double reweight, int X_flag, int mode);
     void Fillphi(float pt, int Cent9, float CosThetaStar, float Res, float Mass2, double reweight, int X_flag, int mode);
     void WriteSub(int X_flag, int mode);
 
@@ -30,7 +29,6 @@ class StZdcSmdHistoManger
     // 1 = centrality: 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
     // 2 = cos(theta*)
     TH1FMap h_mMass2;
-    TH1FMap h_mInvMass_K0S;
     TH1FMap h_mInvMass_Kstar;
     TH1FMap h_mInvMass_phi;
 

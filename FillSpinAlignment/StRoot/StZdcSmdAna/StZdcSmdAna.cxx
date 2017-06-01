@@ -320,21 +320,14 @@ void StZdcSmdAna::MakePhi()
 	TLorentzVector lKstarBar = lTrackB+lTrackPiPlus;
 	double InvMass_KstarBar = lKstarBar.M();
 
-	TLorentzVector lK0S = lTrackPiPlus+lTrackPiMinus;
-	double InvMass_K0S = lK0S.M();
-
-	bool isFilled = 0;
 	if((InvMass_Kstar > 0.89594-3*0.0487 && InvMass_Kstar < 0.89594+3*0.0487) || (InvMass_KstarBar > 0.89594-3*0.0487 && InvMass_KstarBar < 0.89594+3*0.0487))
 	{
 	  mZdcSmdHistoManger->FillKstar(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);
-	  isFilled = 1;
 	}
-	if(InvMass_K0S > 0.48 && InvMass_K0S < 0.52)
+	else 
 	{
-	  mZdcSmdHistoManger->FillK0S(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);
-	  isFilled = 1;
+	  mZdcSmdHistoManger->Fillphi(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);
 	}
-	if(!isFilled) mZdcSmdHistoManger->Fillphi(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);
       }
     }
   }

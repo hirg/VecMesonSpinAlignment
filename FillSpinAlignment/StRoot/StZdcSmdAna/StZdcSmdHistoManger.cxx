@@ -152,12 +152,8 @@ void StZdcSmdHistoManger::InitSub(int X_flag, int mode) // 0 for Same Event, 1 f
       {
 	TString Mode[2] = {"SE","ME"};
 	TString KEY_Mass2 = Form("Kstar_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
-	h_mInvMass_Kstar[KEY_Mass2] = new TH1F(KEY_Mass2.Data(),KEY_Mass2.Data(),200,0.75,1.1);
+	h_mInvMass_Kstar[KEY_Mass2] = new TH1F(KEY_Mass2.Data(),KEY_Mass2.Data(),200,0.75,1.05);
 	h_mInvMass_Kstar[KEY_Mass2]->Sumw2();
-
-	KEY_Mass2 = Form("K0S_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
-	h_mInvMass_K0S[KEY_Mass2] = new TH1F(KEY_Mass2.Data(),KEY_Mass2.Data(),200,0.4,0.6);
-	h_mInvMass_K0S[KEY_Mass2]->Sumw2();
 
 	KEY_Mass2 = Form("phi_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
 	h_mInvMass_phi[KEY_Mass2] = new TH1F(KEY_Mass2.Data(),KEY_Mass2.Data(),200,vmsa::InvMass_low[mode],vmsa::InvMass_high[mode]);
@@ -187,35 +183,6 @@ void StZdcSmdHistoManger::FillKstar(float pt, int Cent9, float CosThetaStar, flo
 		// flow
 		TString KEY_Mass2 = Form("Kstar_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
 		h_mInvMass_Kstar[KEY_Mass2]->Fill(InvMass,reweight);
-	      }
-	    }
-	  }
-	}
-      }
-    }
-  }
-}
-
-void StZdcSmdHistoManger::FillK0S(float pt, int Cent9, float CosThetaStar, float Res, float InvMass, double reweight, int X_flag, int mode)
-{
-  TString Mode[2] = {"SE","ME"};
-  if(Res > 0.0)
-  {
-    for(int i_pt = 0; i_pt < vmsa::pt_total; i_pt++) // pt_bin
-    {
-      if(pt >= vmsa::ptRawStart[i_pt] && pt < vmsa::ptRawStop[i_pt])
-      {
-	for(int i_cent = vmsa::Cent_start; i_cent < vmsa::Cent_stop; i_cent++) // centrality bin
-	{
-	  if(Cent9 >= vmsa::cent_low[i_cent] && Cent9 <= vmsa::cent_up[i_cent])
-	  {
-	    for(int i_theta = 0; i_theta < vmsa::CTS_total; i_theta++) // phi-psi2 bin
-	    {
-	      if(TMath::Abs(CosThetaStar) >= vmsa::CTS_low[i_theta] && TMath::Abs(CosThetaStar) < vmsa::CTS_up[i_theta])
-	      {
-		// flow
-		TString KEY_Mass2 = Form("K0S_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
-		h_mInvMass_K0S[KEY_Mass2]->Fill(InvMass,reweight);
 	      }
 	    }
 	  }
@@ -266,9 +233,6 @@ void StZdcSmdHistoManger::WriteSub(int X_flag, int mode)
       {
 	TString KEY_Mass2 = Form("Kstar_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
 	h_mInvMass_Kstar[KEY_Mass2]->Write();
-
-	KEY_Mass2 = Form("K0S_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
-	h_mInvMass_K0S[KEY_Mass2]->Write();
 
 	KEY_Mass2 = Form("phi_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
 	h_mInvMass_phi[KEY_Mass2]->Write();
