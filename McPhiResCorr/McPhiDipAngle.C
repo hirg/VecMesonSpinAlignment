@@ -34,6 +34,7 @@ void write(int energy);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 float getChi(float Resolution);
 float EventPlaneSmearing(TF1 *f_EP);
+double calDipAngle(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 
 // histograms
@@ -70,7 +71,8 @@ void McPhiDipAngle(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
   h_PsiEP = new TH1F("h_PsiEP","h_PsiEP",BinPhi*10,-TMath::PiOver2(),TMath::PiOver2());
 
   // QA for dip angle cut
-  h_DA_cos = new TH3F("h_DA_cos","h_DA_cos",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,100,0,TMath::Pi());
+  h_DA_cos = new TH3F("h_DA_cos","h_DA_cos",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0,100,-TMath::Pi(),TMath::Pi());
+  h_DA_EP = new TH3F("h_DA_EP","h_DA_EP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi*10,-TMath::PiOver2(),TMath::PiOver2(),100,-TMath::Pi(),TMath::Pi());
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
   f_v2   = readv2(energy,pid,cent);
@@ -309,6 +311,9 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
     h_phiDAoff->Fill(lPhi->Pt(),phiSmear);
     h_cosDAoff->Fill(lPhi->Pt(),CosThetaStarEP);
   }
+  double dipAngle = calDipAngle(lKplus,lKminus);
+  h_DA_cos->Fill(lPhi->Pt(),CosThetaStarEP,dipAngle);
+  h_DA_EP->Fill(lPhi->Pt(),phiSmear,dipAngle);
 }
 
 float getChi(float Resolution)
@@ -334,6 +339,22 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
   TVector3 vMcDauStar = lKaon.Vect().Unit(); // momentum direction of Kplus in phi-meson rest frame
 
   return vMcDauStar;
+}
+
+double calDipAngle(TLorentzVector const& lKplus, TLorentzVector const& lKminus)
+{
+  double KplusPt = lKplus.Pt();
+  double KplusPz = lKplus.Pz();
+  double KplusP  = lKplus.P();
+
+  double KminusPt = lKminus.Pt(); 
+  double KminusPz = lKminus.Pz(); 
+  double KminusP  = lKminus.P();
+
+  double costheta = (KplusPt*KminusPt+KplusPz*KminusPz)/(KplusP*KminusP);
+  double theta = acos(costheta);
+
+  return theta;
 }
 
 bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus)
