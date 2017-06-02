@@ -152,7 +152,7 @@ void StZdcSmdHistoManger::InitSub(int X_flag, int mode) // 0 for Same Event, 1 f
       {
 	TString Mode[2] = {"SE","ME"};
 	TString KEY_Mass2 = Form("Kstar_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
-	h_mInvMass_Kstar[KEY_Mass2] = new TH1F(KEY_Mass2.Data(),KEY_Mass2.Data(),200,0.75,1.05);
+	h_mInvMass_Kstar[KEY_Mass2] = new TH1F(KEY_Mass2.Data(),KEY_Mass2.Data(),50,0.85,0.95);
 	h_mInvMass_Kstar[KEY_Mass2]->Sumw2();
 
 	KEY_Mass2 = Form("phi_pt_%d_Centrality_%d_CosThetaStar_%d_1st_%s_%s",i_pt,i_cent,i_theta,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());

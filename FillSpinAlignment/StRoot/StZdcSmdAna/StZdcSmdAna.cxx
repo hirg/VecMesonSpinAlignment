@@ -296,7 +296,7 @@ void StZdcSmdAna::MakePhi()
       {
 	if( !(mZdcSmdCut->passPhiCut(lTrack)) ) continue;
 	// if( !(mZdcSmdCut->passDipAngleCut(lTrackA,lTrackB)) ) continue;
-	if( (mZdcSmdCut->passDipAngleCut(lTrackA,lTrackB)) ) continue;
+	// if( (mZdcSmdCut->passDipAngleCut(lTrackA,lTrackB)) ) continue;
 
 	Float_t InvMass_lTrack = lTrack.M();
 	TVector3 vBetaPhi = -1.0*lTrack.BoostVector(); // get phi beta
