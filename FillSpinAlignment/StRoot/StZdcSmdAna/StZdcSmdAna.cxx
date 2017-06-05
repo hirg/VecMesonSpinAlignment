@@ -82,7 +82,6 @@ void StZdcSmdAna::Init()
   mZdcSmdCorr->ReadResolution();
   mZdcSmdCorr->CalResolution();
   mZdcSmdHistoManger->Init(mX_flag,mMode);
-  mZdcSmdHistoManger->InitSub(mX_flag,mMode);
 
   TString inputdir = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/%s/Forest/",vmsa::mBeamEnergy[mEnergy].c_str(),vmsa::mPID[mMode].c_str());
   setInputDir(inputdir);
@@ -310,28 +309,6 @@ void StZdcSmdAna::MakePhi()
 	TVector3 nQ = nQ_Full.Unit();
 	float CosThetaStar = vKpRest.Dot(nQ);
 	mZdcSmdHistoManger->Fill(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);
-
-	TLorentzVector lTrackPiPlus, lTrackPiMinus; 
-	lTrackPiPlus.SetXYZM(lTrackA.X(),lTrackA.Y(),lTrackA.Z(),vmsa::mMassPion);
-	lTrackPiMinus.SetXYZM(lTrackB.X(),lTrackB.Y(),lTrackB.Z(),vmsa::mMassPion);
-
-	TLorentzVector lKstar = lTrackA+lTrackPiMinus;
-	double InvMass_Kstar = lKstar.M();
-	TLorentzVector lKstarBar = lTrackB+lTrackPiPlus;
-	double InvMass_KstarBar = lKstarBar.M();
-
-	if( !((InvMass_Kstar > 0.89594-0.0487 && InvMass_Kstar < 0.89594+0.0487) || (InvMass_KstarBar > 0.89594-0.0487 && InvMass_KstarBar < 0.89594+0.0487)) )
-	{
-	  mZdcSmdHistoManger->Fillphi(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_lTrack,reweight,mX_flag,mMode);
-	}
-	if(InvMass_Kstar > 0.89594-0.0487 && InvMass_Kstar < 0.89594+0.0487)
-	{
-	  mZdcSmdHistoManger->FillKstar(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_Kstar,reweight,mX_flag,mMode);
-	}
-	if(InvMass_KstarBar > 0.89594-0.0487 && InvMass_KstarBar < 0.89594+0.0487)
-	{
-	  mZdcSmdHistoManger->FillKstar(pt_lTrack,cent9,CosThetaStar,resolution,InvMass_KstarBar,reweight,mX_flag,mMode);
-	}
       }
     }
   }
@@ -346,7 +323,6 @@ void StZdcSmdAna::Finish()
 {
   mFile_OutPut->cd();
   mZdcSmdHistoManger->Write(mX_flag,mMode);
-  mZdcSmdHistoManger->WriteSub(mX_flag,mMode);
   mFile_OutPut->Close();
   mStopWatch->Stop();
   mStopWatch->Print();
