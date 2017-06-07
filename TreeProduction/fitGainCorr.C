@@ -92,14 +92,11 @@ void fitGainCorr(int energy = 6)
 	f_exp->SetLineWidth(2);
 	f_exp->SetLineStyle(1);
 	f_exp->Draw("l same");
+	string FigureName = Form("../figures/c_mGainCorr%s%s.eps",vmsa::mEastWest[i_eastwest].c_str(),vmsa::mVertHori[i_verthori].c_str());
+	c_GainCorr[i_eastwest][i_verthori]->SaveAs(FigureName.c_str());
       }
     }
   }
-
-  float slopeEastVertical = ;
-  float slopeEastHorizontal = ;
-  float slopeWestVertical = ;
-  float slopeWestHorizontal = ;
 
   // print Gain Correcction Factors
   cout << "const float mGainCorr[2][2][8] = {" << endl;
