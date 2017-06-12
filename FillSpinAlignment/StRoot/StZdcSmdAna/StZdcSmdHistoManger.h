@@ -24,6 +24,7 @@ class StZdcSmdHistoManger
     // 1 = centrality: 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
     // 2 = cos(theta*)
     TH1FMap h_mMass2;
+    TH1FMap h_mMass_Cent; // 1 = centrality: 0-8 centrality bins from StRefMultCorr
 
     // raw pt spectra
     // 0 = pt bin
