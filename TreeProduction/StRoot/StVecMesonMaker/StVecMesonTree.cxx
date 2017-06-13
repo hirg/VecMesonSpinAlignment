@@ -418,8 +418,10 @@ void StVecMesonTree::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, F
       }
       if(momentum >= 0.5)
       {
-	Mass2_low = 0.277205 - 0.0812931*momentum;
-	Mass2_up = 0.215517 + 0.076801*momentum;
+	// Mass2_low = 0.277205 - 0.0812931*momentum;
+	// Mass2_up = 0.215517 + 0.076801*momentum;
+	Mass2_low = 0.19 - 0.06*momentum;
+	Mass2_up = 0.34 + 0.04*momentum;
       }
 
       Int_t charge = 0; // k+

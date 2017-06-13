@@ -6,8 +6,8 @@ date
 if [ $# -eq 0 ]
   then
     PID=Phi
-    Energy=62GeV
-    SM=ME
+    Energy=200GeV
+    SM=SE
     InPutList="./submit_"$Energy".list"
     counter=0;
     for item in `cat $InPutList`
@@ -31,16 +31,16 @@ if [ $# -eq 0 ]
      # echo -n 2',' >> run$Name$counter.csh  # 19.6GeV
      # echo -n 3',' >> run$Name$counter.csh  # 27GeV
      # echo -n 4',' >> run$Name$counter.csh  # 39GeV
-     echo -n 5',' >> run$Name$counter.csh  # 62.4GeV
-     # echo -n 6',' >> run$Name$counter.csh  # 200GeV
+     # echo -n 5',' >> run$Name$counter.csh  # 62.4GeV
+     echo -n 6',' >> run$Name$counter.csh  # 200GeV
 ###############################energy###################################
 
 ###############################flag_ME###################################
-      # echo 0')'"'" >> run$Name$counter.csh  # Same Event 
-     echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
+      echo 0')'"'" >> run$Name$counter.csh  # Same Event 
+     # echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
 ###############################flag_ME###################################
 
-      qsub -hard -l projectio=1,scratchfree=500,h_cpu=6:00:00,h_vmem=1.8G -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
+      qsub -hard -l projectio=1,scratchfree=500,h_cpu=12:00:00,h_vmem=1.8G -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
 
       mv run$Name$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Script/
       let counter=counter+1;

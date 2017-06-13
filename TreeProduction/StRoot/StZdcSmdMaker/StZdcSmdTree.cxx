@@ -384,8 +384,10 @@ void StZdcSmdTree::MixEvent_Phi(int Flag_ME, StPicoDst *pico, int cent9, float v
       }
       if(momentum >= 0.5)
       {
-	Mass2_low = 0.277205 - 0.0812931*momentum;
-	Mass2_up = 0.215517 + 0.076801*momentum;
+	// Mass2_low = 0.277205 - 0.0812931*momentum;
+	// Mass2_up = 0.215517 + 0.076801*momentum;
+	Mass2_low = 0.19 - 0.06*momentum;
+	Mass2_up = 0.34 + 0.04*momentum;
       }
 
       int charge = 0; // k+
