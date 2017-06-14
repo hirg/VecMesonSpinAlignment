@@ -51,7 +51,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 1, int cent = 0, int const NMax = 100000)
+void McLambdaEta(int energy = 6, int pid = 1, int cent = 0, int const NMax = 1000000)
 {
   int   const BinPt    = vmsa::BinPt;
   int   const BinY     = vmsa::BinY;
