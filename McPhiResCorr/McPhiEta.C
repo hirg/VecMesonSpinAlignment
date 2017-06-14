@@ -212,7 +212,9 @@ TH1F* readeta(int energy, int pid, int centrality)
 {
   string InPutEta = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Phi_Eta.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_Eta = TFile::Open(InPutEta.c_str());
-  TH1F *h_eta = (TH1F*)File_Eta->Get("h_mEta");
+  TH2F *h_mEta_Cos_sig = (TH2F*)File_Eta->Get("h_mEta_Cos_sig");
+  TH1F *h_eta = (TH1F*)h_mEta_Cos_sig->ProjectionX();
+
   return h_eta;
 }
 
