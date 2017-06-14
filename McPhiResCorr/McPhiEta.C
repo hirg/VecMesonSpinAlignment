@@ -37,10 +37,12 @@ float getChi(float Resolution);
 float EventPlaneSmearing(TF1 *f_EP);
 double calDipAngle(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
+bool passEtaCut(float eta, int BinEta);
 
 // histograms
 TH3F *h_Tracks;
 TH2F *h_phiRP, *h_cosRP;
+TH2F *h_CosEtaKaon[20], *h_CosEtaPhi;
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -58,6 +60,15 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
 
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   h_cosRP = new TH2F("h_cosRP","h_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+
+  for(int i_eta = 0; i_eta < 20; ++i_eta)
+  {
+    string HistName;
+    HistName = Form("h_CosEtaKaon_%d",i_eta);
+    h_CosEtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+    HistName = Form("h_CosEtaPhi_%d",i_eta);
+    h_CosEtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+  }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
   f_v2   = readv2(energy,pid,cent);
@@ -282,6 +293,19 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   h_phiRP->Fill(lPhi->Pt(),lPhi->Phi());
   h_cosRP->Fill(lPhi->Pt(),CosThetaStarRP);
   h_Tracks->Fill(lPhi->Pt(),lPhi->Eta(),lPhi->Phi());
+
+  float Pt_lPhi = lPhi->Pt();
+  float Eta_lPhi = lPhi->Eta();
+  float Eta_lKplus = lKplus.Eta();
+  float Eta_lKminus = lKminus.Eta();
+
+  for(int i_eta = 0; i_eta < 20; ++i_eta)
+  {
+    if( passEtaCut(Eta_lPhi,i_eta) ) h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+
+    if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
+      h_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+  }
 }
 
 float getChi(float Resolution)
@@ -342,6 +366,13 @@ bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus
   return kTRUE;
 }
 
+bool passEtaCut(float eta, int BinEta)
+{
+  if(TMath::Abs(eta) >= vmsa::McEtaBin[BinEta]) return kFALSE;
+
+  return kTRUE;
+}
+
 void write(int energy)
 {
   string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiEta.root",vmsa::mBeamEnergy[energy].c_str());
@@ -351,6 +382,12 @@ void write(int energy)
   h_Tracks->Write();
   h_phiRP->Write();
   h_cosRP->Write();
+
+  for(int i_eta = 0; i_eta < 20; ++i_eta)
+  {
+    h_CosEtaKaon[i_eta]->Write();
+    h_CosEtaPhi[i_eta]->Write();
+  }
 
   File_OutPut->Close();
 }

@@ -194,6 +194,7 @@ namespace vmsa
   int const decayChannelsSecond[3] = {666,619,614};
   int const decayMother[3] = {333,313,310};
   int const decayChannels[3] = {656,617,613}; // 0: phi->K+K-, 1: K*->Kpi, 2 K0S->pi+pi-
+  float const McEtaBin[20] = {0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,2.0,2.5,3.0,3.5,4.0};
 
   // used in RcPhiEffCorr
   std::string const mParType[2] = {"Kplus","Kminus"};
