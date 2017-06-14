@@ -342,7 +342,7 @@ bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus
 
 void write(int energy)
 {
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ZDCSMD/Phi/MonteCarlo/McPhiDipAngle.root",vmsa::mBeamEnergy[energy].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiEta.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
 
