@@ -290,7 +290,7 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
   float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  p_cosRP->Fill(0,CosThetaStarRP);
+  p_cosRP->Fill(0.0,CosThetaStarRP);
   h_Tracks->Fill(lPhi->Pt(),lPhi->Eta(),lPhi->Phi());
 
   float Pt_lPhi = lPhi->Pt();
@@ -300,10 +300,10 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    if( passEtaCut(Eta_lPhi,i_eta) ) p_CosEtaPhi[i_eta]->Fill(0,CosThetaStarRP);
+    if( passEtaCut(Eta_lPhi,i_eta) ) p_CosEtaPhi[i_eta]->Fill(0.0,CosThetaStarRP);
 
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
-      p_CosEtaKaon[i_eta]->Fill(0,CosThetaStarRP);
+      p_CosEtaKaon[i_eta]->Fill(0.0,CosThetaStarRP);
   }
 }
 
