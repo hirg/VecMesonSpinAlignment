@@ -42,7 +42,7 @@ bool passEtaCut(float eta, int BinEta);
 // histograms
 TH3F *h_Tracks;
 TH2F *h_phiRP, *h_cosRP;
-TH2F *h_CosEtaKaon[20], *h_CosEtaPhi;
+TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
