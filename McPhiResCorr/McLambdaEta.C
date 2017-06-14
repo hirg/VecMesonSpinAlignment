@@ -59,15 +59,15 @@ void McLambdaEta(int energy = 6, int pid = 1, int cent = 0, int const NMax = 100
 
   h_Tracks = new TH3F("h_Tracks","h_Tracks",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
 
-  p_cosRP = new TProfile("p_cosRP","p_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax);
+  p_cosRP = new TProfile("p_cosRP","p_cosRP",1,-0.5,0.5);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
     string HistName;
     HistName = Form("p_CosEtaKaon_%d",i_eta);
-    p_CosEtaKaon[i_eta] = new TProfile(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    p_CosEtaKaon[i_eta] = new TProfile(HistName.c_str(),HistName.c_str(),1,-0.5,0.5);
     HistName = Form("p_CosEtaPhi_%d",i_eta);
-    p_CosEtaPhi[i_eta] = new TProfile(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    p_CosEtaPhi[i_eta] = new TProfile(HistName.c_str(),HistName.c_str(),1,-0.5,0.5);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -290,7 +290,7 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
   float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  p_cosRP->Fill(lPhi->Pt(),CosThetaStarRP);
+  p_cosRP->Fill(0,CosThetaStarRP);
   h_Tracks->Fill(lPhi->Pt(),lPhi->Eta(),lPhi->Phi());
 
   float Pt_lPhi = lPhi->Pt();
@@ -300,10 +300,10 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    if( passEtaCut(Eta_lPhi,i_eta) ) p_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+    if( passEtaCut(Eta_lPhi,i_eta) ) p_CosEtaPhi[i_eta]->Fill(0,CosThetaStarRP);
 
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
-      p_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+      p_CosEtaKaon[i_eta]->Fill(0,CosThetaStarRP);
   }
 }
 
