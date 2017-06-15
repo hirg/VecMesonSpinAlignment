@@ -23,7 +23,6 @@
 
 using namespace std;
 
-float readRes(int energy, int pid, int centrality);
 TF1* readv2(int energy, int pid, int centrality);
 TF1* readspec(int energy, int pid, int centrality);
 TH1F* readeta(int energy, int pid, int centrality);
@@ -33,16 +32,13 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters);
 void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 void write(int energy);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
-float getChi(float Resolution);
-float EventPlaneSmearing(TF1 *f_EP);
-double calDipAngle(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
-bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus);
 bool passEtaCut(float eta, int BinEta);
 
 // histograms
 TH3F *h_Tracks;
 TH2F *h_phiRP, *h_cosRP;
 TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
+TH2F *h_EtaPhiKplus[20], *h_EtaPhiKminus[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -68,20 +64,17 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
     h_CosEtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
     HistName = Form("h_CosEtaPhi_%d",i_eta);
     h_CosEtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+
+    HistName = Form("h_EtaPhiKplus_%d",i_eta);
+    h_EtaPhiKplus[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
+    HistName = Form("h_EtaPhiKminus_%d",i_eta);
+    h_EtaPhiKminus[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
   f_v2   = readv2(energy,pid,cent);
   f_spec = readspec(energy,pid,cent);
   h_eta = readeta(energy,pid,cent);
-
-  // float const Resolution = 0.81; // xin's resolution
-  float const Resolution = readRes(energy,pid,cent);
-  cout << "InPut Resolution = " << Resolution << endl;
-  float const chi = getChi(Resolution);
-  f_EP = new TF1("f_EP",EventPlaneDist,-TMath::PiOver2(),TMath::PiOver2(),2);
-  f_EP->FixParameter(0,chi);
-  f_EP->FixParameter(1,0.5/TMath::Pi());
 
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
@@ -110,19 +103,6 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
 
   stopWatch->Stop();   
   stopWatch->Print();
-}
-
-float readRes(int energy, int pid, int centrality)
-{
-  string InPutRes = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/Data/Resolution.root",vmsa::mBeamEnergy[energy].c_str());
-  TFile *File_Res = TFile::Open(InPutRes.c_str());
-  string HistName = Form("h_mRes_Centrality_%d_EtaGap_0_Phi_SysErrors_0",centrality);
-  TH1F *h_mRes = (TH1F*)File_Res->Get(HistName.c_str());
-  float resGaus = h_mRes->GetBinContent(1);
-  float resBW   = h_mRes->GetBinContent(2);
-  cout << "resGaus = " << resGaus << ", resBW = " << resBW << endl;
-
-  return 0.5*(resGaus+resBW);
 }
 
 TF1* readv2(int energy, int pid, int centrality)
@@ -288,38 +268,30 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 {
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
 
-  TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
-  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  h_phiRP->Fill(lPhi->Pt(),lPhi->Phi());
-  h_cosRP->Fill(lPhi->Pt(),CosThetaStarRP);
-  h_Tracks->Fill(lPhi->Pt(),lPhi->Eta(),lPhi->Phi());
-
   float Pt_lPhi = lPhi->Pt();
   float Eta_lPhi = lPhi->Eta();
   float Eta_lKplus = lKplus.Eta();
   float Eta_lKminus = lKminus.Eta();
 
+  TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
+  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+
+  h_phiRP->Fill(Pt_lPhi,lPhi->Phi());
+  h_cosRP->Fill(Pt_lPhi,CosThetaStarRP);
+  h_Tracks->Fill(Pt_lPhi,Eta_lPhi,lPhi->Phi());
+
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    if( passEtaCut(Eta_lPhi,i_eta) ) h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+    if( passEtaCut(Eta_lPhi,i_eta) ) 
+    {
+      h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+      h_EtaPhiKplus[i_eta]->Fill(Eta_lPhi,Eta_lKplus);
+      h_EtaPhiKminus[i_eta]->Fill(Eta_lPhi,Eta_lKminus);
+    }
 
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
       h_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
   }
-}
-
-float getChi(float Resolution)
-{
-  TF1 *f_res = new TF1("f_res",EventPlaneResolution,0,10,0);
-  double chi = f_res->GetX(Resolution);
-
-  return chi;
-}
-
-float EventPlaneSmearing(TF1 *f_EP)
-{
-  float Psi2 = f_EP->GetRandom(-TMath::PiOver2(),TMath::PiOver2());
-  return Psi2;
 }
 
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
@@ -331,39 +303,6 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
   TVector3 vMcDauStar = lKaon.Vect().Unit(); // momentum direction of Kplus in phi-meson rest frame
 
   return vMcDauStar;
-}
-
-double calDipAngle(TLorentzVector const& lKplus, TLorentzVector const& lKminus)
-{
-  double KplusPt = lKplus.Pt();
-  double KplusPz = lKplus.Pz();
-  double KplusP  = lKplus.P();
-
-  double KminusPt = lKminus.Pt(); 
-  double KminusPz = lKminus.Pz(); 
-  double KminusP  = lKminus.P();
-
-  double costheta = (KplusPt*KminusPt+KplusPz*KminusPz)/(KplusP*KminusP);
-  double theta = acos(costheta);
-
-  return theta;
-}
-
-bool passDipAngleCut(TLorentzVector const& lKplus, TLorentzVector const& lKminus)
-{
-  double KplusPt = lKplus.Pt();
-  double KplusPz = lKplus.Pz();
-  double KplusP  = lKplus.P();
-
-  double KminusPt = lKminus.Pt(); 
-  double KminusPz = lKminus.Pz(); 
-  double KminusP  = lKminus.P();
-
-  double costheta = (KplusPt*KminusPt+KplusPz*KminusPz)/(KplusP*KminusP);
-  double theta = acos(costheta);
-  if(theta < 0.04) return kFALSE;
-
-  return kTRUE;
 }
 
 bool passEtaCut(float eta, int BinEta)
@@ -387,6 +326,8 @@ void write(int energy)
   {
     h_CosEtaKaon[i_eta]->Write();
     h_CosEtaPhi[i_eta]->Write();
+    h_EtaPhiKplus[i_eta]->Write();
+    h_EtaPhiKminus[i_eta]->Write();
   }
 
   File_OutPut->Close();
