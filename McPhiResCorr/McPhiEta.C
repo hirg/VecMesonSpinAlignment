@@ -36,8 +36,8 @@ bool passEtaCut(float eta, int BinEta);
 
 // histograms
 TH3F *h_Tracks;
+TH3F *h_Eta;
 TH2F *h_phiRP, *h_cosRP;
-TH2F *h_EtaPhiKplus, *h_EtaPhiKminus;
 TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
 
 // sampling functions
@@ -53,11 +53,10 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
   int   const BinPhi   = vmsa::BinPhi;
 
   h_Tracks = new TH3F("h_Tracks","h_Tracks",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_Eta = new TH2F("h_Eta","h_Eta",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0,10*BinY,-10.0,10.0); // eta for phi, K+ and K-
 
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   h_cosRP = new TH2F("h_cosRP","h_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
-  h_EtaPhiKplus = new TH2F("h_EtaPhiKplus","h_EtaPhiKplus",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
-  h_EtaPhiKminus = new TH2F("h_EtaPhiKminus","h_EtaPhiKminus",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
@@ -276,8 +275,7 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   h_phiRP->Fill(Pt_lPhi,lPhi->Phi());
   h_cosRP->Fill(Pt_lPhi,CosThetaStarRP);
   h_Tracks->Fill(Pt_lPhi,Eta_lPhi,lPhi->Phi());
-  h_EtaPhiKplus->Fill(Eta_lPhi,Eta_lKplus);
-  h_EtaPhiKminus->Fill(Eta_lPhi,Eta_lKminus);
+  h_Eta->Fill(Eta_lPhi,Eta_lKplus,Eta_lKminus);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
@@ -315,8 +313,7 @@ void write(int energy)
   h_Tracks->Write();
   h_phiRP->Write();
   h_cosRP->Write();
-  h_EtaPhiKplus->Write();
-  h_EtaPhiKminus->Write();
+  h_Eta->Write();
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
