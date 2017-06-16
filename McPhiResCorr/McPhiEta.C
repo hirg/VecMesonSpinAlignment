@@ -37,8 +37,8 @@ bool passEtaCut(float eta, int BinEta);
 // histograms
 TH3F *h_Tracks;
 TH2F *h_phiRP, *h_cosRP;
+TH2F *h_EtaPhiKplus, *h_EtaPhiKminus;
 TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
-TH2F *h_EtaPhiKplus[20], *h_EtaPhiKminus[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -56,6 +56,8 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
 
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
   h_cosRP = new TH2F("h_cosRP","h_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+  h_EtaPhiKplus = new TH2F("h_EtaPhiKplus","h_EtaPhiKplus",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
+  h_EtaPhiKminus = new TH2F("h_EtaPhiKminus","h_EtaPhiKminus",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
@@ -64,11 +66,6 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
     h_CosEtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
     HistName = Form("h_CosEtaPhi_%d",i_eta);
     h_CosEtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
-
-    HistName = Form("h_EtaPhiKplus_%d",i_eta);
-    h_EtaPhiKplus[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
-    HistName = Form("h_EtaPhiKminus_%d",i_eta);
-    h_EtaPhiKminus[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),10*BinY,-10.0,10.0,10*BinY,-10.0,10.0);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -279,15 +276,12 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   h_phiRP->Fill(Pt_lPhi,lPhi->Phi());
   h_cosRP->Fill(Pt_lPhi,CosThetaStarRP);
   h_Tracks->Fill(Pt_lPhi,Eta_lPhi,lPhi->Phi());
+  h_EtaPhiKplus->Fill(Eta_lPhi,Eta_lKplus);
+  h_EtaPhiKminus->Fill(Eta_lPhi,Eta_lKminus);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    if( passEtaCut(Eta_lPhi,i_eta) ) 
-    {
-      h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
-      h_EtaPhiKplus[i_eta]->Fill(Eta_lPhi,Eta_lKplus);
-      h_EtaPhiKminus[i_eta]->Fill(Eta_lPhi,Eta_lKminus);
-    }
+    if( passEtaCut(Eta_lPhi,i_eta) ) h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
 
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
       h_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
@@ -321,13 +315,13 @@ void write(int energy)
   h_Tracks->Write();
   h_phiRP->Write();
   h_cosRP->Write();
+  h_EtaPhiKplus->Write();
+  h_EtaPhiKminus->Write();
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
     h_CosEtaKaon[i_eta]->Write();
     h_CosEtaPhi[i_eta]->Write();
-    h_EtaPhiKplus[i_eta]->Write();
-    h_EtaPhiKminus[i_eta]->Write();
   }
 
   File_OutPut->Close();
