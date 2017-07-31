@@ -58,7 +58,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 10) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -267,11 +267,11 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
   TLorentzVector lPion;
 
   int nTrk = daughters.GetEntriesFast();
-  cout << "nTrk = " << nTrk << endl;
+  // cout << "nTrk = " << nTrk << endl;
   for (int iTrk = 0; iTrk < nTrk; ++iTrk)
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
-    cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
+    // cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
 
     switch (ptl0->GetPdgCode())
     {
