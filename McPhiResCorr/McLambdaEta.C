@@ -29,8 +29,8 @@ TF1* readspec(int energy, int pid, int centrality);
 TH1F* readeta(int energy, int pid, int centrality);
 void getKinematics(TLorentzVector& lLambda, double const mass);
 void setDecayChannels(int const pid);
-void decayAndFill(int const kf, TLorentzVector* lLambda, TClonesArray& daughters);
-void fill(TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion);
+void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughters);
+void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion);
 void write(int energy);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool passEtaCut(float eta, int BinEta);
@@ -118,7 +118,7 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 10)
     cout << "=> processing data: " << 100.0*i_ran/ static_cast<float>(NMax) << "%" << endl;
 
     getKinematics(*lLambda,invMass);
-    decayAndFill(decayMother[pid],lLambda,ptl);
+    decayAndFill(pid,lLambda,ptl);
   }
   cout << "=> processing data: 100%" << endl;
   cout << "work done!" << endl;
@@ -258,20 +258,20 @@ void setDecayChannels(int const pid)
   TPythia6::Instance()->SetMRPY(1,(int)PYSeed); // Random seed
 }
 
-void decayAndFill(int const kf, TLorentzVector* lLambda, TClonesArray& daughters)
+void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughters)
 {
-  pydecay->Decay(kf, lLambda);
+  pydecay->Decay(decayMother[pid], lLambda);
   pydecay->ImportParticles(&daughters);
 
   TLorentzVector lProton;
   TLorentzVector lPion;
 
   int nTrk = daughters.GetEntriesFast();
-  // cout << "nTrk = " << nTrk << endl;
+  cout << "nTrk = " << nTrk << endl;
   for (int iTrk = 0; iTrk < nTrk; ++iTrk)
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
-    // cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
+    cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
 
     switch (ptl0->GetPdgCode())
     {
@@ -293,12 +293,12 @@ void decayAndFill(int const kf, TLorentzVector* lLambda, TClonesArray& daughters
   }
   daughters.Clear("C");
 
-  fill(lLambda,lProton,lPion);
+  fill(pid,lLambda,lProton,lPion);
 }
 
-void fill(TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion)
+void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion)
 {
-  TVector3 vMcKpBoosted = CalBoostedVector(lProton,lLambda); // boost Kplus back to phi-meson rest frame
+  TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Kplus back to phi-meson rest frame
 
   float Pt_Lambda = lLambda->Pt();
   float Eta_Lambda = lLambda->Eta();
