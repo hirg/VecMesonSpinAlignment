@@ -3,6 +3,7 @@
 #include "TF1.h"
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TH3F.h"
 #include "TCanvas.h"
 #include "TGraphAsymmErrors.h"
 #include "TLine.h"
@@ -17,8 +18,30 @@
 
 void plotMcPhiEta()
 {
-  string InPutHist = "/Users/xusun/Data/SpinAlignment/AuAu200GeV/McPhiEta.root";
+  string InPutHist = "/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McPhiEta_1.root";
   TFile *File_InPut = TFile::Open(InPutHist.c_str());
+
+  TH3F *h_Eta = (TH3F*)File_InPut->Get("h_Eta");
+  TH2F *h_eta = (TH2F*)h_Eta->Project3D("yx");
+  h_eta->SetTitle("");
+  h_eta->SetStats(0);
+  h_eta->GetXaxis()->SetTitle("#eta(#phi-meson)");
+  h_eta->GetXaxis()->CenterTitle();
+  h_eta->GetXaxis()->SetLabelSize(0.04);
+  h_eta->GetXaxis()->SetNdivisions(505);
+
+  h_eta->GetYaxis()->SetTitle("#eta(K^{+})");
+  h_eta->GetYaxis()->SetTitleSize(0.04);
+  h_eta->GetYaxis()->CenterTitle();
+  h_eta->GetYaxis()->SetLabelSize(0.04);
+  h_eta->GetYaxis()->SetNdivisions(505);
+  TCanvas *c_eta = new TCanvas("c_eta","c_eta",10,10,800,800);
+  c_eta->cd()->SetLeftMargin(0.15);
+  c_eta->cd()->SetBottomMargin(0.15);
+  c_eta->cd()->SetTicks(1,1);
+  c_eta->cd()->SetGrid(0,0);
+  h_eta->Draw("colz");
+  c_eta->SaveAs("../figures/c_eta.eps");
 
   TH2F *h_cosRP = (TH2F*)File_InPut->Get("h_cosRP");
   TH1F *h_Cos = (TH1F*)h_cosRP->ProjectionY();
@@ -171,7 +194,7 @@ void plotMcPhiEta()
   h_rho->GetXaxis()->SetNdivisions(505);
 
   h_rho->GetYaxis()->CenterTitle();
-  h_rho->GetYaxis()->SetRangeUser(0.25,0.6);
+  h_rho->GetYaxis()->SetRangeUser(0.25,0.7);
   h_rho->GetYaxis()->SetNdivisions(505);
   h_rho->Draw("pE");
   PlotLine(0.0,10.0,1.0/3.0,1.0/3.0,1,2,2);
@@ -193,4 +216,13 @@ void plotMcPhiEta()
   leg->AddEntry(g_Phi,"cut on #phi-meson only","p");
   leg->Draw("same");
   c_rhoEta->SaveAs("../figures/c_phiRhoEta.eps");
+  
+  TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McRho_1.root","RECREATE");
+  File_OutPut->cd();
+  h_rho->Write();
+  g_Kaon->SetName("g_Kaon");
+  g_Kaon->Write();
+  g_Phi->SetName("g_Phi");
+  g_Phi->Write();
+  File_OutPut->Close();
 }
