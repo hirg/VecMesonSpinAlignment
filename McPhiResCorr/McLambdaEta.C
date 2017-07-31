@@ -308,7 +308,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
   float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
   float Psi = 0.0;
-  float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi())
+  float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,lLambda->Phi());
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,lLambda->Phi());
