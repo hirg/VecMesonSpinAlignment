@@ -31,7 +31,7 @@ void getKinematics(TLorentzVector& lLambda, double const mass);
 void setDecayChannels(int const pid);
 void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughters);
 void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion);
-void write(int energy);
+void write(int energy,int pid);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool passEtaCut(float eta, int BinEta);
 
@@ -123,7 +123,7 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
   cout << "=> processing data: 100%" << endl;
   cout << "work done!" << endl;
 
-  write(energy);
+  write(energy,pid);
 
   stopWatch->Stop();   
   stopWatch->Print();
@@ -354,9 +354,9 @@ bool passEtaCut(float eta, int BinEta)
   return kTRUE;
 }
 
-void write(int energy)
+void write(int energy, int pid)
 {
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiEta.root",vmsa::mBeamEnergy[energy].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McLambdaEta_%d.root",vmsa::mBeamEnergy[energy].c_str(),pid);
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
 
