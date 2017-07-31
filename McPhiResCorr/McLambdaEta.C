@@ -18,6 +18,7 @@
 #include "TCanvas.h"
 #include "TGraphAsymmErrors.h"
 #include "TVector3.h"
+#include "TProfile.h"
 #include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/functions.h"
 #include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/StSpinAlignmentCons.h"
 
@@ -38,13 +39,18 @@ int const decayChannelsFirst[2] = {1058,1058};
 int const decayChannelsSecond[2] = {1061,1061};
 int const decayMother[2] = {3122,-3122};
 int const decayChannels[2] = {1058,1058}; // 0: Lambda->p+pi-, 1: Lambdabar->pbar+pi+
+float const spinDirection[2] = {1.0,-1.0}; // pbar's momentum is opposite to anti-Lambda spin
 float const invMass = 1.116;
 
 // histograms
 TH3F *h_Tracks;
 TH3F *h_Eta;
-TH2F *h_phiRP, *h_cosRP;
-TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
+TH2F *h_phiRP;
+TProfile *p_cosRP, *p_sinRP;
+TProfile *p_cosDau[20],     *p_cosLambda[20];
+TProfile *p_cosInteDau[20], *p_cosInteLambda[20];
+TProfile *p_sinDau[20],     *p_sinLambda[20];
+TProfile *p_sinInteDau[20], *p_sinInteLambda[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -62,15 +68,31 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 10)
   h_Eta = new TH3F("h_Eta","h_Eta",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0,10*BinY,-10.0,10.0); // eta for phi, K+ and K-
 
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
-  h_cosRP = new TH2F("h_cosRP","h_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+  p_cosRP = new TProfile("p_cosRP","p_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax);
+  p_sinRP = new TProfile("p_sinRP","p_sinRP",BinPt,vmsa::ptMin,vmsa::ptMax);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    string HistName;
-    HistName = Form("h_CosEtaKaon_%d",i_eta);
-    h_CosEtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
-    HistName = Form("h_CosEtaPhi_%d",i_eta);
-    h_CosEtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+    string ProName;
+    ProName = Form("p_cosDau_%d",i_eta);
+    p_cosDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    ProName = Form("p_cosInteDau_%d",i_eta);
+    p_cosInteDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+
+    ProName = Form("p_cosLambda_%d",i_eta);
+    p_cosLambda[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    ProName = Form("p_cosInteLambda_%d",i_eta);
+    p_cosInteLambda[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+
+    ProName = Form("p_sinDau_%d",i_eta);
+    p_sinDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    ProName = Form("p_sinInteDau_%d",i_eta);
+    p_sinInteDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+
+    ProName = Form("p_sinLambda_%d",i_eta);
+    p_sinLambda[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    ProName = Form("p_sinInteLambda_%d",i_eta);
+    p_sinInteLambda[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -245,11 +267,11 @@ void decayAndFill(int const kf, TLorentzVector* lLambda, TClonesArray& daughters
   TLorentzVector lPion;
 
   int nTrk = daughters.GetEntriesFast();
-  cout << "nTrk = " << nTrk << endl;
+  // cout << "nTrk = " << nTrk << endl;
   for (int iTrk = 0; iTrk < nTrk; ++iTrk)
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
-    cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
+    // cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
 
     switch (ptl0->GetPdgCode())
     {
@@ -285,18 +307,32 @@ void fill(TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector
 
   TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
   float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+  float Psi = 0.0;
+  float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi())
 
   h_phiRP->Fill(Pt_Lambda,lLambda->Phi());
-  h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,lLambda->Phi());
   h_Eta->Fill(Eta_Lambda,Eta_Proton,Eta_Pion);
+  p_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
+  p_sinRP->Fill(Pt_Lambda,SinPhiStar);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    if( passEtaCut(Eta_Lambda,i_eta) ) h_CosEtaPhi[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
+    if( passEtaCut(Eta_Lambda,i_eta) ) 
+    {
+      p_cosLambda[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
+      p_cosInteLambda[i_eta]->Fill(vmsa::McEtaBin[i_eta],CosThetaStarRP);
+      p_sinLambda[i_eta]->Fill(Pt_Lambda,SinPhiStar);
+      p_sinInteLambda[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStar);
+    }
 
     if( passEtaCut(Eta_Proton,i_eta) && passEtaCut(Eta_Pion,i_eta) && passEtaCut(Eta_Lambda,i_eta) )
-      h_CosEtaKaon[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
+    {
+      p_cosDau[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
+      p_cosInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],CosThetaStarRP);
+      p_sinDau[i_eta]->Fill(Pt_Lambda,SinPhiStar);
+      p_sinInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStar);
+    }
   }
 }
 
@@ -326,13 +362,22 @@ void write(int energy)
 
   h_Tracks->Write();
   h_phiRP->Write();
-  h_cosRP->Write();
   h_Eta->Write();
+
+  p_cosRP->Write();
+  p_sinRP->Write();
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
-    h_CosEtaKaon[i_eta]->Write();
-    h_CosEtaPhi[i_eta]->Write();
+    p_cosDau[i_eta]->Write();
+    p_cosInteDau[i_eta]->Write();
+    p_cosLambda[i_eta]->Write();
+    p_cosInteLambda[i_eta]->Write();
+
+    p_sinDau[i_eta]->Write();
+    p_sinInteDau[i_eta]->Write();
+    p_sinLambda[i_eta]->Write();
+    p_sinInteLambda[i_eta]->Write();
   }
 
   File_OutPut->Close();
