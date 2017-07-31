@@ -34,10 +34,10 @@ void write(int energy);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool passEtaCut(float eta, int BinEta);
 
-int const decayChannelsFirst[2] = {1058,-1061};
-int const decayChannelsSecond[2] = {1061,-1058};
+int const decayChannelsFirst[2] = {1058,1058};
+int const decayChannelsSecond[2] = {1061,1061};
 int const decayMother[2] = {3122,-3122};
-int const decayChannels[2] = {1058,-1058}; // 0: Lambda->p+pi-, 1: Lambdabar->pbar+pi+
+int const decayChannels[2] = {1058,1058}; // 0: Lambda->p+pi-, 1: Lambdabar->pbar+pi+
 float const invMass = 1.116;
 
 // histograms
