@@ -59,7 +59,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 10) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -287,26 +287,30 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
     }
   }
   daughters.Clear("C");
-  cout << "lProton.M() = " << lProton.M() << endl;
-  cout << "lPion.M() = " << lPion.M() << endl;
+  // cout << "lProton.M() = " << lProton.M() << endl;
+  // cout << "lPion.M() = " << lPion.M() << endl;
 
   fill(pid,lLambda,lProton,lPion);
 }
 
 void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion)
 {
-  TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Kplus back to phi-meson rest frame
+  // TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
+  TVector3 vMcKpBoosted = CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
 
   float Pt_Lambda = lLambda->Pt();
   float Eta_Lambda = lLambda->Eta();
   float Eta_Proton = lProton.Eta();
   float Eta_Pion = lPion.Eta();
 
-  TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
-  float CosThetaStarRP = (3.0/alphaH[pid])*vMcKpBoosted.Dot(nQ);
   float Psi = 0.0;
+  TVector3 nQ(TMath::Sin(Psi),-TMath::Cos(Psi),0.0); // direction of angular momentum with un-smeared EP
+  // float CosThetaStarRP = (3.0/alphaH[pid])*vMcKpBoosted.Dot(nQ);
+  // // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  // float SinPhiStar = (8.0/(alphaH[pid]*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
   // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  float SinPhiStar = (8.0/(alphaH[pid]*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float SinPhiStar = TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,lLambda->Phi());
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,lLambda->Phi());
@@ -338,9 +342,9 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
 {
   TVector3 vMcBeta = -1.0*lMcVec->BoostVector(); // boost vector
 
-  TLorentzVector lKaon = lMcDau;
-  lKaon.Boost(vMcBeta); // boost Kplus back to phi-meson rest frame
-  TVector3 vMcDauStar = lKaon.Vect().Unit(); // momentum direction of Kplus in phi-meson rest frame
+  TLorentzVector lProton = lMcDau;
+  lProton.Boost(vMcBeta); // boost proton back to Lambda rest frame
+  TVector3 vMcDauStar = lProton.Vect().Unit(); // momentum direction of Kplus in phi-meson rest frame
 
   return vMcDauStar;
 }
