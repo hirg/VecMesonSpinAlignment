@@ -59,7 +59,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 50000000) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -238,15 +238,15 @@ TH1F* readeta(int energy, int pid, int centrality)
 
 void getKinematics(TLorentzVector& lLambda, double const mass)
 {
-  // double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
-  // double const eta = h_eta->GetRandom();
-  // f_flow->ReleaseParameter(0);
-  // f_flow->SetParameter(0,f_v2->Eval(pt));
-  // double const phi = f_flow->GetRandom();
+  double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
+  double const eta = h_eta->GetRandom();
+  f_flow->ReleaseParameter(0);
+  f_flow->SetParameter(0,f_v2->Eval(pt));
+  double const phi = f_flow->GetRandom();
 
-  double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
-  double const phi = TMath::TwoPi() * gRandom->Rndm();
+  // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
+  // double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
+  // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
 }
