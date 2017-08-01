@@ -40,11 +40,11 @@ int const decayChannelsFirst = 1058;
 int const decayChannelsSecond = 1061;
 int const decayChannels = 1058; // 0: Lambda->p+pi-, 1: Lambdabar->pbar+pi+
 float const spinDirection[2] = {1.0,-1.0}; // pbar's momentum is opposite to anti-Lambda spin
-float const alphaH[2] = {0.642,-0.642};
+float const alphaH = 0.642;
 float const invMass = 1.11568;
 
 // histograms
-TH3F *h_Tracks;
+TH3F *h_Tracks, *h_TracksProton, *h_TracksPion;
 TH3F *h_Eta;
 TH2F *h_phiRP;
 TProfile *p_cosRP, *p_sinRP;
@@ -66,6 +66,8 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
   int const BinPhi   = vmsa::BinPhi;
 
   h_Tracks = new TH3F("h_Tracks","h_Tracks",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_TracksProton = new TH3F("h_TracksProton","h_TracksProton",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_TracksPion = new TH3F("h_TracksPion","h_TracksPion",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
   h_Eta = new TH3F("h_Eta","h_Eta",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0,10*BinY,-10.0,10.0); // eta for phi, K+ and K-
 
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
@@ -243,7 +245,7 @@ void getKinematics(TLorentzVector& lLambda, double const mass)
   // double const phi = f_flow->GetRandom();
 
   double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  double const eta = gRandom->Uniform(-4.0*vmsa::acceptanceRapidity, 4.0*vmsa::acceptanceRapidity);
+  double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
   double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
@@ -301,20 +303,29 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 
   float Pt_Lambda = lLambda->Pt();
   float Eta_Lambda = lLambda->Eta();
+  float Phi_Lambda = lLambda->Phi();
+
+  float Pt_Proton = lProton.Pt();
   float Eta_Proton = lProton.Eta();
+  float Phi_Proton = lProton.Phi();
+
+  float Pt_Pion = lPion.Pt();
   float Eta_Pion = lPion.Eta();
+  float Phi_Pion = lPion.Phi();
 
   float Psi = 0.0;
   TVector3 nQ(TMath::Sin(Psi),-TMath::Cos(Psi),0.0); // direction of angular momentum with un-smeared EP
-  float CosThetaStarRP = (3.0/alphaH[pid])*vMcKpBoosted.Dot(nQ);
+  float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*vMcKpBoosted.Dot(nQ);
   // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  float SinPhiStar = (8.0/(alphaH[pid]*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float SinPhiStar = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
   // float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
   // // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
   // float SinPhiStar = TMath::Sin(Psi-vMcKpBoosted.Phi());
 
-  h_phiRP->Fill(Pt_Lambda,lLambda->Phi());
-  h_Tracks->Fill(Pt_Lambda,Eta_Lambda,lLambda->Phi());
+  h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
+  h_Tracks->Fill(Pt_Lambda,Eta_Lambda,Phi_Lambda);
+  h_TracksProton->Fill(Pt_Proton,Eta_Proton,Phi_Proton);
+  h_TracksPion->Fill(Pt_Pion,Eta_Pion,Phi_Pion);
   h_Eta->Fill(Eta_Lambda,Eta_Proton,Eta_Pion);
   p_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
   p_sinRP->Fill(Pt_Lambda,SinPhiStar);
@@ -364,6 +375,8 @@ void write(int energy, int pid)
   File_OutPut->cd();
 
   h_Tracks->Write();
+  h_TracksProton->Write();
+  h_TracksPion->Write();
   h_phiRP->Write();
   h_Eta->Write();
 
