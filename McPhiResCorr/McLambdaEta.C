@@ -59,7 +59,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 10) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -243,7 +243,7 @@ void getKinematics(TLorentzVector& lLambda, double const mass)
   // double const phi = f_flow->GetRandom();
 
   double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  double const eta = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
+  double const eta = gRandom->Uniform(-4.0*vmsa::acceptanceRapidity, 4.0*vmsa::acceptanceRapidity);
   double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
@@ -274,18 +274,12 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
     // cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
 
-    switch (ptl0->GetPdgCode())
+    switch (TMath::Abs(ptl0->GetPdgCode()))
     {
       case 2212:
 	ptl0->Momentum(lProton);
 	break;
-      case -2212:
-	ptl0->Momentum(lProton);
-	break;
       case 211:
-	ptl0->Momentum(lPion);
-	break;
-      case -211:
 	ptl0->Momentum(lPion);
 	break;
       default:
@@ -293,6 +287,8 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
     }
   }
   daughters.Clear("C");
+  cout << "lProton.M() = " << lProton.M() << endl;
+  cout << "lPion.M() = " << lPion.M() << endl;
 
   fill(pid,lLambda,lProton,lPion);
 }
