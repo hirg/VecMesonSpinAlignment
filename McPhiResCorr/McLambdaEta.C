@@ -46,7 +46,7 @@ float const invMass = 1.11568;
 // histograms
 TH3F *h_Tracks, *h_TracksProton, *h_TracksPion;
 TH3F *h_Eta;
-TH2F *h_phiRP;
+TH2F *h_phiRP, h_cosRP;
 TProfile *p_cosRP, *p_sinRP;
 TProfile *p_cosDau[20],     *p_cosLambda[20];
 TProfile *p_cosInteDau[20], *p_cosInteLambda[20];
@@ -59,7 +59,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 50000000) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -71,6 +71,8 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
   h_Eta = new TH3F("h_Eta","h_Eta",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0,10*BinY,-10.0,10.0); // eta for phi, K+ and K-
 
   h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
+  h_cosRP = new TH2F("h_cosRP","h_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax,2.0*BinY,-1.0,1.0);
+
   p_cosRP = new TProfile("p_cosRP","p_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax);
   p_sinRP = new TProfile("p_sinRP","p_sinRP",BinPt,vmsa::ptMin,vmsa::ptMax);
 
@@ -238,15 +240,15 @@ TH1F* readeta(int energy, int pid, int centrality)
 
 void getKinematics(TLorentzVector& lLambda, double const mass)
 {
-  double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
-  double const eta = h_eta->GetRandom();
-  f_flow->ReleaseParameter(0);
-  f_flow->SetParameter(0,f_v2->Eval(pt));
-  double const phi = f_flow->GetRandom();
+  // double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
+  // double const eta = h_eta->GetRandom();
+  // f_flow->ReleaseParameter(0);
+  // f_flow->SetParameter(0,f_v2->Eval(pt));
+  // double const phi = f_flow->GetRandom();
 
-  // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  // double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
-  // double const phi = TMath::TwoPi() * gRandom->Rndm();
+  double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
+  double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
+  double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
 }
@@ -323,6 +325,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   // float SinPhiStar = TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
+  h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,Phi_Lambda);
   h_TracksProton->Fill(Pt_Proton,Eta_Proton,Phi_Proton);
   h_TracksPion->Fill(Pt_Pion,Eta_Pion,Phi_Pion);
@@ -378,6 +381,7 @@ void write(int energy, int pid)
   h_TracksProton->Write();
   h_TracksPion->Write();
   h_phiRP->Write();
+  h_cosRP->Write();
   h_Eta->Write();
 
   p_cosRP->Write();
