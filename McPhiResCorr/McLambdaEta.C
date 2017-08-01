@@ -40,6 +40,7 @@ int const decayChannelsSecond[2] = {1061,1061};
 int const decayMother[2] = {3122,-3122};
 int const decayChannels[2] = {1058,1058}; // 0: Lambda->p+pi-, 1: Lambdabar->pbar+pi+
 float const spinDirection[2] = {1.0,-1.0}; // pbar's momentum is opposite to anti-Lambda spin
+float const alphaH[2] = {0.642,-0.642};
 float const invMass = 1.116;
 
 // histograms
@@ -306,10 +307,10 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   float Eta_Pion = lPion.Eta();
 
   TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
-  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+  float CosThetaStarRP = (3.0/alphaH[pid])*vMcKpBoosted.Dot(nQ);
   float Psi = 0.0;
   // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  float SinPhiStar = TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float SinPhiStar = (8.0/(alphaH[pid]*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,lLambda->Phi());
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,lLambda->Phi());
