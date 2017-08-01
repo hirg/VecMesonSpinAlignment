@@ -59,7 +59,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 50000000) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -300,8 +300,8 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
 
 void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion)
 {
-  TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
-  // TVector3 vMcKpBoosted = CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
+  // TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
+  TVector3 vMcKpBoosted = CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
 
   float Pt_Lambda = lLambda->Pt();
   float Eta_Lambda = lLambda->Eta();
@@ -317,12 +317,11 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 
   float Psi = 0.0;
   TVector3 nQ(TMath::Sin(Psi),-TMath::Cos(Psi),0.0); // direction of angular momentum with un-smeared EP
-  float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*vMcKpBoosted.Dot(nQ);
-  // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  float SinPhiStar = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  // float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  // // float SinPhiStar = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  // float SinPhiStar = TMath::Sin(Psi-vMcKpBoosted.Phi());
+  // float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*vMcKpBoosted.Dot(nQ);
+  // // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  // float SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+  float SinPhiStarRP = TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
   h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
@@ -331,7 +330,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   h_TracksPion->Fill(Pt_Pion,Eta_Pion,Phi_Pion);
   h_Eta->Fill(Eta_Lambda,Eta_Proton,Eta_Pion);
   p_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
-  p_sinRP->Fill(Pt_Lambda,SinPhiStar);
+  p_sinRP->Fill(Pt_Lambda,SinPhiStarRP);
 
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
@@ -339,16 +338,16 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
     {
       p_cosLambda[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
       p_cosInteLambda[i_eta]->Fill(vmsa::McEtaBin[i_eta],CosThetaStarRP);
-      p_sinLambda[i_eta]->Fill(Pt_Lambda,SinPhiStar);
-      p_sinInteLambda[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStar);
+      p_sinLambda[i_eta]->Fill(Pt_Lambda,SinPhiStarRP);
+      p_sinInteLambda[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStarRP);
     }
 
     if( passEtaCut(Eta_Proton,i_eta) && passEtaCut(Eta_Pion,i_eta) && passEtaCut(Eta_Lambda,i_eta) )
     {
       p_cosDau[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
       p_cosInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],CosThetaStarRP);
-      p_sinDau[i_eta]->Fill(Pt_Lambda,SinPhiStar);
-      p_sinInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStar);
+      p_sinDau[i_eta]->Fill(Pt_Lambda,SinPhiStarRP);
+      p_sinInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStarRP);
     }
   }
 }
