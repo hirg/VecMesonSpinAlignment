@@ -300,8 +300,8 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
 
 void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion)
 {
-  // TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
-  TVector3 vMcKpBoosted = CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
+  TVector3 vMcKpBoosted = spinDirection[pid]*CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
+  // TVector3 vMcKpBoosted = CalBoostedVector(lProton,lLambda); // boost Lambda back to Lambda rest frame
 
   float Pt_Lambda = lLambda->Pt();
   float Eta_Lambda = lLambda->Eta();
@@ -317,11 +317,12 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 
   float Psi = 0.0;
   TVector3 nQ(TMath::Sin(Psi),-TMath::Cos(Psi),0.0); // direction of angular momentum with un-smeared EP
-  // float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*vMcKpBoosted.Dot(nQ);
-  // // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  // float SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  float SinPhiStarRP = TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*vMcKpBoosted.Dot(nQ);
+  float SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  // float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+  // float SinPhiStarRP = TMath::Sin(Psi-vMcKpBoosted.Phi());
+
+  // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
   h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
