@@ -337,11 +337,11 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 
   float Psi = 0.0;
   TVector3 nQ(TMath::Sin(Psi),-TMath::Cos(Psi),0.0); // direction of angular momentum with un-smeared EP
-  // float CosThetaStarRP = vMcKpBoosted.Dot(nQ)*(3.0*spinDirection[pid]/alphaH);
-  // float SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
-  float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  float costheta = 3.0*spinDirection[pid]*CosThetaStarRP/alphaH;
-  float SinPhiStarRP = TMath::Sin(Psi-vMcKpBoosted.Phi());
+  double CosThetaStarRP = vMcKpBoosted.Dot(nQ)*(3.0*spinDirection[pid]/alphaH);
+  double SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  // float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+  // float costheta = 3.0*spinDirection[pid]*CosThetaStarRP/alphaH;
+  // float SinPhiStarRP = TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
