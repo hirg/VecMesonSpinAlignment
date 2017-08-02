@@ -36,7 +36,7 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool passEtaCut(float eta, int BinEta);
 bool Sampling(int const pid, TF1 *f_pHPhy,float CosThetaStar);
 
-double SpinDensity(double *x_val, double *par)
+double polarization(double *x_val, double *par)
 {
   double x = x_val[0];
   double pH = par[0];
@@ -120,7 +120,7 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
   h_eta = readeta(energy,pid,cent);
 
   float pHPhy = 0.2;
-  f_pHPhy = new TF1("f_pHPhy",SpinDensity,-1.0,1.0,3);
+  f_pHPhy = new TF1("f_pHPhy",polarization,-1.0,1.0,3);
   f_pHPhy->FixParameter(0,pHPhy);
   f_pHPhy->FixParameter(1,1.0);
   f_pHPhy->FixParameter(2,alphaH*spinDirection[pid]);
