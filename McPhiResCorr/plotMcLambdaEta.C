@@ -105,11 +105,11 @@ void plotMcLambdaEta(int pid = 0)
     p_sinInteLambda[i_eta]->SetMarkerStyle(21);
     p_sinInteLambda[i_eta]->SetMarkerSize(1.4);
     p_sinInteLambda[i_eta]->SetMarkerColor(kAzure-2);
-    p_sinInteLambda[i_eta]->Draw("pE same");
+    // p_sinInteLambda[i_eta]->Draw("pE same");
 
     p_sinInteDau[i_eta]->SetMarkerStyle(25);
     p_sinInteDau[i_eta]->SetMarkerSize(1.4);
     p_sinInteDau[i_eta]->SetMarkerColor(kAzure-2);
-    p_sinInteDau[i_eta]->Draw("pE same");
+    // p_sinInteDau[i_eta]->Draw("pE same");
   }
 }

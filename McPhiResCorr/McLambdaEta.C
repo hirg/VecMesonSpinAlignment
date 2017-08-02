@@ -241,13 +241,13 @@ TH1F* readeta(int energy, int pid, int centrality)
 void getKinematics(TLorentzVector& lLambda, double const mass)
 {
   // double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
-  // double const eta = h_eta->GetRandom();
+  double const eta = h_eta->GetRandom();
   // f_flow->ReleaseParameter(0);
   // f_flow->SetParameter(0,f_v2->Eval(pt));
   // double const phi = f_flow->GetRandom();
 
   double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
+  // double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
   double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
