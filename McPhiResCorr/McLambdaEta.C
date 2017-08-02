@@ -340,7 +340,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   // float CosThetaStarRP = vMcKpBoosted.Dot(nQ)*(3.0*spinDirection[pid]/alphaH);
   // float SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
   float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
-  float costheta *= 3.0*spinDirection[pid]*CosThetaStarRP/alphaH;
+  float costheta = 3.0*spinDirection[pid]*CosThetaStarRP/alphaH;
   float SinPhiStarRP = TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
