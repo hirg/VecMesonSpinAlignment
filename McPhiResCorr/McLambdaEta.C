@@ -34,6 +34,19 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 void write(int energy,int pid);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool passEtaCut(float eta, int BinEta);
+bool Sampling(int const pid, TF1 *f_pHPhy,float CosThetaStar);
+
+double SpinDensity(double *x_val, double *par)
+{
+  double x = x_val[0];
+  double pH = par[0];
+  double Norm = par[1];
+  double alpha = par[2];
+
+  double dNdCosThetaStar = Norm*(1+alpha*pH*x);
+
+  return dNdCosThetaStar;
+}
 
 int const decayMother[2] = {3122,-3122};
 int const decayChannelsFirst = 1058;
@@ -55,6 +68,7 @@ TProfile *p_sinInteDau[20], *p_sinInteLambda[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
+TF1 *f_pHPhy;
 TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
@@ -104,6 +118,12 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
   f_v2   = readv2(energy,pid,cent);
   f_spec = readspec(energy,pid,cent);
   h_eta = readeta(energy,pid,cent);
+
+  float pHPhy = 0.2;
+  f_pHPhy = new TF1("f_pHPhy",SpinDensity,-1.0,1.0,3);
+  f_pHPhy->FixParameter(0,pHPhy);
+  f_pHPhy->FixParameter(1,1.0);
+  f_pHPhy->FixParameter(2,alphaH*spinDirection[pid]);
 
   TStopwatch* stopWatch = new TStopwatch();
   stopWatch->Start();
@@ -324,6 +344,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 
   // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
+  if(!Sampling(pid,f_rhoPhy,CosThetaStarRP)) return;
   h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
   h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,Phi_Lambda);
@@ -369,6 +390,14 @@ bool passEtaCut(float eta, int BinEta)
   if(TMath::Abs(eta) >= vmsa::McEtaBin[BinEta]) return kFALSE;
 
   return kTRUE;
+}
+
+bool Sampling(int const pid, TF1 *f_pHPhy,float CosThetaStar)
+{
+  float wMax;
+  if(pid == 0) wMax = f_pHPhy->Eval(1.0);
+  else wMax = f_pHPhy->Eval(-1.0);
+  return !(gRandom->Rndm() > f_pHPhy->Eval(CosThetaStar)/wMax);
 }
 
 void write(int energy, int pid)
