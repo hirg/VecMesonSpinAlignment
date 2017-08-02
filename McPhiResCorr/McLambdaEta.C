@@ -344,7 +344,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
 
   // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
-  if(!Sampling(pid,f_rhoPhy,CosThetaStarRP)) return;
+  if(!Sampling(pid,f_pHPhy,CosThetaStarRP)) return;
   h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
   h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
   h_Tracks->Fill(Pt_Lambda,Eta_Lambda,Phi_Lambda);
