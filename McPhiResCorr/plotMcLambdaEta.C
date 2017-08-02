@@ -3,11 +3,15 @@
 #include "TProfile.h"
 #include "TCanvas.h"
 #include "TH1F.h"
+#include "TH2F.h"
+#include "TH3F.h"
+#include "TLegend.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/draw.h"
 
 void plotMcLambdaEta(int pid = 0)
 {
+  string PID[2] = {"L","Lbar"};
   string InPutHist = Form("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McLambdaEta_%d.root",pid);
   TFile *File_InPut = TFile::Open(InPutHist.c_str());
 
@@ -56,11 +60,19 @@ void plotMcLambdaEta(int pid = 0)
   p_cosRP->SetMarkerColor(kGray+2);
   p_cosRP->Draw("pE");
 
-  p_sinRP->SetMarkerStyle(21);
+  p_sinRP->SetMarkerStyle(24);
   p_sinRP->SetMarkerSize(1.4);
   p_sinRP->SetMarkerColor(kAzure-2);
   p_sinRP->Draw("pE same");
   PlotLine(vmsa::ptMin,vmsa::ptMax,0.0,0.0,1,2,2);
+  TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);
+  leg->AddEntry(p_cosRP,"#frac{3}{#alpha_{H}}<cos(#theta*)>","p");
+  leg->AddEntry(p_sinRP,"#frac{8}{#pi#alpha_{H}}<sin(#Psi_{RP}-#phi_{p}*)>","p");
+  leg->Draw("same");
+  string outputPolaPt = Form("c_PolaPt_%s.eps",PID[pid].c_str());
+  c_PolaPt->SaveAs(outputPolaPt.c_str());
 
 
   TCanvas *c_PolaEta = new TCanvas("c_PolaEta","c_PolaEta",10,10,800,800);
@@ -112,4 +124,79 @@ void plotMcLambdaEta(int pid = 0)
     p_sinInteDau[i_eta]->SetMarkerColor(kAzure-2);
     // p_sinInteDau[i_eta]->Draw("pE same");
   }
+  TLegend *legEta = new TLegend(0.4,0.6,0.8,0.8);
+  legEta->SetBorderSize(0);
+  legEta->SetFillColor(0);
+  legEta->AddEntry(p_cosInteDau[0],"cut on daughters and #Lambda","p");
+  legEta->AddEntry(p_cosInteLambda[0],"cut on #Lambda only","p");
+  legEta->Draw("same");
+  string outputPolaEta = Form("c_PolaEta_%s.eps",PID[pid].c_str());
+  c_PolaEta->SaveAs(outputPolaEta.c_str());
+
+  TH3F *h_Eta = (TH3F*)File_InPut->Get("h_Eta");
+  TH2F *h_EtaProton = (TH2F*)h_Eta->Project3D("yx")->Clone("h_EtaProton");
+  TH2F *h_EtaPion   = (TH2F*)h_Eta->Project3D("zx")->Clone("h_EtaPion");
+  TH2F *h_EtaPPion  = (TH2F*)h_Eta->Project3D("zy")->Clone("h_EtaPPion");
+  TCanvas *c_EtaPL = new TCanvas("c_EtaPL","c_EtaPL",10,10,800,800);
+  c_EtaPL->cd()->SetLeftMargin(0.15);
+  c_EtaPL->cd()->SetBottomMargin(0.15);
+  c_EtaPL->cd()->SetTicks(1,1);
+  c_EtaPL->cd()->SetGrid(0,0);
+  h_EtaProton->SetTitle("");
+  h_EtaProton->SetStats(0);
+  h_EtaProton->GetXaxis()->SetTitle("#eta_{p}");
+  h_EtaProton->GetXaxis()->CenterTitle();
+  h_EtaProton->GetXaxis()->SetLabelSize(0.04);
+  h_EtaProton->GetXaxis()->SetNdivisions(505);
+
+  h_EtaProton->GetYaxis()->SetTitle("#eta_{#Lambda}");
+  h_EtaProton->GetYaxis()->SetTitleSize(0.04);
+  h_EtaProton->GetYaxis()->CenterTitle();
+  h_EtaProton->GetYaxis()->SetLabelSize(0.04);
+  h_EtaProton->GetYaxis()->SetNdivisions(505);
+  h_EtaProton->Draw("colz");
+  string outputEtaPL = Form("c_EtaPL_%s.eps",PID[pid].c_str());
+  c_EtaPL->SaveAs(outputEtaPL.c_str());
+
+  TCanvas *c_EtaPiL = new TCanvas("c_EtaPiL","c_EtaPiL",10,10,800,800);
+  c_EtaPiL->cd()->SetLeftMargin(0.15);
+  c_EtaPiL->cd()->SetBottomMargin(0.15);
+  c_EtaPiL->cd()->SetTicks(1,1);
+  c_EtaPiL->cd()->SetGrid(0,0);
+  h_EtaPion->SetTitle("");
+  h_EtaPion->SetStats(0);
+  h_EtaPion->GetXaxis()->SetTitle("#eta_{#pi}");
+  h_EtaPion->GetXaxis()->CenterTitle();
+  h_EtaPion->GetXaxis()->SetLabelSize(0.04);
+  h_EtaPion->GetXaxis()->SetNdivisions(505);
+
+  h_EtaPion->GetYaxis()->SetTitle("#eta_{#Lambda}");
+  h_EtaPion->GetYaxis()->SetTitleSize(0.04);
+  h_EtaPion->GetYaxis()->CenterTitle();
+  h_EtaPion->GetYaxis()->SetLabelSize(0.04);
+  h_EtaPion->GetYaxis()->SetNdivisions(505);
+  h_EtaPion->Draw("colz");
+  string outputEtaPiL = Form("c_EtaPiL_%s.eps",PID[pid].c_str());
+  c_EtaPiL->SaveAs(outputEtaPiL.c_str());
+
+  TCanvas *c_EtaPPi = new TCanvas("c_EtaPPi","c_EtaPPi",10,10,800,800);
+  c_EtaPPi->cd()->SetLeftMargin(0.15);
+  c_EtaPPi->cd()->SetBottomMargin(0.15);
+  c_EtaPPi->cd()->SetTicks(1,1);
+  c_EtaPPi->cd()->SetGrid(0,0);
+  h_EtaPPion->SetTitle("");
+  h_EtaPPion->SetStats(0);
+  h_EtaPPion->GetXaxis()->SetTitle("#eta_{p}");
+  h_EtaPPion->GetXaxis()->CenterTitle();
+  h_EtaPPion->GetXaxis()->SetLabelSize(0.04);
+  h_EtaPPion->GetXaxis()->SetNdivisions(505);
+
+  h_EtaPPion->GetYaxis()->SetTitle("#eta_{#pi}");
+  h_EtaPPion->GetYaxis()->SetTitleSize(0.04);
+  h_EtaPPion->GetYaxis()->CenterTitle();
+  h_EtaPPion->GetYaxis()->SetLabelSize(0.04);
+  h_EtaPPion->GetYaxis()->SetNdivisions(505);
+  h_EtaPPion->Draw("colz");
+  string outputEtaPPi = Form("c_EtaPPi_%s.eps",PID[pid].c_str());
+  c_EtaPPi->SaveAs(outputEtaPPi.c_str());
 }
