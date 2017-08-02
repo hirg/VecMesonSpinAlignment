@@ -46,7 +46,7 @@ float const invMass = 1.11568;
 // histograms
 TH3F *h_Tracks, *h_TracksProton, *h_TracksPion;
 TH3F *h_Eta;
-TH2F *h_phiRP, h_cosRP;
+TH2F *h_phiRP, *h_cosRP;
 TProfile *p_cosRP, *p_sinRP;
 TProfile *p_cosDau[20],     *p_cosLambda[20];
 TProfile *p_cosInteDau[20], *p_cosInteLambda[20];
