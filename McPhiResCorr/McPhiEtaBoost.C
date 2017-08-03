@@ -274,7 +274,7 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
 
   float Pt_lPhi = lPhi->Pt();
-  float Eta_lPhi = lPhi->Eta();
+  // float Eta_lPhi = lPhi->Eta();
   float Eta_lKplus = lKplus.Eta();
   float Eta_lKminus = lKminus.Eta();
 
@@ -288,13 +288,14 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   for(int i_eta = 0; i_eta < 25; ++i_eta)
   {
-    if( passEtaCut(Eta_lPhi,i_eta) ) 
-    {
-      h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
-      h_Cos2EtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP*CosThetaStarRP);
-    }
+    // if( passEtaCut(Eta_lPhi,i_eta) ) 
+    // {
+    //   h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+    //   h_Cos2EtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP*CosThetaStarRP);
+    // }
 
-    if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
+    // if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
+    if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) )
     {
       h_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
       h_Cos2EtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP*CosThetaStarRP);
