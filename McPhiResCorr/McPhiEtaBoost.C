@@ -315,7 +315,7 @@ TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
 
 bool passEtaCut(float eta, int BinEta)
 {
-  if(TMath::Abs(eta) >= vmsa::McEtaBinFake[BinEta]) return kFALSE;
+  if(TMath::Abs(eta) >= McEtaBinFake[BinEta]) return kFALSE;
 
   return kTRUE;
 }
