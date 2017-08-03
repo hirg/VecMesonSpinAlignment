@@ -18,7 +18,7 @@
 
 void plotMcPhiEta()
 {
-  string InPutHist = "/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McPhiEta_1.root";
+  string InPutHist = "/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McPhiEta.root";
   TFile *File_InPut = TFile::Open(InPutHist.c_str());
 
   TH3F *h_Eta = (TH3F*)File_InPut->Get("h_Eta");
