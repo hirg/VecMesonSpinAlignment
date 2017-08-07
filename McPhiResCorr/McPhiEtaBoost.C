@@ -94,7 +94,7 @@ void McPhiEtaBoost(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
     if (floor(10.0*i_ran/ static_cast<float>(NMax)) > floor(10.0*(i_ran-1)/ static_cast<float>(NMax)))
     cout << "=> processing data: " << 100.0*i_ran/ static_cast<float>(NMax) << "%" << endl;
 
-    getKinematics(*lPhi,vmsa::InvMass[pid]);
+    getKinematics(*lPhi,1.01940);
     decayAndFill(vmsa::decayMother[pid],lPhi,ptl);
   }
   cout << "=> processing data: 100%" << endl;
