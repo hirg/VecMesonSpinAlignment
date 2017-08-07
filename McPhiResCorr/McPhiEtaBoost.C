@@ -219,12 +219,11 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   // double const phi = f_flow->GetRandom();
   // double const pz = pt*TMath::SinH(eta);
 
-  double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  double const eta = gRandom->Uniform(-6.0*vmsa::acceptanceRapidity, 6.0*vmsa::acceptanceRapidity);
-  double const phi = TMath::TwoPi() * gRandom->Rndm();
+  // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
+  // double const eta = gRandom->Uniform(-6.0*vmsa::acceptanceRapidity, 6.0*vmsa::acceptanceRapidity);
+  // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
-  // lPhi.SetXYZM(1.0,1.0,1.0,mass);
-  lPhi.SetPtEtaPhiM(pt,eta,phi,mass);
+  lPhi.SetXYZM(0.0,0.0,0.0,mass);
 }
 
 void setDecayChannels(int const pid)
@@ -270,6 +269,8 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters)
 void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector const& lKminus)
 {
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
+  TLorentzVector lPhiRec = lKplus+lKminus; 
+  cout << "lPhiRec.M = " << lPhiRec.M() << endl;
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
@@ -278,6 +279,8 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   TVector3 nQ(0.0,-1.0,0.0); // direction of angular momentum with un-smeared EP
   float CosThetaStarRP = vMcKpBoosted.Dot(nQ);
+  cout << "vMcKpBoosted.Px = " << vMcKpBoosted.Px() << ", vMcKpBoosted.Py = " << vMcKpBoosted.Py() << ", vMcKpBoosted.Pz = " << vMcKpBoosted.Pz() << endl;
+  cout << "lKplus.Px = " << lKplus.Px() << ", lKplus.Py = " << lKplus.Py() << ", lKplus.Pz = " << lKplus.Pz() << endl;
 
   h_phiRP->Fill(Pt_lPhi,lPhi->Phi());
   h_cosRP->Fill(Pt_lPhi,CosThetaStarRP);
