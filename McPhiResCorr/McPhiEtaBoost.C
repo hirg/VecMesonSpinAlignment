@@ -223,7 +223,7 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
   // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
-  lPhi.SetXYZM(0.0,0.0,0.0,mass);
+  lPhi.SetPxPyPzE(0.0,0.0,0.0,mass);
 }
 
 void setDecayChannels(int const pid)
