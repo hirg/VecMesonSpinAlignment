@@ -60,7 +60,7 @@ void plotMcPhiEtaBoost()
   h_play->GetYaxis()->SetNdivisions(505);
   h_play->GetYaxis()->SetRangeUser(0.25,0.85);
   h_play->Draw("pE");
-  PlotLine(0.0,10.0,1.0/3.0,1.0/3.0,1,2,2);
+  PlotLine(-0.5,9.5,1.0/3.0,1.0/3.0,1,2,2);
 
   for(int i_eta = 0; i_eta < 25; ++i_eta)
   {
@@ -74,4 +74,13 @@ void plotMcPhiEtaBoost()
   g_eta->SetMarkerSize(1.4);
   g_eta->SetMarkerColor(2);
   g_eta->Draw("pE same");
+
+  TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
+  leg->SetBorderSize(0);
+  leg->SetFillColor(0);
+  leg->AddEntry(p_Cos2EtaKaon[0],"MC Simulation","p");
+  leg->AddEntry(g_eta,"Analytic Calculation","p");
+  leg->Draw("same");
+
+  c_play->SaveAs("../figures/McPhiEtaBoost.eps");
 }
