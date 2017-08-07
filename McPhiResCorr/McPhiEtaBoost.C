@@ -38,8 +38,8 @@ bool passEtaCut(float eta, int BinEta);
 TH3F *h_Tracks;
 TH3F *h_Eta;
 TH2F *h_phiRP, *h_cosRP;
-TH2F *h_CosEtaKaon[25], *h_CosEtaPhi[25];
-TH2F *h_Cos2EtaKaon[25], *h_Cos2EtaPhi[25];
+TH1F *h_CosEtaKaon[25];
+TH1F *h_Cos2EtaKaon[25];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -65,14 +65,10 @@ void McPhiEtaBoost(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
   {
     string HistName;
     HistName = Form("h_CosEtaKaon_%d",i_eta);
-    h_CosEtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
-    HistName = Form("h_CosEtaPhi_%d",i_eta);
-    h_CosEtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+    h_CosEtaKaon[i_eta] = new TH1F(HistName.c_str(),HistName.c_str(),BinY,-1.0,1.0);
 
     HistName = Form("h_Cos2EtaKaon_%d",i_eta);
-    h_Cos2EtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,0.0,1.0);
-    HistName = Form("h_Cos2EtaPhi_%d",i_eta);
-    h_Cos2EtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,0.0,1.0);
+    h_Cos2EtaKaon[i_eta] = new TH1F(HistName.c_str(),HistName.c_str(),BinY,0.0,1.0);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -288,17 +284,10 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 
   for(int i_eta = 0; i_eta < 25; ++i_eta)
   {
-    // if( passEtaCut(Eta_lPhi,i_eta) ) 
-    // {
-    //   h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
-    //   h_Cos2EtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP*CosThetaStarRP);
-    // }
-
-    // if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) )
     {
-      h_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
-      h_Cos2EtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP*CosThetaStarRP);
+      h_CosEtaKaon[i_eta]->Fill(CosThetaStarRP);
+      h_Cos2EtaKaon[i_eta]->Fill(CosThetaStarRP*CosThetaStarRP);
     }
   }
 }
@@ -323,7 +312,7 @@ bool passEtaCut(float eta, int BinEta)
 
 void write(int energy)
 {
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiEta.root",vmsa::mBeamEnergy[energy].c_str());
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McPhiEtaBoost.root",vmsa::mBeamEnergy[energy].c_str());
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
 
@@ -335,9 +324,7 @@ void write(int energy)
   for(int i_eta = 0; i_eta < 25; ++i_eta)
   {
     h_CosEtaKaon[i_eta]->Write();
-    h_CosEtaPhi[i_eta]->Write();
     h_Cos2EtaKaon[i_eta]->Write();
-    h_Cos2EtaPhi[i_eta]->Write();
   }
 
   File_OutPut->Close();
