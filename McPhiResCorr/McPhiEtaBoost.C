@@ -219,11 +219,12 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   // double const phi = f_flow->GetRandom();
   // double const pz = pt*TMath::SinH(eta);
 
-  // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
-  // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
-  // double const phi = TMath::TwoPi() * gRandom->Rndm();
+  double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
+  double const eta = gRandom->Uniform(-6.0*vmsa::acceptanceRapidity, 6.0*vmsa::acceptanceRapidity);
+  double const phi = TMath::TwoPi() * gRandom->Rndm();
 
-  lPhi.SetXYZM(1.0,1.0,1.0,mass);
+  // lPhi.SetXYZM(1.0,1.0,1.0,mass);
+  lPhi.SetPtEtaPhiM(pt,eta,phi,mass);
 }
 
 void setDecayChannels(int const pid)
