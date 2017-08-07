@@ -274,6 +274,8 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   cout << "vMcKpBoosted.Px = " << vMcKpBoosted.Px() << ", vMcKpBoosted.Py = " << vMcKpBoosted.Py() << ", vMcKpBoosted.Pz = " << vMcKpBoosted.Pz() << endl;
   TVector3 vKplus = lKplus.Vect().Unit();
   cout << "lKplus.Px = " << vKplus.Px() << ", lKplus.Py = " << vKplus.Py() << ", lKplus.Pz = " << vKplus.Pz() << endl;
+  TVector3 vKminus = lKminus.Vect().Unit();
+  cout << "lKminus.Px = " << vKminus.Px() << ", lKminus.Py = " << vKminus.Py() << ", lKminus.Pz = " << vKminus.Pz() << endl;
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
