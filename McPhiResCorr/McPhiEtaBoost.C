@@ -94,7 +94,7 @@ void McPhiEtaBoost(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
     if (floor(10.0*i_ran/ static_cast<float>(NMax)) > floor(10.0*(i_ran-1)/ static_cast<float>(NMax)))
     cout << "=> processing data: " << 100.0*i_ran/ static_cast<float>(NMax) << "%" << endl;
 
-    getKinematics(*lPhi,1.01940);
+    getKinematics(*lPhi,vmsa::InvMass[pid]);
     decayAndFill(vmsa::decayMother[pid],lPhi,ptl);
   }
   cout << "=> processing data: 100%" << endl;
@@ -270,6 +270,7 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 {
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
   TLorentzVector lPhiRec = lKplus+lKminus; 
+  if (lPhiRec.M() < vmsa::InvMass[0]) return;
   cout << "lPhiRec.M = " << lPhiRec.M() << endl;
   cout << "vMcKpBoosted.Px = " << vMcKpBoosted.Px() << ", vMcKpBoosted.Py = " << vMcKpBoosted.Py() << ", vMcKpBoosted.Pz = " << vMcKpBoosted.Pz() << endl;
   TVector3 vKplus = lKplus.Vect().Unit();
