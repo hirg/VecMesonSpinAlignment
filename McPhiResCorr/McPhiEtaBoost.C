@@ -212,17 +212,17 @@ TH1F* readeta(int energy, int pid, int centrality)
 
 void getKinematics(TLorentzVector& lPhi, double const mass)
 {
-  double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
-  double const eta = h_eta->GetRandom();
-  f_flow->ReleaseParameter(0);
-  f_flow->SetParameter(0,f_v2->Eval(pt));
-  double const phi = f_flow->GetRandom();
+  // double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
+  // double const eta = h_eta->GetRandom();
+  // f_flow->ReleaseParameter(0);
+  // f_flow->SetParameter(0,f_v2->Eval(pt));
+  // double const phi = f_flow->GetRandom();
+  // double const pz = pt*TMath::SinH(eta);
 
   // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
   // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
   // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
-  double const pz = pt*TMath::SinH(eta);
   lPhi.SetXYZM(0.0,0.0,0.0,mass);
 }
 
@@ -268,7 +268,8 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters)
 
 void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector const& lKminus)
 {
-  TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
+  // TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
+  TVector3 vMcKpBoosted = lKplus.Vect().Unit(); // boost Kplus back to phi-meson rest frame
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
