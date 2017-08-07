@@ -18,6 +18,7 @@
 #include "TCanvas.h"
 #include "TGraphAsymmErrors.h"
 #include "TVector3.h"
+#include "TProfile.h"
 #include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/functions.h"
 #include "/global/homes/x/xusun/STAR/VecMesonSpinAlignment/Utility/StSpinAlignmentCons.h"
 
@@ -39,7 +40,7 @@ TH3F *h_Tracks;
 TH3F *h_Eta;
 TH2F *h_phiRP, *h_cosRP;
 TH1F *h_CosEtaKaon[25];
-TH1F *h_Cos2EtaKaon[25];
+TProfile *p_Cos2EtaKaon[25];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -67,8 +68,8 @@ void McPhiEtaBoost(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1
     HistName = Form("h_CosEtaKaon_%d",i_eta);
     h_CosEtaKaon[i_eta] = new TH1F(HistName.c_str(),HistName.c_str(),BinY,-1.0,1.0);
 
-    HistName = Form("h_Cos2EtaKaon_%d",i_eta);
-    h_Cos2EtaKaon[i_eta] = new TH1F(HistName.c_str(),HistName.c_str(),BinY,0.0,1.0);
+    HistName = Form("p_Cos2EtaKaon_%d",i_eta);
+    p_Cos2EtaKaon[i_eta] = new TProfile(HistName.c_str(),HistName.c_str(),1.0,McEtaBinFake[i_eta]-0.1,McEtaBinFake[i_eta]+0.1);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -287,7 +288,7 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) )
     {
       h_CosEtaKaon[i_eta]->Fill(CosThetaStarRP);
-      h_Cos2EtaKaon[i_eta]->Fill(CosThetaStarRP*CosThetaStarRP);
+      p_Cos2EtaKaon[i_eta]->Fill(McEtaBinFake[i_eta],2.5*(CosThetaStarRP*CosThetaStarRP-0.2));
     }
   }
 }
@@ -324,7 +325,7 @@ void write(int energy)
   for(int i_eta = 0; i_eta < 25; ++i_eta)
   {
     h_CosEtaKaon[i_eta]->Write();
-    h_Cos2EtaKaon[i_eta]->Write();
+    p_Cos2EtaKaon[i_eta]->Write();
   }
 
   File_OutPut->Close();

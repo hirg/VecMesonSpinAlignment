@@ -6,6 +6,7 @@
 #include "TH2F.h"
 #include "TH3F.h"
 #include "TLegend.h"
+#include "TF1.h"
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/draw.h"
 
@@ -55,22 +56,23 @@ void plotMcLambdaEta(int pid = 0)
   p_cosRP->GetYaxis()->CenterTitle();
   p_cosRP->GetYaxis()->SetLabelSize(0.04);
   p_cosRP->GetYaxis()->SetNdivisions(505);
+  p_cosRP->GetYaxis()->SetRangeUser(0.00,0.05);
   p_cosRP->SetMarkerStyle(20);
   p_cosRP->SetMarkerSize(1.4);
   p_cosRP->SetMarkerColor(kGray+2);
   p_cosRP->Draw("pE");
+  PlotLine(vmsa::ptMin,vmsa::ptMax,0.02,0.02,1,2,2);
+  TF1 *f_pol0 = new TF1("f_pol0","pol0",vmsa::ptMin,vmsa::ptMax);
+  f_pol0->SetParameter(0,0.02);
+  p_cosRP->Fit(f_pol0,"NQ");
+  f_pol0->SetLineColor(2);
+  f_pol0->SetLineWidth(2);
+  f_pol0->SetLineStyle(2);
+  f_pol0->Draw("l same");
+  plotTopLegend("input P_{H} = 0.02",3.0,0.03,0.03,1,0.0,42,0,1);
+  string PHfit = Form("extract P_{H} = %0.4f #pm %0.4f",f_pol0->GetParameter(0),f_pol0->GetParError(0));
+  plotTopLegend((char*)PHfit.c_str(),3.0,0.04,0.03,1,0.0,42,0,1);
 
-  p_sinRP->SetMarkerStyle(24);
-  p_sinRP->SetMarkerSize(1.4);
-  p_sinRP->SetMarkerColor(kAzure-2);
-  p_sinRP->Draw("pE same");
-  PlotLine(vmsa::ptMin,vmsa::ptMax,0.0,0.0,1,2,2);
-  TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
-  leg->SetBorderSize(0);
-  leg->SetFillColor(0);
-  leg->AddEntry(p_cosRP,"#frac{3}{#alpha_{H}}<cos(#theta*)>","p");
-  leg->AddEntry(p_sinRP,"#frac{8}{#pi#alpha_{H}}<sin(#Psi_{RP}-#phi_{p}*)>","p");
-  leg->Draw("same");
   string outputPolaPt = Form("../figures/c_PolaPt_%s.eps",PID[pid].c_str());
   c_PolaPt->SaveAs(outputPolaPt.c_str());
 
@@ -98,7 +100,7 @@ void plotMcLambdaEta(int pid = 0)
   h_play->GetYaxis()->CenterTitle();
   h_play->GetYaxis()->SetLabelSize(0.04);
   h_play->GetYaxis()->SetNdivisions(505);
-  h_play->GetYaxis()->SetRangeUser(0.1,0.3);
+  h_play->GetYaxis()->SetRangeUser(0.01,0.03);
   h_play->Draw("pE");
   PlotLine(0.0,10.0,0.0,0.0,1,2,2);
 
