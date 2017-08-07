@@ -223,7 +223,7 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   // double const y = gRandom->Uniform(-vmsa::acceptanceRapidity, vmsa::acceptanceRapidity);
   // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
-  lPhi.SetPxPyPzE(0.0,0.0,0.0,mass);
+  lPhi.SetPxPyPzE(1.0,1.0,1.0,mass);
 }
 
 void setDecayChannels(int const pid)
@@ -296,12 +296,12 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
 {
   TVector3 vMcBeta = -1.0*lMcVec->BoostVector(); // boost vector
-  cout << "vMcBeta.Px() = " << vMcBeta.Px() << ", vMcBeta.Py = " << vMcBeta.Py() << ", vMcBeta.Pz() = " << vMcBeta.Pz() << endl;
+  // cout << "vMcBeta.Px() = " << vMcBeta.Px() << ", vMcBeta.Py = " << vMcBeta.Py() << ", vMcBeta.Pz() = " << vMcBeta.Pz() << endl;
 
   TLorentzVector lKaon = lMcDau;
-  cout << "before boost lKaon.Px() = " << lKaon.Px() << ", lKaon.Py = " << lKaon.Py() << ", lKaon.Pz = " << lKaon.Pz() << endl;
+  // cout << "before boost lKaon.Px() = " << lKaon.Px() << ", lKaon.Py = " << lKaon.Py() << ", lKaon.Pz = " << lKaon.Pz() << endl;
   lKaon.Boost(vMcBeta); // boost Kplus back to phi-meson rest frame
-  cout << "after boost lKaon.Px() = " << lKaon.Px() << ", lKaon.Py = " << lKaon.Py() << ", lKaon.Pz = " << lKaon.Pz() << endl;
+  // cout << "after boost lKaon.Px() = " << lKaon.Px() << ", lKaon.Py = " << lKaon.Py() << ", lKaon.Pz = " << lKaon.Pz() << endl;
   TVector3 vMcDauStar = lKaon.Vect().Unit(); // momentum direction of Kplus in phi-meson rest frame
 
   return vMcDauStar;
