@@ -268,8 +268,7 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters)
 
 void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector const& lKminus)
 {
-  // TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
-  TVector3 vMcKpBoosted = lKplus.Vect().Unit(); // boost Kplus back to phi-meson rest frame
+  TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
@@ -297,9 +296,12 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec)
 {
   TVector3 vMcBeta = -1.0*lMcVec->BoostVector(); // boost vector
+  cout << "vMcBeta.Px() = " << vMcBeta.Px() << ", vMcBeta.Py = " << vMcBeta.Py() << ", vMcBeta.Pz() = " << vMcBeta.Pz() << endl;
 
   TLorentzVector lKaon = lMcDau;
+  cout << "before boost lKaon.Px() = " << lKaon.Px() << ", lKaon.Py = " << lKaon.Py() << ", lKaon.Pz = " << lKaon.Pz() << endl;
   lKaon.Boost(vMcBeta); // boost Kplus back to phi-meson rest frame
+  cout << "after boost lKaon.Px() = " << lKaon.Px() << ", lKaon.Py = " << lKaon.Py() << ", lKaon.Pz = " << lKaon.Pz() << endl;
   TVector3 vMcDauStar = lKaon.Vect().Unit(); // momentum direction of Kplus in phi-meson rest frame
 
   return vMcDauStar;
