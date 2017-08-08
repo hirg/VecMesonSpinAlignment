@@ -270,13 +270,10 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
 {
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
   TLorentzVector lPhiRec = lKplus+lKminus; 
-  if (lPhiRec.M() < vmsa::InvMass[0]) return;
-  // cout << "lPhiRec.M = " << lPhiRec.M() << endl;
-  // cout << "vMcKpBoosted.Px = " << vMcKpBoosted.Px() << ", vMcKpBoosted.Py = " << vMcKpBoosted.Py() << ", vMcKpBoosted.Pz = " << vMcKpBoosted.Pz() << endl;
-  // TVector3 vKplus = lKplus.Vect().Unit();
-  // cout << "lKplus.Px = " << vKplus.Px() << ", lKplus.Py = " << vKplus.Py() << ", lKplus.Pz = " << vKplus.Pz() << endl;
-  // TVector3 vKminus = lKminus.Vect().Unit();
-  // cout << "lKminus.Px = " << vKminus.Px() << ", lKminus.Py = " << vKminus.Py() << ", lKminus.Pz = " << vKminus.Pz() << endl;
+  // if (lPhiRec.M() < vmsa::InvMass[0]) return;
+  cout << "lPhiRec.M = " << lPhiRec.M() << endl;
+  cout << "lKplus.Px = " << lKplus.Px() << ", lKplus.Py = " << lKplus.Py() << ", lKplus.Pz = " << lKplus.Pz() << ", lKplus.P = " << lKplus.P() << ", lKplus.M = " << lKplus.M() << endl;
+  cout << "lKminus.Px = " << lKminus.Px() << ", lKminus.Py = " << lKminus.Py() << ", lKminus.Pz = " << lKminus.Pz() << ", lKminus.P = " << lKminus.P() << ", lKminus.M = " << lKminus.M() << endl;
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
