@@ -223,7 +223,7 @@ void getKinematics(TLorentzVector& lPhi, double const mass)
   // double const eta = gRandom->Uniform(-6.0*vmsa::acceptanceRapidity, 6.0*vmsa::acceptanceRapidity);
   // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
-  lPhi.SetXYZM(0.0,0.0,0.0,mass);
+  lPhi.SetXYZM(1.0,1.0,1.0,mass);
 }
 
 void setDecayChannels(int const pid)
@@ -275,9 +275,9 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
   TLorentzVector lPhiRec = lKplus+lKminus; 
   // if (lPhiRec.M() < vmsa::InvMass[0]) return;
-  cout << "lPhiRec.M = " << lPhiRec.M() << endl;
-  cout << "lKplus.Px = " << lKplus.Px() << ", lKplus.Py = " << lKplus.Py() << ", lKplus.Pz = " << lKplus.Pz() << ", lKplus.P = " << lKplus.P() << ", lKplus.M = " << lKplus.M() << endl;
-  cout << "lKminus.Px = " << lKminus.Px() << ", lKminus.Py = " << lKminus.Py() << ", lKminus.Pz = " << lKminus.Pz() << ", lKminus.P = " << lKminus.P() << ", lKminus.M = " << lKminus.M() << endl;
+  // cout << "lPhiRec.M = " << lPhiRec.M() << endl;
+  // cout << "lKplus.Px = " << lKplus.Px() << ", lKplus.Py = " << lKplus.Py() << ", lKplus.Pz = " << lKplus.Pz() << ", lKplus.P = " << lKplus.P() << ", lKplus.M = " << lKplus.M() << endl;
+  // cout << "lKminus.Px = " << lKminus.Px() << ", lKminus.Py = " << lKminus.Py() << ", lKminus.Pz = " << lKminus.Pz() << ", lKminus.P = " << lKminus.P() << ", lKminus.M = " << lKminus.M() << endl;
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
