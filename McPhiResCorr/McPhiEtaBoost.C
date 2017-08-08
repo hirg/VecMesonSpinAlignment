@@ -244,10 +244,14 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters)
   TLorentzVector lKplus;
   TLorentzVector lKminus;
 
+  TLorentzVector lTest;
+
   int nTrk = daughters.GetEntriesFast();
   for (int iTrk = 0; iTrk < nTrk; ++iTrk)
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
+    ptl0->Momentum(lTest);
+    cout << "pdgCode = " << ptl0->GetPdgCode() << ", Mass = " << lTest.M() << ", Px = " << lTest.Px() << ", Py = " << lTest.Py() << ", Pz = " << lTest.Pz() << ", P = " << lTest.P() << endl;
 
     switch (ptl0->GetPdgCode())
     {
