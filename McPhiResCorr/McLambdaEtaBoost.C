@@ -281,12 +281,15 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
   TLorentzVector lProton;
   TLorentzVector lPion;
 
+  TLorentzVector lTest;
+
   int nTrk = daughters.GetEntriesFast();
   // cout << "nTrk = " << nTrk << endl;
   for (int iTrk = 0; iTrk < nTrk; ++iTrk)
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
-    // cout << "PdgCode = " << ptl0->GetPdgCode() << endl;
+    ptl0->Momentum(lTest);
+    cout << "pdgCode = " << ptl0->GetPdgCode() << ", Mass = " << lTest.M() << ", Px = " << lTest.Px() << ", Py = " << lTest.Py() << ", Pz = " << lTest.Pz() << ", P = " << lTest.P() << endl;
 
     switch (TMath::Abs(ptl0->GetPdgCode()))
     {
