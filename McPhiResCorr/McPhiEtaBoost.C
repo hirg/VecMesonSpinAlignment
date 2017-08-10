@@ -251,7 +251,7 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters)
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
     ptl0->Momentum(lTest);
-    cout << "pdgCode = " << ptl0->GetPdgCode() << ", Mass = " << lTest.M() << ", Px = " << lTest.Px() << ", Py = " << lTest.Py() << ", Pz = " << lTest.Pz() << ", P = " << lTest.P() << endl;
+    // cout << "pdgCode = " << ptl0->GetPdgCode() << ", Mass = " << lTest.M() << ", Px = " << lTest.Px() << ", Py = " << lTest.Py() << ", Pz = " << lTest.Pz() << ", P = " << lTest.P() << endl;
 
     switch (ptl0->GetPdgCode())
     {
@@ -273,11 +273,6 @@ void decayAndFill(int const kf, TLorentzVector* lPhi, TClonesArray& daughters)
 void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector const& lKminus)
 {
   TVector3 vMcKpBoosted = CalBoostedVector(lKplus,lPhi); // boost Kplus back to phi-meson rest frame
-  TLorentzVector lPhiRec = lKplus+lKminus; 
-  // if (lPhiRec.M() < vmsa::InvMass[0]) return;
-  // cout << "lPhiRec.M = " << lPhiRec.M() << endl;
-  // cout << "lKplus.Px = " << lKplus.Px() << ", lKplus.Py = " << lKplus.Py() << ", lKplus.Pz = " << lKplus.Pz() << ", lKplus.P = " << lKplus.P() << ", lKplus.M = " << lKplus.M() << endl;
-  // cout << "lKminus.Px = " << lKminus.Px() << ", lKminus.Py = " << lKminus.Py() << ", lKminus.Pz = " << lKminus.Pz() << ", lKminus.P = " << lKminus.P() << ", lKminus.M = " << lKminus.M() << endl;
 
   float Pt_lPhi = lPhi->Pt();
   // float Eta_lPhi = lPhi->Eta();
