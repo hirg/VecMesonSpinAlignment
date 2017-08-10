@@ -259,7 +259,8 @@ void getKinematics(TLorentzVector& lLambda, double const mass)
   double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   // lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
-  lLambda.SetXYZM(0.0,0.0,0.0,mass);
+  // lLambda.SetXYZM(0.0,0.0,0.0,mass);
+  lLambda.SetXYZM(0.0,0.0,0.0,1.0); // if energy is smaller than rest mass, then Lambda will decay at rest
 }
 
 void setDecayChannels(int const pid)
@@ -330,7 +331,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*CosThetaStarSimple;
-  float SinPhiStarRP = (TMath::Pi()*spinDirection[pid]/(alphaH*8.0))*TMath::Sin(vMcKpBoosted.Phi());
+  float SinPhiStarRP = (TMath::Pi()*spinDirection[pid]/(alphaH*8.0))*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
   h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
