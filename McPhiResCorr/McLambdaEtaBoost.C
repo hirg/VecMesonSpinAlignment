@@ -94,10 +94,10 @@ void McLambdaEtaBoost(int energy = 6, int pid = 0, int cent = 0, int const NMax 
   {
     string ProName;
     ProName = Form("p_cosInteDau_%d",i_eta);
-    p_cosInteDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+    p_cosInteDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,McEtaBinFake[i_eta]-0.1,McEtaBinFake[i_eta]+0.1);
 
     ProName = Form("p_sinInteDau_%d",i_eta);
-    p_sinInteDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+    p_sinInteDau[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,McEtaBinFake[i_eta]-0.1,McEtaBinFake[i_eta]+0.1);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -345,8 +345,8 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   {
     if( passEtaCut(Eta_Proton,i_eta) && passEtaCut(Eta_Pion,i_eta) )
     {
-      p_cosInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],CosThetaStarRP);
-      p_sinInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStarRP);
+      p_cosInteDau[i_eta]->Fill(McEtaBinFake[i_eta],CosThetaStarRP);
+      p_sinInteDau[i_eta]->Fill(McEtaBinFake[i_eta],SinPhiStarRP);
     }
   }
 }
