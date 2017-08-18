@@ -67,7 +67,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
   leg->Draw("same");
 
   string outputPolaPt = Form("../figures/c_PolaPt_%s.eps",PID[pid].c_str());
-  // c_PolaPt->SaveAs(outputPolaPt.c_str());
+  c_PolaPt->SaveAs(outputPolaPt.c_str());
 
 
   TCanvas *c_PolaEta = new TCanvas("c_PolaEta","c_PolaEta",10,10,800,800);
@@ -75,7 +75,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
   c_PolaEta->cd()->SetBottomMargin(0.15);
   c_PolaEta->cd()->SetTicks(1,1);
   c_PolaEta->cd()->SetGrid(0,0);
-  TH1F *h_play = new TH1F("h_play","h_play",100,0.0,10.0);
+  TH1F *h_play = new TH1F("h_play","h_play",100,-0.5,9.5);
   for(int i_bin = 0; i_bin < 100; ++i_bin)
   {
     h_play->SetBinContent(i_bin+1,-10.0);
@@ -87,6 +87,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
   h_play->GetXaxis()->CenterTitle();
   h_play->GetXaxis()->SetLabelSize(0.04);
   h_play->GetXaxis()->SetNdivisions(505);
+  h_play->GetXaxis()->SetRangeUser(-0.05,4.1);
 
   h_play->GetYaxis()->SetTitle("P_{H}");
   h_play->GetYaxis()->SetTitleSize(0.04);
@@ -95,7 +96,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
   h_play->GetYaxis()->SetNdivisions(505);
   h_play->GetYaxis()->SetRangeUser(-0.05,0.5);
   h_play->Draw("pE");
-  PlotLine(0.0,10.0,0.0,0.0,1,2,2);
+  PlotLine(-0.05,4.1,0.0,0.0,1,2,2);
 
   for(int i_eta = 0; i_eta < 17; ++i_eta)
   {
@@ -116,5 +117,5 @@ void plotMcLambdaEtaBoost(int pid = 0)
   legEta->AddEntry(p_sinRP,"#frac{#pi}{8#alpha_{H}}<sin(#Psi-#phi_{p}*)>","p");
   legEta->Draw("same");
   string outputPolaEta = Form("../figures/c_PolaEta_%s.eps",PID[pid].c_str());
-  // c_PolaEta->SaveAs(outputPolaEta.c_str());
+  c_PolaEta->SaveAs(outputPolaEta.c_str());
 }
