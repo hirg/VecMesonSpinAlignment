@@ -61,9 +61,9 @@ float const McEtaBinFake[17] = {0.001,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2
 
 
 // histograms
-TH3F *h_Tracks, *h_TracksProton, *h_TracksPion;
-TH3F *h_Eta;
-TH2F *h_phiRP, *h_cosRP;
+TH3F *h_TracksProton, *h_TracksPion;
+TH2F *h_Eta;
+TH1F *h_cosRP;
 TProfile *p_cosRP, *p_sinRP;
 TProfile *p_cosInteDau[17];
 TProfile *p_sinInteDau[17];
@@ -81,16 +81,14 @@ void McLambdaEtaBoost(int energy = 6, int pid = 0, int cent = 0, int const NMax 
   int const BinY     = vmsa::BinY;
   int const BinPhi   = vmsa::BinPhi;
 
-  h_Tracks = new TH3F("h_Tracks","h_Tracks",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
   h_TracksProton = new TH3F("h_TracksProton","h_TracksProton",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
   h_TracksPion = new TH3F("h_TracksPion","h_TracksPion",BinPt,vmsa::ptMin,vmsa::ptMax,10.0*BinY,-10.0,10.0,BinPhi,-TMath::Pi(),TMath::Pi());
-  h_Eta = new TH3F("h_Eta","h_Eta",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0,10*BinY,-10.0,10.0); // eta for phi, K+ and K-
+  h_Eta = new TH2F("h_Eta","h_Eta",10*BinY,-10.0,10.0,10*BinY,-10.0,10.0); // eta for p and pi
 
-  h_phiRP = new TH2F("h_phiRP","h_phiRP",BinPt,vmsa::ptMin,vmsa::ptMax,BinPhi,-TMath::Pi(),TMath::Pi());
-  h_cosRP = new TH2F("h_cosRP","h_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax,2.0*BinY,-1.0,1.0);
+  h_cosRP = new TH1F("h_cosRP","h_cosRP",2.0*BinY,-1.0,1.0);
 
-  p_cosRP = new TProfile("p_cosRP","p_cosRP",BinPt,vmsa::ptMin,vmsa::ptMax);
-  p_sinRP = new TProfile("p_sinRP","p_sinRP",BinPt,vmsa::ptMin,vmsa::ptMax);
+  p_cosRP = new TProfile("p_cosRP","p_cosRP",1,-0.5,0.5);
+  p_sinRP = new TProfile("p_sinRP","p_sinRP",1,-0.5,0.5);
 
   for(int i_eta = 0; i_eta < 17; ++i_eta)
   {
@@ -289,7 +287,7 @@ void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughter
   {
     TParticle* ptl0 = (TParticle*)daughters.At(iTrk);
     ptl0->Momentum(lTest);
-    cout << "pdgCode = " << ptl0->GetPdgCode() << ", Mass = " << lTest.M() << ", Px = " << lTest.Px() << ", Py = " << lTest.Py() << ", Pz = " << lTest.Pz() << ", P = " << lTest.P() << endl;
+    // cout << "pdgCode = " << ptl0->GetPdgCode() << ", Mass = " << lTest.M() << ", Px = " << lTest.Px() << ", Py = " << lTest.Py() << ", Pz = " << lTest.Pz() << ", P = " << lTest.P() << endl;
 
     switch (TMath::Abs(ptl0->GetPdgCode()))
     {
@@ -336,14 +334,12 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*CosThetaStarSimple;
   float SinPhiStarRP = (TMath::Pi()*spinDirection[pid]/(alphaH*8.0))*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
-  h_phiRP->Fill(Pt_Lambda,Phi_Lambda);
-  h_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
-  // h_Tracks->Fill(Pt_Lambda,Eta_Lambda,Phi_Lambda);
+  h_cosRP->Fill(CosThetaStarRP);
   h_TracksProton->Fill(Pt_Proton,Eta_Proton,Phi_Proton);
   h_TracksPion->Fill(Pt_Pion,Eta_Pion,Phi_Pion);
-  // h_Eta->Fill(Eta_Lambda,Eta_Proton,Eta_Pion);
-  p_cosRP->Fill(Pt_Lambda,CosThetaStarRP);
-  p_sinRP->Fill(Pt_Lambda,SinPhiStarRP);
+  h_Eta->Fill(Eta_Proton,Eta_Pion);
+  p_cosRP->Fill(0.0,CosThetaStarRP);
+  p_sinRP->Fill(0.0,SinPhiStarRP);
 
   for(int i_eta = 0; i_eta < 17; ++i_eta)
   {
@@ -387,10 +383,8 @@ void write(int energy, int pid)
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
 
-  h_Tracks->Write();
   h_TracksProton->Write();
   h_TracksPion->Write();
-  h_phiRP->Write();
   h_cosRP->Write();
   h_Eta->Write();
 
