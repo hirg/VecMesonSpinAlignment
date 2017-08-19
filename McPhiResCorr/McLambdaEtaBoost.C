@@ -332,7 +332,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
   // float SinPhiStarRP = TMath::Sin(vMcKpBoosted.Theta())*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   float CosThetaStarRP = (3.0*spinDirection[pid]/alphaH)*CosThetaStarSimple;
-  float SinPhiStarRP = (TMath::Pi()*spinDirection[pid]/(alphaH*8.0))*TMath::Sin(Psi-vMcKpBoosted.Phi());
+  float SinPhiStarRP = (8.0*spinDirection[pid]/(alphaH*TMath::Pi()))*TMath::Sin(Psi-vMcKpBoosted.Phi());
 
   h_cosRP->Fill(CosThetaStarRP);
   h_TracksProton->Fill(Pt_Proton,Eta_Proton,Phi_Proton);
