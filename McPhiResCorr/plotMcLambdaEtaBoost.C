@@ -10,8 +10,12 @@
 #include "../Utility/StSpinAlignmentCons.h"
 #include "../Utility/draw.h"
 
+float const McEtaBinFake[17] = {0.001,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75,3.0,3.25,3.5,3.75,4.0};	
+float const McPhFake[17] = {1.2732,1.2604,1.2263,1.1815,1.1363,1.0972,1.0666,1.0443,1.0289,1.0185,1.0117,1.0073,1.0046,1.0028,1.0017,1.0011,1.0007};
+
 void plotMcLambdaEtaBoost(int pid = 0)
 {
+
   string PID[2] = {"L","Lbar"};
   string InPutHist = Form("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McLambdaEtaBoost_%d.root",pid);
   TFile *File_InPut = TFile::Open(InPutHist.c_str());
@@ -20,6 +24,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
   p_cosRP = (TProfile*)File_InPut->Get("p_cosRP");
   p_sinRP = (TProfile*)File_InPut->Get("p_sinRP");
 
+  TGraphAsymmErrors *g_eta = new TGraphAsymmErrors();
   TProfile *p_cosInteDau[17];
   TProfile *p_sinInteDau[17];
   for(int i_eta = 0; i_eta < 17; ++i_eta)
@@ -30,6 +35,8 @@ void plotMcLambdaEtaBoost(int pid = 0)
 
     ProName = Form("p_sinInteDau_%d",i_eta);
     p_sinInteDau[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+
+    g_eta->SetPoint(i_eta,McEtaBinFake[i_eta],McPhFake[i_eta]);
   }
 
   TCanvas *c_PolaPt = new TCanvas("c_PolaPt","c_PolaPt",10,10,800,800);
@@ -94,27 +101,34 @@ void plotMcLambdaEtaBoost(int pid = 0)
   h_play->GetYaxis()->CenterTitle();
   h_play->GetYaxis()->SetLabelSize(0.04);
   h_play->GetYaxis()->SetNdivisions(505);
-  h_play->GetYaxis()->SetRangeUser(-0.05,0.5);
+  h_play->GetYaxis()->SetRangeUser(0.8,1.5);
   h_play->Draw("pE");
-  PlotLine(-0.05,4.1,0.0,0.0,1,2,2);
+  PlotLine(-0.05,4.1,1.0,1.0,1,2,2);
 
   for(int i_eta = 0; i_eta < 17; ++i_eta)
   {
-    p_cosInteDau[i_eta]->SetMarkerStyle(20);
-    p_cosInteDau[i_eta]->SetMarkerSize(1.4);
-    p_cosInteDau[i_eta]->SetMarkerColor(kGray+2);
-    p_cosInteDau[i_eta]->Draw("pE same");
+    // p_cosInteDau[i_eta]->SetMarkerStyle(20);
+    // p_cosInteDau[i_eta]->SetMarkerSize(1.4);
+    // p_cosInteDau[i_eta]->SetMarkerColor(kGray+2);
+    // p_cosInteDau[i_eta]->Draw("pE same");
 
-    p_sinInteDau[i_eta]->SetMarkerStyle(24);
+    p_sinInteDau[i_eta]->SetMarkerStyle(20);
     p_sinInteDau[i_eta]->SetMarkerSize(1.4);
-    p_sinInteDau[i_eta]->SetMarkerColor(2);
+    p_sinInteDau[i_eta]->SetMarkerColor(kGray+2);
     p_sinInteDau[i_eta]->Draw("pE same");
   }
+
+  g_eta->SetMarkerStyle(24);
+  g_eta->SetMarkerSize(1.4);
+  g_eta->SetMarkerColor(2);
+  g_eta->Draw("pE same");
+
   TLegend *legEta = new TLegend(0.4,0.6,0.8,0.8);
   legEta->SetBorderSize(0);
   legEta->SetFillColor(0);
-  legEta->AddEntry(p_cosRP,"#frac{3}{#alpha_{H}}<cos(#theta*)>","p");
-  legEta->AddEntry(p_sinRP,"#frac{#pi}{8#alpha_{H}}<sin(#Psi-#phi_{p}*)>","p");
+  // legEta->AddEntry(p_cosRP,"#frac{3}{#alpha_{H}}<cos(#theta*)>","p");
+  legEta->AddEntry(p_sinRP,"MC Simulation","p");
+  legEta->AddEntry(g_eta,"Analytic Calculation","p");
   legEta->Draw("same");
   string outputPolaEta = Form("../figures/c_PolaEta_%s.eps",PID[pid].c_str());
   c_PolaEta->SaveAs(outputPolaEta.c_str());
