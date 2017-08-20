@@ -346,7 +346,7 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
     if( passEtaCut(Eta_Proton,i_eta) && passEtaCut(Eta_Pion,i_eta) )
     {
       p_cosInteDau[i_eta]->Fill(McEtaBinFake[i_eta],CosThetaStarRP);
-      p_sinInteDau[i_eta]->Fill(McEtaBinFake[i_eta],SinPhiStarRP/0.2);
+      p_sinInteDau[i_eta]->Fill(McEtaBinFake[i_eta],SinPhiStarRP);
     }
   }
 }

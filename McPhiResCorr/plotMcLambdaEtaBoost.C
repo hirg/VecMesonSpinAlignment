@@ -112,6 +112,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
     // p_cosInteDau[i_eta]->SetMarkerColor(kGray+2);
     // p_cosInteDau[i_eta]->Draw("pE same");
 
+    p_sinInteDau[i_eta]->Scale(1/0.2);
     p_sinInteDau[i_eta]->SetMarkerStyle(20);
     p_sinInteDau[i_eta]->SetMarkerSize(1.4);
     p_sinInteDau[i_eta]->SetMarkerColor(kGray+2);
