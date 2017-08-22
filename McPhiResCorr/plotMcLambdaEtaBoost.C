@@ -36,7 +36,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
     ProName = Form("p_sinInteDau_%d",i_eta);
     p_sinInteDau[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
 
-    g_eta->SetPoint(i_eta,McEtaBinFake[i_eta],McPhFake[i_eta]);
+    g_eta->SetPoint(i_eta,McEtaBinFake[i_eta],McPhFake[i_eta]*0.2);
   }
 
   TCanvas *c_PolaPt = new TCanvas("c_PolaPt","c_PolaPt",10,10,800,800);
@@ -144,14 +144,14 @@ void plotMcLambdaEtaBoost(int pid = 0)
   h_play->GetXaxis()->SetNdivisions(505);
   h_play->GetXaxis()->SetRangeUser(-0.05,4.1);
 
-  h_play->GetYaxis()->SetTitle("P_{H}^{obs}/P_{H}^{input}");
+  h_play->GetYaxis()->SetTitle("P_{H}");
   h_play->GetYaxis()->SetTitleSize(0.04);
   h_play->GetYaxis()->CenterTitle();
   h_play->GetYaxis()->SetLabelSize(0.04);
   h_play->GetYaxis()->SetNdivisions(505);
-  h_play->GetYaxis()->SetRangeUser(0.8,1.5);
+  h_play->GetYaxis()->SetRangeUser(0.18,0.28);
   h_play->Draw("pE");
-  PlotLine(-0.05,4.1,1.0,1.0,1,2,2);
+  PlotLine(-0.05,4.1,0.2,0.2,1,2,2);
 
   for(int i_eta = 0; i_eta < 17; ++i_eta)
   {
@@ -160,9 +160,9 @@ void plotMcLambdaEtaBoost(int pid = 0)
     // p_cosInteDau[i_eta]->SetMarkerColor(kGray+2);
     // p_cosInteDau[i_eta]->Draw("pE same");
 
-    p_sinInteDau[i_eta]->Scale(1/0.2);
+    // p_sinInteDau[i_eta]->Scale(1/0.2);
     p_sinInteDau[i_eta]->SetMarkerStyle(20);
-    p_sinInteDau[i_eta]->SetMarkerSize(1.4);
+    p_sinInteDau[i_eta]->SetMarkerSize(1.0);
     p_sinInteDau[i_eta]->SetMarkerColor(kGray+2);
     p_sinInteDau[i_eta]->Draw("pE same");
   }
@@ -170,14 +170,17 @@ void plotMcLambdaEtaBoost(int pid = 0)
   g_eta->SetMarkerStyle(24);
   g_eta->SetMarkerSize(1.4);
   g_eta->SetMarkerColor(2);
-  g_eta->Draw("pE same");
+  g_eta->SetLineColor(2);
+  g_eta->SetLineWidth(2);
+  g_eta->SetLineStyle(2);
+  g_eta->Draw("l same");
 
   TLegend *legEta = new TLegend(0.4,0.6,0.8,0.8);
   legEta->SetBorderSize(0);
   legEta->SetFillColor(0);
   // legEta->AddEntry(p_cosRP,"#frac{3}{#alpha_{H}}<cos(#theta*)>","p");
   legEta->AddEntry(p_sinInteDau[0],"MC Simulation","p");
-  legEta->AddEntry(g_eta,"Analytic Calculation","p");
+  legEta->AddEntry(g_eta,"Analytic Calculation","l");
   legEta->Draw("same");
   string outputPolaEta = Form("../figures/c_PolaEta_%s.eps",PID[pid].c_str());
   c_PolaEta->SaveAs(outputPolaEta.c_str());

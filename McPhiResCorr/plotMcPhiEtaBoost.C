@@ -73,13 +73,16 @@ void plotMcPhiEtaBoost()
   g_eta->SetMarkerStyle(24);
   g_eta->SetMarkerSize(1.4);
   g_eta->SetMarkerColor(2);
-  g_eta->Draw("pE same");
+  g_eta->SetLineColor(2);
+  g_eta->SetLineStyle(2);
+  g_eta->SetLineWidth(2);
+  g_eta->Draw("l same");
 
   TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->AddEntry(p_Cos2EtaKaon[0],"MC Simulation","p");
-  leg->AddEntry(g_eta,"Analytic Calculation","p");
+  leg->AddEntry(g_eta,"Analytic Calculation","l");
   leg->Draw("same");
 
   c_play->SaveAs("../figures/McPhiEtaBoost.eps");
