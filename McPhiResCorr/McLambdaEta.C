@@ -31,7 +31,7 @@ void getKinematics(TLorentzVector& lLambda, double const mass);
 void setDecayChannels(int const pid);
 void decayAndFill(int const pid, TLorentzVector* lLambda, TClonesArray& daughters);
 void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton, TLorentzVector const& lPion);
-void write(int energy,int pid);
+void write(int energy,int pid,int counter);
 TVector3 CalBoostedVector(TLorentzVector const lMcDau, TLorentzVector *lMcVec);
 bool passEtaCut(float eta, int BinEta);
 bool Sampling(int const pid, TF1 *f_pHPhy,float CosThetaStar);
@@ -73,7 +73,7 @@ TH1F *h_eta;
 
 TPythia6Decayer* pydecay;
 
-void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000) // pid = 0 for Lambda, 1 for anti-Lambda
+void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 1000000, int counter = 0) // pid = 0 for Lambda, 1 for anti-Lambda
 {
   int const BinPt    = vmsa::BinPt;
   int const BinY     = vmsa::BinY;
@@ -148,7 +148,7 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
   cout << "=> processing data: 100%" << endl;
   cout << "work done!" << endl;
 
-  write(energy,pid);
+  write(energy,pid,counter);
 
   stopWatch->Stop();   
   stopWatch->Print();
@@ -262,13 +262,13 @@ void getKinematics(TLorentzVector& lLambda, double const mass)
 {
   double const pt = f_spec->GetRandom(vmsa::ptMin, vmsa::ptMax);
   double const eta = h_eta->GetRandom();
-  // f_flow->ReleaseParameter(0);
-  // f_flow->SetParameter(0,f_v2->Eval(pt));
-  // double const phi = f_flow->GetRandom();
+  f_flow->ReleaseParameter(0);
+  f_flow->SetParameter(0,f_v2->Eval(pt));
+  double const phi = f_flow->GetRandom();
 
   // double const pt = gRandom->Uniform(vmsa::ptMin, vmsa::ptMax);
   // double const eta = gRandom->Uniform(-5.0*vmsa::acceptanceRapidity, 5.0*vmsa::acceptanceRapidity);
-  double const phi = TMath::TwoPi() * gRandom->Rndm();
+  // double const phi = TMath::TwoPi() * gRandom->Rndm();
 
   lLambda.SetPtEtaPhiM(pt,eta,phi,mass);
 }
@@ -399,9 +399,9 @@ bool Sampling(int const pid, TF1 *f_pHPhy,float CosThetaStar)
   return !(gRandom->Rndm() > f_pHPhy->Eval(CosThetaStar)/wMax);
 }
 
-void write(int energy, int pid)
+void write(int energy, int pid, int counter)
 {
-  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McLambdaEta_%d.root",vmsa::mBeamEnergy[energy].c_str(),pid);
+  string OutPutFile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Phi/MonteCarlo/McLambdaEta_%d_%d.root",vmsa::mBeamEnergy[energy].c_str(),pid,counter);
   TFile *File_OutPut = new TFile(OutPutFile.c_str(),"RECREATE");
   File_OutPut->cd();
 
