@@ -53,13 +53,14 @@ void plotMcPhiEta()
   float err = f_rho->GetParError(0);
   float Norm = f_rho->GetParameter(1);
 
-  TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
-  TH1F *h_CosKaon[20], *h_CosPhi[20];
-  float Norm_Kaon[20], Norm_Phi[20];
-  float rho_Kaon[20], rho_Phi[20];
-  float err_Kaon[20], err_Phi[20];
+  TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20], *h_CosEtaKOnly[20];
+  TH1F *h_CosKaon[20], *h_CosPhi[20], *h_CosKOnly[20];
+  float Norm_Kaon[20], Norm_Phi[20], Norm_KOnly[20];
+  float rho_Kaon[20], rho_Phi[20], rho_KOnly[20];
+  float err_Kaon[20], err_Phi[20], err_KOnly[20];
   TGraphAsymmErrors *g_Kaon = new TGraphAsymmErrors();
   TGraphAsymmErrors *g_Phi = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_KOnly = new TGraphAsymmErrors();
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
     string HistName;
@@ -126,11 +127,45 @@ void plotMcPhiEta()
     Norm_Phi[i_eta] = f_rhoPhi->GetParameter(1);
     g_Phi->SetPoint(i_eta,vmsa::McEtaBin[i_eta],rho_Phi[i_eta]);
     g_Phi->SetPointError(i_eta,0.0,0.0,err_Phi[i_eta],err_Phi[i_eta]);
+
+    HistName = Form("h_CosEtaKOnly_%d",i_eta);
+    h_CosEtaKOnly[i_eta] = (TH2F*)File_InPut->Get(HistName.c_str());
+    HistName = Form("h_CosKOnly_%d",i_eta);
+    h_CosKOnly[i_eta] = (TH1F*)h_CosEtaKOnly[i_eta]->ProjectionY(HistName.c_str());
+    h_CosKOnly[i_eta]->SetTitle("");
+    h_CosKOnly[i_eta]->SetStats(0);
+    h_CosKOnly[i_eta]->GetXaxis()->SetTitle("cos(#theta*)");
+    h_CosKOnly[i_eta]->GetXaxis()->CenterTitle();
+    h_CosKOnly[i_eta]->GetXaxis()->SetLabelSize(0.04);
+    h_CosKOnly[i_eta]->GetXaxis()->SetNdivisions(505);
+
+    h_CosKOnly[i_eta]->GetYaxis()->SetTitle("Counts");
+    h_CosKOnly[i_eta]->GetYaxis()->SetTitleSize(0.04);
+    h_CosKOnly[i_eta]->GetYaxis()->CenterTitle();
+    h_CosKOnly[i_eta]->GetYaxis()->SetLabelSize(0.04);
+    h_CosKOnly[i_eta]->GetYaxis()->SetNdivisions(505);
+    h_CosKOnly[i_eta]->GetYaxis()->SetRangeUser(0.9*h_CosKOnly[i_eta]->GetMinimum(),1.1*h_CosKOnly[i_eta]->GetMaximum());
+
+    h_CosKOnly[i_eta]->SetMarkerStyle(24);
+    h_CosKOnly[i_eta]->SetMarkerSize(1.1);
+    h_CosKOnly[i_eta]->SetMarkerColor(2);
+    h_CosKOnly[i_eta]->SetLineColor(2);
+    TF1 *f_rhoKOnly = new TF1("f_rhoKOnly",SpinDensity,-1.0,1.0,2);
+    f_rhoKOnly->SetParameter(0,0.33);
+    f_rhoKOnly->SetParameter(1,100);
+    h_CosKOnly[i_eta]->Fit(f_rhoKOnly,"NQ");
+    rho_KOnly[i_eta] = f_rhoKOnly->GetParameter(0);
+    err_KOnly[i_eta] = f_rhoKOnly->GetParError(0);
+    Norm_KOnly[i_eta] = f_rhoKOnly->GetParameter(1);
+    g_KOnly->SetPoint(i_eta,vmsa::McEtaBin[i_eta],rho_KOnly[i_eta]);
+    g_KOnly->SetPointError(i_eta,0.0,0.0,err_KOnly[i_eta],err_KOnly[i_eta]);
   }
   g_Kaon->SetPoint(20,8.0,rho);
   g_Kaon->SetPointError(20,0.0,0.0,err,err);
   g_Phi->SetPoint(20,8.0,rho);
   g_Phi->SetPointError(20,0.0,0.0,err,err);
+  g_KOnly->SetPoint(20,8.0,rho);
+  g_KOnly->SetPointError(20,0.0,0.0,err,err);
 
   TCanvas *c_EtaCutEff = new TCanvas("c_EtaCutEff","c_EtaCutEff",10,10,1600,800);
   c_EtaCutEff->Divide(2,1);
@@ -170,8 +205,6 @@ void plotMcPhiEta()
   plotTopLegend((char*)printRhoPhi.c_str(),0.2,0.70,0.04,1,0.0,42,1);
   c_EtaCutEff->SaveAs("../figures/c_phiEtaCutEff.eps");
 
-
-
   TCanvas *c_rhoEta = new TCanvas("c_rhoEta","c_rhoEta",10,10,800,800);
   c_rhoEta->cd()->SetLeftMargin(0.15);
   c_rhoEta->cd()->SetBottomMargin(0.15);
@@ -200,29 +233,37 @@ void plotMcPhiEta()
   PlotLine(0.0,10.0,1.0/3.0,1.0/3.0,1,2,2);
 
   g_Kaon->SetMarkerStyle(24);
-  g_Kaon->SetMarkerColor(2);
+  g_Kaon->SetMarkerColor(4);
   g_Kaon->SetMarkerSize(1.4);
   g_Kaon->Draw("pE same");
 
-  g_Phi->SetMarkerStyle(24);
-  g_Phi->SetMarkerColor(4);
+  g_Phi->SetMarkerStyle(30);
+  g_Phi->SetMarkerColor(1);
   g_Phi->SetMarkerSize(1.4);
   g_Phi->Draw("pE same");
+
+  g_KOnly->SetMarkerStyle(26);
+  g_KOnly->SetMarkerColor(2);
+  g_KOnly->SetMarkerSize(1.4);
+  g_KOnly->Draw("pE same");
 
   TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->AddEntry(g_Kaon,"cut on K and #phi-meson","p");
+  leg->AddEntry(g_KOnly,"cut on K only","p");
   leg->AddEntry(g_Phi,"cut on #phi-meson only","p");
   leg->Draw("same");
   c_rhoEta->SaveAs("../figures/c_phiRhoEta.eps");
   
-  TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McRho_1.root","RECREATE");
+  TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McRho.root","RECREATE");
   File_OutPut->cd();
   h_rho->Write();
   g_Kaon->SetName("g_Kaon");
   g_Kaon->Write();
   g_Phi->SetName("g_Phi");
   g_Phi->Write();
+  g_KOnly->SetName("g_KOnly");
+  g_KOnly->Write();
   File_OutPut->Close();
 }
