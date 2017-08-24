@@ -25,13 +25,16 @@ void plotMcPhiEtaBoost()
   TFile *File_InPut = TFile::Open(InPutHist.c_str());
 
   TProfile *p_Cos2EtaKaon[25];
-  TGraphAsymmErrors *g_eta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_phiMc = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_phiAna = new TGraphAsymmErrors();
   for(int i_eta = 0; i_eta < 25; ++i_eta)
   {
     string HistName = Form("p_Cos2EtaKaon_%d",i_eta);
     p_Cos2EtaKaon[i_eta] = (TProfile*)File_InPut->Get(HistName.c_str());
 
-    g_eta->SetPoint(i_eta,McEtaBinFake[i_eta],McRhoFake[i_eta]);
+    g_phiMc->SetPoint(i_eta,McEtaBinFake[i_eta],p_Cos2EtaKaon[i_eta]->GetBinContent(1));
+    g_phiMc->SetPointError(i_eta,0.0,0.0,p_Cos2EtaKaon[i_eta]->GetBinError(1),p_Cos2EtaKaon[i_eta]->GetBinError(1));
+    g_phiAna->SetPoint(i_eta,McEtaBinFake[i_eta],McRhoFake[i_eta]);
   }
 
 
@@ -69,21 +72,35 @@ void plotMcPhiEtaBoost()
     p_Cos2EtaKaon[i_eta]->SetMarkerColor(kGray+2);
     p_Cos2EtaKaon[i_eta]->Draw("pE same");
   }
+  g_phiMc->SetMarkerStyle(24);
+  g_phiMc->SetMarkerSize(1.4);
+  g_phiMc->SetMarkerColor(4);
+  g_phiMc->Draw("pE same");
 
-  g_eta->SetMarkerStyle(24);
-  g_eta->SetMarkerSize(1.4);
-  g_eta->SetMarkerColor(2);
-  g_eta->SetLineColor(2);
-  g_eta->SetLineStyle(2);
-  g_eta->SetLineWidth(2);
-  g_eta->Draw("l same");
+
+  g_phiAna->SetMarkerStyle(24);
+  g_phiAna->SetMarkerSize(1.4);
+  g_phiAna->SetMarkerColor(2);
+  g_phiAna->SetLineColor(2);
+  g_phiAna->SetLineStyle(2);
+  g_phiAna->SetLineWidth(2);
+  g_phiAna->Draw("l same");
 
   TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->AddEntry(p_Cos2EtaKaon[0],"MC Simulation","p");
-  leg->AddEntry(g_eta,"Analytic Calculation","l");
+  leg->AddEntry(g_phiMc,"MonteCarlo Simulation","p");
+  leg->AddEntry(g_phiAna,"Analytic Calculation","l");
   leg->Draw("same");
 
   c_play->SaveAs("../figures/McPhiEtaBoost.eps");
+
+  TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McRhoBoost.root","RECREATE");
+  File_OutPut->cd();
+  g_phiMc->SetName("g_phiMc");
+  g_phiMc->Write();
+  g_phiAna->SetName("g_phiAna");
+  g_phiAna->Write();
+  File_OutPut->Close();
 }
