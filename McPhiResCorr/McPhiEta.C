@@ -38,7 +38,7 @@ bool passEtaCut(float eta, int BinEta);
 TH3F *h_Tracks;
 TH3F *h_Eta;
 TH2F *h_phiRP, *h_cosRP;
-TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20];
+TH2F *h_CosEtaKaon[20], *h_CosEtaPhi[20], *h_CosEta[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -65,6 +65,8 @@ void McPhiEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100000
     h_CosEtaKaon[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
     HistName = Form("h_CosEtaPhi_%d",i_eta);
     h_CosEtaPhi[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
+    HistName = Form("h_CosEta_%d",i_eta);
+    h_CosEta[i_eta] = new TH2F(HistName.c_str(),HistName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax,BinY,-1.0,1.0);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -282,7 +284,14 @@ void fill(TLorentzVector* lPhi, TLorentzVector const& lKplus, TLorentzVector con
     if( passEtaCut(Eta_lPhi,i_eta) ) h_CosEtaPhi[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
 
     if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) && passEtaCut(Eta_lPhi,i_eta) )
+    {
       h_CosEtaKaon[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+    }
+
+    if( passEtaCut(Eta_lKplus,i_eta) && passEtaCut(Eta_lKminus,i_eta) )
+    {
+      h_CosEta[i_eta]->Fill(Pt_lPhi,CosThetaStarRP);
+    }
   }
 }
 
@@ -319,6 +328,7 @@ void write(int energy)
   {
     h_CosEtaKaon[i_eta]->Write();
     h_CosEtaPhi[i_eta]->Write();
+    h_CosEta[i_eta]->Write();
   }
 
   File_OutPut->Close();
