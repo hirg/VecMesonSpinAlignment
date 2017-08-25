@@ -11,7 +11,8 @@
 #include "../Utility/draw.h"
 
 float const McEtaBinFake[17] = {0.001,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75,3.0,3.25,3.5,3.75,4.0};	
-float const McPhFake[17] = {1.2732,1.2604,1.2263,1.1815,1.1363,1.0972,1.0666,1.0443,1.0289,1.0185,1.0117,1.0073,1.0046,1.0028,1.0017,1.0011,1.0007};
+float const McSinFake[17] = {1.2732,1.2604,1.2263,1.1815,1.1363,1.0972,1.0666,1.0443,1.0289,1.0185,1.0117,1.0073,1.0046,1.0028,1.0017,1.0011,1.0007};
+float const McCosFake[17] = {1.5000,1.4700,1.3932,1.2983,1.21  ,1.1402,1.0904,1.0569,1.0353,1.0217,1.0133,1.0081,1.0049,1.0030,1.0018,1.0011,1.0007};
 
 void plotMcLambdaEtaBoost(int pid = 0)
 {
@@ -24,7 +25,10 @@ void plotMcLambdaEtaBoost(int pid = 0)
   p_cosRP = (TProfile*)File_InPut->Get("p_cosRP");
   p_sinRP = (TProfile*)File_InPut->Get("p_sinRP");
 
-  TGraphAsymmErrors *g_eta = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_LambdaMcSin = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_LambdaMcCos = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_LambdaAnaSin = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_LambdaAnaCos = new TGraphAsymmErrors();
   TProfile *p_cosInteDau[17];
   TProfile *p_sinInteDau[17];
   for(int i_eta = 0; i_eta < 17; ++i_eta)
@@ -32,11 +36,16 @@ void plotMcLambdaEtaBoost(int pid = 0)
     string ProName;
     ProName = Form("p_cosInteDau_%d",i_eta);
     p_cosInteDau[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+    g_LambdaMcCos->SetPoint(i_eta,McEtaBinFake[i_eta],p_cosInteDau[i_eta]->GetBinContent(1));
+    g_LambdaMcCos->SetPointError(i_eta,0.0,0.0,p_cosInteDau[i_eta]->GetBinError(1),p_cosInteDau[i_eta]->GetBinError(1));
+    g_LambdaAnaCos->SetPoint(i_eta,McEtaBinFake[i_eta],McCosFake[i_eta]*0.2);
 
     ProName = Form("p_sinInteDau_%d",i_eta);
     p_sinInteDau[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+    g_LambdaMcSin->SetPoint(i_eta,McEtaBinFake[i_eta],p_sinInteDau[i_eta]->GetBinContent(1));
+    g_LambdaMcSin->SetPointError(i_eta,0.0,0.0,p_sinInteDau[i_eta]->GetBinError(1),p_sinInteDau[i_eta]->GetBinError(1));
 
-    g_eta->SetPoint(i_eta,McEtaBinFake[i_eta],McPhFake[i_eta]*0.2);
+    g_LambdaAnaSin->SetPoint(i_eta,McEtaBinFake[i_eta],McSinFake[i_eta]*0.2);
   }
 
   TCanvas *c_PolaPt = new TCanvas("c_PolaPt","c_PolaPt",10,10,800,800);
@@ -115,6 +124,7 @@ void plotMcLambdaEtaBoost(int pid = 0)
     p_sinInteDau[i_eta]->SetMarkerColor(2);
     p_sinInteDau[i_eta]->Draw("pE same");
   }
+
   TLegend *legEta = new TLegend(0.4,0.6,0.8,0.8);
   legEta->SetBorderSize(0);
   legEta->SetFillColor(0);
@@ -149,39 +159,57 @@ void plotMcLambdaEtaBoost(int pid = 0)
   h_play->GetYaxis()->CenterTitle();
   h_play->GetYaxis()->SetLabelSize(0.04);
   h_play->GetYaxis()->SetNdivisions(505);
-  h_play->GetYaxis()->SetRangeUser(0.18,0.28);
+  h_play->GetYaxis()->SetRangeUser(0.19,0.4);
   h_play->Draw("pE");
   PlotLine(-0.05,4.1,0.2,0.2,1,2,2);
 
-  for(int i_eta = 0; i_eta < 17; ++i_eta)
-  {
-    // p_cosInteDau[i_eta]->SetMarkerStyle(20);
-    // p_cosInteDau[i_eta]->SetMarkerSize(1.4);
-    // p_cosInteDau[i_eta]->SetMarkerColor(kGray+2);
-    // p_cosInteDau[i_eta]->Draw("pE same");
+  g_LambdaMcCos->SetMarkerStyle(20);
+  g_LambdaMcCos->SetMarkerSize(1.4);
+  g_LambdaMcCos->SetMarkerColor(kGray+2);
+  g_LambdaMcCos->Draw("pE same");
 
-    // p_sinInteDau[i_eta]->Scale(1/0.2);
-    p_sinInteDau[i_eta]->SetMarkerStyle(20);
-    p_sinInteDau[i_eta]->SetMarkerSize(1.0);
-    p_sinInteDau[i_eta]->SetMarkerColor(kGray+2);
-    p_sinInteDau[i_eta]->Draw("pE same");
-  }
+  g_LambdaAnaCos->SetMarkerStyle(24);
+  g_LambdaAnaCos->SetMarkerSize(1.4);
+  g_LambdaAnaCos->SetMarkerColor(kGray+2);
+  g_LambdaAnaCos->SetLineColor(kGray+2);
+  g_LambdaAnaCos->SetLineWidth(2);
+  g_LambdaAnaCos->SetLineStyle(2);
+  g_LambdaAnaCos->Draw("l same");
 
-  g_eta->SetMarkerStyle(24);
-  g_eta->SetMarkerSize(1.4);
-  g_eta->SetMarkerColor(2);
-  g_eta->SetLineColor(2);
-  g_eta->SetLineWidth(2);
-  g_eta->SetLineStyle(2);
-  g_eta->Draw("l same");
+  g_LambdaMcSin->SetMarkerStyle(20);
+  g_LambdaMcSin->SetMarkerSize(1.4);
+  g_LambdaMcSin->SetMarkerColor(2);
+  g_LambdaMcSin->Draw("pE same");
+
+  g_LambdaAnaSin->SetMarkerStyle(24);
+  g_LambdaAnaSin->SetMarkerSize(1.4);
+  g_LambdaAnaSin->SetMarkerColor(2);
+  g_LambdaAnaSin->SetLineColor(2);
+  g_LambdaAnaSin->SetLineWidth(2);
+  g_LambdaAnaSin->SetLineStyle(2);
+  g_LambdaAnaSin->Draw("l same");
 
   TLegend *legEta = new TLegend(0.4,0.6,0.8,0.8);
   legEta->SetBorderSize(0);
   legEta->SetFillColor(0);
-  // legEta->AddEntry(p_cosRP,"#frac{3}{#alpha_{H}}<cos(#theta*)>","p");
-  legEta->AddEntry(p_sinInteDau[0],"MC Simulation","p");
-  legEta->AddEntry(g_eta,"Analytic Calculation","l");
+  legEta->AddEntry(g_LambdaMcCos,"MC cos","p");
+  legEta->AddEntry(g_LambdaAnaCos,"Analytic cos","l");
+  legEta->AddEntry(g_LambdaMcSin,"MC sin","p");
+  legEta->AddEntry(g_LambdaAnaSin,"Analytic sin","l");
   legEta->Draw("same");
   string outputPolaEta = Form("../figures/c_PolaEta_%s.eps",PID[pid].c_str());
   c_PolaEta->SaveAs(outputPolaEta.c_str());
+
+  TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McPHBoost.root","RECREATE");
+  File_OutPut->cd();
+  h_play->Write();
+  g_LambdaMcCos->SetName("g_LambdaMcCos");
+  g_LambdaMcCos->Write();
+  g_LambdaAnaCos->SetName("g_LambdaAnaCos");
+  g_LambdaAnaCos->Write();
+  g_LambdaMcSin->SetName("g_LambdaMcSin");
+  g_LambdaMcSin->Write();
+  g_LambdaAnaSin->SetName("g_LambdaAnaSin");
+  g_LambdaAnaSin->Write();
+  File_OutPut->Close();
 }

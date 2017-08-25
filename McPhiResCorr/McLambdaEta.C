@@ -61,10 +61,10 @@ TH3F *h_Tracks, *h_TracksProton, *h_TracksPion;
 TH3F *h_Eta;
 TH2F *h_phiRP, *h_cosRP;
 TProfile *p_cosRP, *p_sinRP;
-TProfile *p_cosDau[20],     *p_cosLambda[20];
-TProfile *p_cosInteDau[20], *p_cosInteLambda[20];
-TProfile *p_sinDau[20],     *p_sinLambda[20];
-TProfile *p_sinInteDau[20], *p_sinInteLambda[20];
+TProfile *p_cosDau[20],     *p_cosLambda[20],     *p_cosDauOnly[20];
+TProfile *p_cosInteDau[20], *p_cosInteLambda[20], *p_cosInteDauOnly[20];
+TProfile *p_sinDau[20],     *p_sinLambda[20],     *p_sinDauOnly[20];
+TProfile *p_sinInteDau[20], *p_sinInteLambda[20], *p_sinInteDauOnly[20];
 
 // sampling functions
 TF1 *f_v2, *f_spec, *f_flow, *f_EP;
@@ -112,6 +112,16 @@ void McLambdaEta(int energy = 6, int pid = 0, int cent = 0, int const NMax = 100
     p_sinLambda[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
     ProName = Form("p_sinInteLambda_%d",i_eta);
     p_sinInteLambda[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+
+    ProName = Form("p_cosDauOnly_%d",i_eta);
+    p_cosDauOnly[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    ProName = Form("p_cosInteDauOnly_%d",i_eta);
+    p_cosInteDauOnly[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
+
+    ProName = Form("p_sinDauOnly_%d",i_eta);
+    p_sinDauOnly[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),BinPt,vmsa::ptMin,vmsa::ptMax);
+    ProName = Form("p_sinInteDauOnly_%d",i_eta);
+    p_sinInteDauOnly[i_eta] = new TProfile(ProName.c_str(),ProName.c_str(),1,vmsa::McEtaBin[i_eta]-0.1,vmsa::McEtaBin[i_eta]+0.1);
   }
 
   f_flow = new TF1("f_flow",flowSample,-TMath::Pi(),TMath::Pi(),1);
@@ -370,6 +380,14 @@ void fill(int const pid, TLorentzVector* lLambda, TLorentzVector const& lProton,
       p_sinDau[i_eta]->Fill(Pt_Lambda,SinPhiStarRP);
       p_sinInteDau[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStarRP);
     }
+
+    if( passEtaCut(Eta_Proton,i_eta) && passEtaCut(Eta_Pion,i_eta) )
+    {
+      p_cosDauOnly[i_eta]->Fill(Pt_Lambda,CosThetaStarRP);
+      p_cosInteDauOnly[i_eta]->Fill(vmsa::McEtaBin[i_eta],CosThetaStarRP);
+      p_sinDauOnly[i_eta]->Fill(Pt_Lambda,SinPhiStarRP);
+      p_sinInteDauOnly[i_eta]->Fill(vmsa::McEtaBin[i_eta],SinPhiStarRP);
+    }
   }
 }
 
@@ -421,11 +439,15 @@ void write(int energy, int pid, int counter)
     p_cosInteDau[i_eta]->Write();
     p_cosLambda[i_eta]->Write();
     p_cosInteLambda[i_eta]->Write();
+    p_cosDauOnly[i_eta]->Write();
+    p_cosInteDauOnly[i_eta]->Write();
 
     p_sinDau[i_eta]->Write();
     p_sinInteDau[i_eta]->Write();
     p_sinLambda[i_eta]->Write();
     p_sinInteLambda[i_eta]->Write();
+    p_sinDauOnly[i_eta]->Write();
+    p_sinInteDauOnly[i_eta]->Write();
   }
 
   File_OutPut->Close();

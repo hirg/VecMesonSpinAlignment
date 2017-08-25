@@ -65,13 +65,6 @@ void plotMcPhiEtaBoost()
   h_play->Draw("pE");
   PlotLine(-0.5,9.5,1.0/3.0,1.0/3.0,1,2,2);
 
-  for(int i_eta = 0; i_eta < 25; ++i_eta)
-  {
-    p_Cos2EtaKaon[i_eta]->SetMarkerStyle(20);
-    p_Cos2EtaKaon[i_eta]->SetMarkerSize(1.4);
-    p_Cos2EtaKaon[i_eta]->SetMarkerColor(kGray+2);
-    p_Cos2EtaKaon[i_eta]->Draw("pE same");
-  }
   g_phiMc->SetMarkerStyle(24);
   g_phiMc->SetMarkerSize(1.4);
   g_phiMc->SetMarkerColor(4);
@@ -89,12 +82,11 @@ void plotMcPhiEtaBoost()
   TLegend *leg = new TLegend(0.4,0.6,0.8,0.8);
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
-  leg->AddEntry(p_Cos2EtaKaon[0],"MC Simulation","p");
   leg->AddEntry(g_phiMc,"MonteCarlo Simulation","p");
   leg->AddEntry(g_phiAna,"Analytic Calculation","l");
   leg->Draw("same");
 
-  c_play->SaveAs("../figures/McPhiEtaBoost.eps");
+  c_play->SaveAs("../figures/c_phiEtaBoost.eps");
 
   TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McRhoBoost.root","RECREATE");
   File_OutPut->cd();
