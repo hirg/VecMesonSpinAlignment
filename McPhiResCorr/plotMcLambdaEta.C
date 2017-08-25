@@ -20,22 +20,37 @@ void plotMcLambdaEta(int pid = 0)
   p_cosRP = (TProfile*)File_InPut->Get("p_cosRP");
   p_sinRP = (TProfile*)File_InPut->Get("p_sinRP");
 
-  TProfile *p_cosInteDau[20], *p_cosInteLambda[20];
-  TProfile *p_sinInteDau[20], *p_sinInteLambda[20];
+  TGraphAsymmErrors *g_Dau = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_Lambda = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_DauOnly = new TGraphAsymmErrors();
+  TProfile *p_cosInteDau[20], *p_cosInteLambda[20], *p_cosInteDauOnly[20];
+  TProfile *p_sinInteDau[20], *p_sinInteLambda[20], *p_sinInteDauOnly[20];
   for(int i_eta = 0; i_eta < 20; ++i_eta)
   {
     string ProName;
     ProName = Form("p_cosInteDau_%d",i_eta);
     p_cosInteDau[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+    g_Dau->SetPoint(i_eta,vmsa::McEtaBin[i_eta],p_cosInteDau[i_eta]->GetBinContent(1));
+    g_Dau->SetPointError(i_eta,0.0,0.0,p_cosInteDau[i_eta]->GetBinError(1),p_cosInteDau[i_eta]->GetBinError(1));
 
     ProName = Form("p_cosInteLambda_%d",i_eta);
     p_cosInteLambda[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+    g_Lambda->SetPoint(i_eta,vmsa::McEtaBin[i_eta],p_cosInteLambda[i_eta]->GetBinContent(1));
+    g_Lambda->SetPointError(i_eta,0.0,0.0,p_cosInteLambda[i_eta]->GetBinError(1),p_cosInteLambda[i_eta]->GetBinError(1));
+
+    ProName = Form("p_cosInteDauOnly_%d",i_eta);
+    p_cosInteDauOnly[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+    g_DauOnly->SetPoint(i_eta,vmsa::McEtaBin[i_eta],p_cosInteDauOnly[i_eta]->GetBinContent(1));
+    g_DauOnly->SetPointError(i_eta,0.0,0.0,p_cosInteDauOnly[i_eta]->GetBinError(1),p_cosInteDauOnly[i_eta]->GetBinError(1));
 
     ProName = Form("p_sinInteDau_%d",i_eta);
     p_sinInteDau[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
 
     ProName = Form("p_sinInteLambda_%d",i_eta);
     p_sinInteLambda[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
+
+    ProName = Form("p_sinInteDauOnly_%d",i_eta);
+    p_sinInteDauOnly[i_eta] = (TProfile*)File_InPut->Get(ProName.c_str());
   }
 
   TCanvas *c_PolaPt = new TCanvas("c_PolaPt","c_PolaPt",10,10,800,800);
@@ -104,33 +119,27 @@ void plotMcLambdaEta(int pid = 0)
   h_play->Draw("pE");
   PlotLine(0.0,10.0,0.0,0.0,1,2,2);
 
-  for(int i_eta = 0; i_eta < 20; ++i_eta)
-  {
-    p_cosInteLambda[i_eta]->SetMarkerStyle(20);
-    p_cosInteLambda[i_eta]->SetMarkerSize(1.4);
-    p_cosInteLambda[i_eta]->SetMarkerColor(kGray+2);
-    p_cosInteLambda[i_eta]->Draw("pE same");
+  g_Dau->SetMarkerStyle(24);
+  g_Dau->SetMarkerSize(1.4);
+  g_Dau->SetMarkerColor(4);
+  g_Dau->Draw("pE same");
 
-    p_cosInteDau[i_eta]->SetMarkerStyle(24);
-    p_cosInteDau[i_eta]->SetMarkerSize(1.4);
-    p_cosInteDau[i_eta]->SetMarkerColor(kGray+2);
-    p_cosInteDau[i_eta]->Draw("pE same");
+  g_DauOnly->SetMarkerStyle(26);
+  g_DauOnly->SetMarkerSize(1.4);
+  g_DauOnly->SetMarkerColor(2);
+  g_DauOnly->Draw("pE same");
 
-    p_sinInteLambda[i_eta]->SetMarkerStyle(21);
-    p_sinInteLambda[i_eta]->SetMarkerSize(1.4);
-    p_sinInteLambda[i_eta]->SetMarkerColor(kAzure-2);
-    // p_sinInteLambda[i_eta]->Draw("pE same");
+  g_Lambda->SetMarkerStyle(30);
+  g_Lambda->SetMarkerSize(1.4);
+  g_Lambda->SetMarkerColor(1);
+  g_Lambda->Draw("pE same");
 
-    p_sinInteDau[i_eta]->SetMarkerStyle(25);
-    p_sinInteDau[i_eta]->SetMarkerSize(1.4);
-    p_sinInteDau[i_eta]->SetMarkerColor(kAzure-2);
-    // p_sinInteDau[i_eta]->Draw("pE same");
-  }
   TLegend *legEta = new TLegend(0.4,0.6,0.8,0.8);
   legEta->SetBorderSize(0);
   legEta->SetFillColor(0);
-  legEta->AddEntry(p_cosInteDau[0],"cut on daughters and #Lambda","p");
-  legEta->AddEntry(p_cosInteLambda[0],"cut on #Lambda only","p");
+  legEta->AddEntry(g_Dau,"cut on daughters and #Lambda","p");
+  legEta->AddEntry(g_DauOnly,"cut on daughters","p");
+  legEta->AddEntry(g_Lambda,"cut on #Lambda only","p");
   legEta->Draw("same");
   string outputPolaEta = Form("../figures/c_PolaEta_%s.eps",PID[pid].c_str());
   c_PolaEta->SaveAs(outputPolaEta.c_str());
@@ -201,4 +210,15 @@ void plotMcLambdaEta(int pid = 0)
   h_EtaPPion->Draw("colz");
   string outputEtaPPi = Form("../figures/c_EtaPPi_%s.eps",PID[pid].c_str());
   c_EtaPPi->SaveAs(outputEtaPPi.c_str());
+  
+  TFile *File_OutPut = new TFile("/Users/xusun/Data/SpinAlignment/AuAu200GeV/MonteCarlo/McPH.root","RECREATE");
+  File_OutPut->cd();
+  h_play->Write();
+  g_Dau->SetName("g_Dau");
+  g_Dau->Write();
+  g_Lambda->SetName("g_Lambda");
+  g_Lambda->Write();
+  g_DauOnly->SetName("g_DauOnly");
+  g_DauOnly->Write();
+  File_OutPut->Close();
 }
