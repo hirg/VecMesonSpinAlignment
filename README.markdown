@@ -44,7 +44,7 @@
 > - custom defined fype used in `VecMesonSpinAlignment`
 
 ### PlotMacro
-> - macros to plot QA and final figures
+> - macros to plot QA and final figures for rho_00 vs energy with sysErrors
 
 ### figures
 > - place to save QA and final plots
