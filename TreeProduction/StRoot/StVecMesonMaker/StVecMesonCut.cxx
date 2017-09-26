@@ -267,26 +267,6 @@ bool StVecMesonCut::passTrackEP(StPicoTrack *track)
   return kTRUE;
 }
 
-bool StVecMesonCut::passTrackCut(StPicoTrack *track)
-{
-  if(!track) return kFALSE;
-
-  if(!passTrackBasic(track)) return kFALSE;
-
-  // dca cut for flow analysis: 1.0, 1.5 and 2.0
-  if(track->dca() > vmsa::mDcaTrMax)
-  {
-    return kFALSE;
-  }
-
-  // primary pt and momentum cut: PtMin = 0.15 for 200 GeV, PtMin = 0.2 for BES
-  if(!(track->pMom().perp() > vmsa::mPrimPtMin[mEnergy] && track->pMom().mag() < vmsa::mPrimMomMax))
-  {
-    return kFALSE;
-  }
-
-  return kTRUE;
-}
 //---------------------------------------------------------------------------------
 bool StVecMesonCut::passTrackPhi(StPicoTrack *track)
 {

@@ -20,11 +20,11 @@ namespace vmsa
   float const mSigScaleMap[NumBeamEnergy] = {1.0,1.0,1.0,1.9,1.0,1.0,1.0}; // 7.7 -- 200 GeV
   float const mDcaEPMax[NumBeamEnergy] = {1.0,1.0,1.0,1.0,1.0,1.0,3.0}; // for event plane reconstruction: 1.0 for BES, 3.0 for 200GeV
   float const mDcaTrMax = 1.0; // for pion, kaon, proton mDcaTrMax = 1.0 for flow
-  float const mDcaTrMax_phi = 2.0; // for phi meson mDcaTrMax = 2.0 to fill a tree and apply an additional cut
+  float const mDcaTrMax_phi = 3.0; // for phi meson mDcaTrMax = 2.0 to fill a tree and apply an additional cut
   int const mHitsDedxMin = 5;
   int const mHitsFitTPCMin = 15;
   int const mHitsMaxTPCMin = 0;
-  float const mHitsRatioTPCMin = 0.51;
+  float const mHitsRatioTPCMin = 0.52;
   float const mEtaMax = 1.0;
   float const mPrimPtMin[NumBeamEnergy] = {0.2,0.2,0.2,0.2,0.2,0.2,0.15}; // for event plane reconstruction and for pion, kaon, proton: 0.15 for 200 GeV, 0.2 for BES
   float const mGlobPtMin = 0.1; // for phi, Lambda, K0s
