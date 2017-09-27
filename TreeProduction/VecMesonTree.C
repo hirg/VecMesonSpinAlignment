@@ -1,5 +1,6 @@
 
 #include <TSystem>
+#include "TStopwatch.h"
 
 class StMaker;
 class StChain;
@@ -13,6 +14,8 @@ void VecMesonTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xus
   // Mode: 0 for re-center correction, 1 for shift correction, 2 for resolution calculation, 3 for phi meson
   // flag_ME: 0 for Same Event, 1 for Mixed Event
 
+  TStopwatch *stopWatch = new TStopwatch();
+  stopWatch->Start();
   Int_t nEvents = 10000000;
   // Int_t nEvents = 50000;
 
@@ -71,6 +74,9 @@ void VecMesonTree(const Char_t *inputFile="/project/projectdirs/starprod/rnc/xus
   cout << "****************************************** " << endl;
   cout << "total number of events  " << nEvents << endl;
   cout << "****************************************** " << endl;
+
+  stopWatch->Stop();
+  stopWatch->Print();
 
   delete chain;
 }

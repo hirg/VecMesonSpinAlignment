@@ -274,7 +274,7 @@ bool StVecMesonCut::passTrackPhi(StPicoTrack *track)
 
   if(!passTrackBasic(track)) return kFALSE;
 
-  // dca cut for flow analysis: 2.0
+  // dca cut for phi-meson TTree production: 3.0
   if(track->dca() > vmsa::mDcaTrMax_phi)
   {
     return kFALSE;
@@ -285,44 +285,6 @@ bool StVecMesonCut::passTrackPhi(StPicoTrack *track)
   {
     return kFALSE;
   }
-
-  return kTRUE;
-}
-
-bool StVecMesonCut::passTrackV0(StPicoTrack *track)
-{
-  if(!track) return kFALSE;
-
-  // nHitsFit cut
-  if(track->nHitsFit() < vmsa::mHitsFitTPCMin)
-  {
-    return kFALSE;
-  }
-
-  // nHitsRatio cut
-  if(track->nHitsMax() <= vmsa::mHitsMaxTPCMin)
-  {
-    return kFALSE;
-  }
-  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() < vmsa::mHitsRatioTPCMin)
-  {
-    return kFALSE;
-  }
-
-  // global pt and momentum cut: PtMin = 0.1
-  if(!(track->gMom().perp() > vmsa::mGlobPtMin && track->gMom().mag() < vmsa::mPrimMomMax))
-  {
-    return kFALSE;
-  }
-
-  /*
-  // eta cut
-  Float_t eta = track->gMom().pseudoRapidity();
-  if(fabs(eta) > vmsa::mEtaMax)
-  {
-    return kFALSE;
-  }
-  */
 
   return kTRUE;
 }
