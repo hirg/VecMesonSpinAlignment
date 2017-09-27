@@ -219,7 +219,7 @@ bool StVecMesonCut::passSigProntonCut(StPicoTrack* track, Float_t scale_nSigma_f
 bool StVecMesonCut::passTrackBasic(StPicoTrack *track)
 {
   // nHitsFit cut
-  if(track->nHitsFit() < vmsa::mHitsFitTPCMin)
+  if(track->nHitsFit() <= vmsa::mHitsFitTPCMin)
   {
     return kFALSE;
   }
@@ -229,7 +229,7 @@ bool StVecMesonCut::passTrackBasic(StPicoTrack *track)
   {
     return kFALSE;
   }
-  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() < vmsa::mHitsRatioTPCMin)
+  if((Float_t)track->nHitsFit()/(Float_t)track->nHitsMax() <= vmsa::mHitsRatioTPCMin)
   {
     return kFALSE;
   }

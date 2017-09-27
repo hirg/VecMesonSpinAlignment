@@ -312,8 +312,10 @@ void StVecMesonAna::MakePhi()
 	    )
 	  )
 	{
-	  Float_t eta_lTrack = lTrack.Eta();
-	  if(TMath::Abs(eta_lTrack) > 1.0) continue;
+	  // Float_t eta_lTrack = lTrack.Eta();
+	  // if(TMath::Abs(eta_lTrack) > 1.0) continue;
+	  Float_t rapidity_lTrack = lTrack.Rapidity();
+	  if(TMath::Abs(rapidity_lTrack) > 1.0) continue;
 
 	  Float_t InvMass_lTrack = lTrack.M();
 	  TVector3 vBetaPhi = -1.0*lTrack.BoostVector(); // get phi beta

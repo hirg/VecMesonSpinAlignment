@@ -409,24 +409,11 @@ void StVecMesonTree::MixEvent_Phi(Int_t Flag_ME, StPicoDst *pico, Int_t cent9, F
       Float_t scale_nSigma_factor = vmsa::mSigScaleMap[mEnergy];
       Float_t Polarity = static_cast<Float_t>(track->charge());
       Float_t momentum = track->pMom().mag();
-      Float_t Mass2_low;
-      Float_t Mass2_up;
-      if(momentum < 0.5)
-      {
-        Mass2_low = 0.4*0.4;
-	Mass2_up = 0.6*0.6;
-      }
-      if(momentum >= 0.5)
-      {
-	// Mass2_low = 0.277205 - 0.0812931*momentum;
-	// Mass2_up = 0.215517 + 0.076801*momentum;
-	Mass2_low = 0.19 - 0.06*momentum;
-	Mass2_up = 0.34 + 0.04*momentum;
-      }
+      Float_t Mass2_low = 0.1;
+      Float_t Mass2_up = 0.4;
 
       Int_t charge = 0; // k+
       if(Polarity < 0) charge = 1; // k-
-
 
       if(mVecMesonCut->passSigKaonCut(track,scale_nSigma_factor))
       {
