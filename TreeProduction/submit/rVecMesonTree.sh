@@ -15,6 +15,8 @@ if [ $# -eq 0 ]
       Name=$PID$SM$Energy
       cp ./run.csh ./run$Name$counter.csh
 
+      echo "sleep $(( $RANDOM % 600 ))" >> run$Name$counter.csh
+
       echo -n "root4star -b -q -x 'VecMesonTree.C(" >> run$Name$counter.csh
       echo -n '"'$item'",' >> run$Name$counter.csh
       echo -n $counter',' >> run$Name$counter.csh

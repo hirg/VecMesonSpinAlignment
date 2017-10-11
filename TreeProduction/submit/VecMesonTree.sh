@@ -15,14 +15,16 @@ if [ $# -eq 0 ]
       Name=$PID$SM$Energy
       cp ./run.csh ./run$Name$counter.csh
 
+      echo "sleep $(( $RANDOM % 600 ))" >> run$Name$counter.csh
+
       echo -n "root4star -b -q -x 'VecMesonTree.C(" >> run$Name$counter.csh
       echo -n '"'$item'",' >> run$Name$counter.csh
       echo -n $counter',' >> run$Name$counter.csh
 ###############################mode###################################
      # echo -n 0',' >> run$Name$counter.csh  # fill ReCenterPar mode
      # echo -n 1',' >> run$Name$counter.csh  # fill ShiftPar mode
-     # echo -n 2',' >> run$Name$counter.csh  # Resolution mode
-     echo -n 3',' >> run$Name$counter.csh  # Phi mode
+     echo -n 2',' >> run$Name$counter.csh  # Resolution mode
+     # echo -n 3',' >> run$Name$counter.csh  # Phi mode
 ###############################mode###################################
 
 #############################energy###################################
@@ -40,7 +42,7 @@ if [ $# -eq 0 ]
      # echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
 ###############################flag_ME###################################
 
-      qsub -hard -l projectio=1,scratchfree=500,h_cpu=12:00:00,h_vmem=1.8G -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
+      qsub -hard -l projectio=1,scratchfree=500,h_cpu=4:00:00,h_vmem=1.8G -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
 
       mv run$Name$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Script/
       let counter=counter+1;
