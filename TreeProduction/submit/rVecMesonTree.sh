@@ -8,7 +8,7 @@ if [ $# -eq 0 ]
     PID=Phi
     Energy=200GeV
     SM=SE
-    InPutList="./failed_"$Energy".list"
+    InPutList="./failed_${Energy}.list"
     counter=10000;
     for item in `cat $InPutList`
     do
@@ -42,11 +42,12 @@ if [ $# -eq 0 ]
      # echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
 ###############################flag_ME###################################
 
-      qsub -hard -l projectio=1,scratchfree=500,h_cpu=8:00:00,h_vmem=1.8G -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/re$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/re$Name$counter.err ./run$Name$counter.csh
+      sbatch -p shared-chos -t 3:00:00 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
 
       mv run$Name$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Script/
       let counter=counter+1;
     done
+    rm $InPutList
 
   else
     echo "Wrong number of parameters"
