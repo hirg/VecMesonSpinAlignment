@@ -46,8 +46,10 @@ then
   ls -d $OriginScript/*.csh | sort > $OriginROOT
 
   comm -13 $InPutList $OriginROOT > $OutPutROOT
-  sed -i 's/Script/SpinAlignment\/Resolution/g' $OutPutROOT
-  sed -i "s/runPhiSE${Energy}/file_${Energy}_Resolution_/g" $OutPutROOT
+  # sed -i 's/Script/SpinAlignment\/Resolution/g' $OutPutROOT # resolution mode
+  # sed -i "s/runPhiSE${Energy}/file_${Energy}_Resolution_/g" $OutPutROOT
+  sed -i 's/Script/SpinAlignment\/Phi\/Forest/g' $OutPutROOT # phi-meson production mode
+  sed -i "s/runPhi${SM}${Energy}/file_${Energy}_Phi_${SM}_/g" $OutPutROOT
   sed -i "s/csh/root/g" $OutPutROOT
 
   rm $InPutList

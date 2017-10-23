@@ -7,7 +7,7 @@ if [ $# -eq 0 ]
   then
     PID=Phi
     Energy=200GeV
-    SM=SE
+    SM=ME
     InPutList="./submit_"$Energy".list"
     counter=0;
     for item in `cat $InPutList`
@@ -23,8 +23,8 @@ if [ $# -eq 0 ]
 ###############################mode###################################
      # echo -n 0',' >> run$Name$counter.csh  # fill ReCenterPar mode
      # echo -n 1',' >> run$Name$counter.csh  # fill ShiftPar mode
-     echo -n 2',' >> run$Name$counter.csh  # Resolution mode
-     # echo -n 3',' >> run$Name$counter.csh  # Phi mode
+     # echo -n 2',' >> run$Name$counter.csh  # Resolution mode
+     echo -n 3',' >> run$Name$counter.csh  # Phi mode
 ###############################mode###################################
 
 #############################energy###################################
@@ -38,11 +38,11 @@ if [ $# -eq 0 ]
 ###############################energy###################################
 
 ###############################flag_ME###################################
-      echo 0')'"'" >> run$Name$counter.csh  # Same Event 
-     # echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
+      # echo 0')'"'" >> run$Name$counter.csh  # Same Event 
+     echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
 ###############################flag_ME###################################
 
-      sbatch -p shared-chos -t 3:00:00 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
+      sbatch -p shared-chos -t 18:00:00 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
 
       mv run$Name$counter.csh /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Script/
       let counter=counter+1;
