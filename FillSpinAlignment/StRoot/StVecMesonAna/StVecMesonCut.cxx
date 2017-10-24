@@ -45,6 +45,13 @@ bool StVecMesonCut::passTrackEP(TLorentzVector lTrack, Float_t dca)
   return kTRUE;
 }
 //---------------------------------------------------------------------------------
+bool StVecMesonCut::passTrackDCA(Float_t dcaA, Float_t dcaB) 
+{
+  if( !(fabs(dcaA) <= 2.0 && fabs(dcaB) <= 2.0) ) return kFALSE;
+
+  return kTRUE;
+}
+
 bool StVecMesonCut::passTrackEtaEast(TLorentzVector lTrack) // neg
 {
   Float_t eta = lTrack.Eta();

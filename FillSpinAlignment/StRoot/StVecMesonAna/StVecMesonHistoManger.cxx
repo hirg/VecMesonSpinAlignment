@@ -57,6 +57,9 @@ void StVecMesonHistoManger::Init(Int_t X_flag, Int_t mode) // 0 for Same Event, 
     h_mMass_Yields[KEY_Mass2_Yields] = new TH1F(KEY_Mass2_Yields.Data(),KEY_Mass2_Yields.Data(),200,vmsa::InvMass_low[mode],vmsa::InvMass_high[mode]);
     h_mMass_Yields[KEY_Mass2_Yields]->Sumw2();
   }
+
+  h_DcaA = new TH1F("h_DcaA","h_DcaA",100,-5.0,5.0);
+  h_DcaB = new TH1F("h_DcaB","h_DcaB",100,-5.0,5.0);
 }
 //-------------------------------------------------------------
 void StVecMesonHistoManger::Fill(Float_t pt, Int_t Cent9, Float_t CosThetaStar, Float_t Res2, Float_t InvMass, Double_t reweight, Int_t X_flag, Int_t mode)
@@ -100,6 +103,13 @@ void StVecMesonHistoManger::Fill(Float_t pt, Int_t Cent9, Float_t CosThetaStar, 
   TString KEY_Mass2_Yields = Form("Yields_Centrality_%d_EtaGap_0_%s_%s_SysErrors_0",Cent9,vmsa::mPID[mode].c_str(),Mode[X_flag].Data());
   h_mMass_Yields[KEY_Mass2_Yields]->Fill(InvMass,reweight);
 }
+
+void StVecMesonHistoManger::FillDCA(Float_t dcaA, Float_t dcaB)
+{
+  h_DcaA->Fill(dcaA);
+  h_DcaB->Fill(dcaB);
+}
+
 //-------------------------------------------------------------
 void StVecMesonHistoManger::Write(Int_t X_flag, Int_t mode)
 {
@@ -137,4 +147,7 @@ void StVecMesonHistoManger::Write(Int_t X_flag, Int_t mode)
       }
     }
   }
+
+  h_DcaA->Write();
+  h_DcaB->Write();
 }

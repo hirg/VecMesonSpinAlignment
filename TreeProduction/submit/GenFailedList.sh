@@ -6,7 +6,7 @@ date
 if [ $# -eq 0 ]
 then
   Energy=200GeV
-  SM=SE
+  SM=ME
 
   OutPutList="/global/homes/x/xusun/STAR/VecMesonSpinAlignment/TreeProduction/submit/failed_"$Energy".list"
   rm $OutPutList
@@ -14,7 +14,7 @@ then
 
   LogDirectory="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Log"
   InPutList="./completed_"$Energy".log"
-  grep -l "Work done" $LogDirectory/*.log > $InPutList
+  grep -l "Work done" $LogDirectory/*${SM}*.log > $InPutList
 
   sed -i 's/Log/Script/g' $InPutList
   sed -i 's/job/run/g' $InPutList
@@ -43,7 +43,7 @@ then
   OutPutROOT="/global/homes/x/xusun/STAR/VecMesonSpinAlignment/TreeProduction/submit/deleteROOT_"$Energy".list"
   OriginROOT="/global/homes/x/xusun/STAR/VecMesonSpinAlignment/TreeProduction/submit/originROOT_"$Energy".list"
   OriginScript="/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu$Energy/Script"
-  ls -d $OriginScript/*.csh | sort > $OriginROOT
+  ls -d $OriginScript/*${SM}*.csh | sort > $OriginROOT
 
   comm -13 $InPutList $OriginROOT > $OutPutROOT
   # sed -i 's/Script/SpinAlignment\/Resolution/g' $OutPutROOT # resolution mode

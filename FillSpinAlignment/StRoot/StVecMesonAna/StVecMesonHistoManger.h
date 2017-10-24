@@ -16,6 +16,7 @@ class StVecMesonHistoManger
 
     void Init(Int_t X_flag, Int_t mode);
     void Fill(Float_t pt, Int_t Cent9, Float_t CosThetaStar, Float_t Res2, Float_t Mass2, Double_t reweight, Int_t X_flag, Int_t mode);
+    void FillDCA(Float_t,Float_t);
     void Write(Int_t X_flag, Int_t mode);
 
   private:
@@ -34,6 +35,8 @@ class StVecMesonHistoManger
     // event plane resolution correction
     // centrality: 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
     TH1FMap h_mMass_Yields;
+
+    TH1F *h_DcaA, *h_DcaB;
 
   ClassDef(StVecMesonHistoManger,1)
 };

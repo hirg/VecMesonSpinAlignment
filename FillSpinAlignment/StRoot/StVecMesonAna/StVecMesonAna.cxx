@@ -312,6 +312,10 @@ void StVecMesonAna::MakePhi()
 	    )
 	  )
 	{
+	  if( !(mVecMesonCut->passTrackDCA(dcaA,dcaB)) ) continue;
+
+	  mVecMesonHistoManger->FillDCA(dcaA,dcaB); // fill QA for dcaA and dcaB
+
 	  // Float_t eta_lTrack = lTrack.Eta();
 	  // if(TMath::Abs(eta_lTrack) > 1.0) continue;
 	  Float_t rapidity_lTrack = lTrack.Rapidity();

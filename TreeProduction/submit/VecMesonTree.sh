@@ -7,7 +7,7 @@ if [ $# -eq 0 ]
   then
     PID=Phi
     Energy=200GeV
-    SM=ME
+    SM=SE
     InPutList="./submit_"$Energy".list"
     counter=0;
     for item in `cat $InPutList`
@@ -38,8 +38,8 @@ if [ $# -eq 0 ]
 ###############################energy###################################
 
 ###############################flag_ME###################################
-      # echo 0')'"'" >> run$Name$counter.csh  # Same Event 
-     echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
+      echo 0')'"'" >> run$Name$counter.csh  # Same Event 
+     # echo 1')'"'" >> run$Name$counter.csh  # Mixed Event
 ###############################flag_ME###################################
 
       sbatch -p shared-chos -t 18:00:00 -o /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.log -e /global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/job$Name$counter.err ./run$Name$counter.csh
