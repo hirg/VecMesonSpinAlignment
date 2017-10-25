@@ -1,4 +1,5 @@
 #include <TSystem>
+#include "TStopwatch.h"
 
 void FillSpinAlignment(const Int_t energy = 6, const Int_t X_flag = 1, const Int_t List = 0, const Long64_t start_event = 0, const Long64_t stop_event = 1024, const Int_t mode = 0)
 {
@@ -6,6 +7,9 @@ void FillSpinAlignment(const Int_t energy = 6, const Int_t X_flag = 1, const Int
   // X_flag: 0 for Same Event, 1 for Mixed Event
   // List: different number for different TTree list
   // mode: 0 for phi meson, 1 for K*, 2 for K0S
+
+  TStopwatch *stopWatch = new TStopwatch();
+  stopWatch->Start();
 
   gSystem->Load("StRefMultCorr");
   // gSystem->Load("StPicoDstMaker");
@@ -22,5 +26,8 @@ void FillSpinAlignment(const Int_t energy = 6, const Int_t X_flag = 1, const Int
   mVecMesonAna->Make();
   mVecMesonAna->Finish();
 
-//  cout << "End of the Calculation!!" << endl;
+  stopWatch->Stop();
+  stopWatch->Print();
+
+  cout << "End of the Calculation!!" << endl;
 }

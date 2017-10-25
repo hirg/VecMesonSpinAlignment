@@ -116,7 +116,7 @@ namespace vmsa
   std::string const Centrality[9] = {"70%-80%","60%-70%","50%-60%","40%-50%","30%-40%","20%-30%","10%-20%","5%-10%","0%-5%"}; // Centrality bin
   int const Cent_Total = 5;
   int const Cent_start = 0;
-  int const Cent_stop  = 5;
+  int const Cent_stop  = 1;
   int const cent_low[5] = {2,0,7,4,0}; // 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
   int const cent_up[5]  = {5,8,8,6,3}; // 0 = 20%-60%, 1 = 0-80%, 2 = 0-10%, 3 = 10-40%, 4 = 40-80%
   int const Cent_QA    = 0;
@@ -141,7 +141,7 @@ namespace vmsa
   int const Sys_QA    = 0;
 
   int const Norm_start = 0;
-  int const Norm_stop  = 3;
+  int const Norm_stop  = 1;
   int const Norm_QA    = 2;
 
   std::string const mInteMethod[2] = {"Count","Inte"};

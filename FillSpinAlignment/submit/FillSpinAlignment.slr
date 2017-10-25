@@ -1,0 +1,91 @@
+#!/bin/bash
+
+#SBATCH -t 23:25:00   --ntasks=3 --account nstaff
+
+# Pick one of the following lines to toggle: chos or shifter or Cori
+# (toggle  '#-SBATCH' vs. '#SBATCH'  )
+#-SBATCH -J star-chos -p shared-chos 
+#SBATCH -J star-shift -p shared --image=custom:pdsf-sl64-star:v3
+#-SBATCH -J star-cori -p debug -N1 --image=custom:pdsf-sl64-star:v6  -C haswell
+
+echo "start-A "`hostname`" in PWD="`pwd`
+
+startSkew=600 # (seconds), random delay for task
+nsleep=$(($RANDOM % $startSkew))
+echo nsleep=$nsleep
+sleep $nsleep
+
+#tasks script to be executed
+job_sh=FillSpinAlignment.csh
+
+# export energy=0  # 7.7GeV
+# export energy=1  # 11.5GeV
+# export energy=2  # 19.6GeV
+# export energy=3  # 27GeV
+# export energy=4  # 39GeV
+# export energy=5  # 62.4GeV
+export energy=6  # 200GeV
+
+export flag_ME=0  # Same Event 
+export SM=SE
+# export flag_ME=1  # Mixed Event
+# export SM=ME
+
+export startEvent=0
+export stopEvent=1000000000
+# export stopEvent=100024 # test mode
+
+export mode=0 # phi-meson
+
+export Energy=200GeV
+# use data from the submit_$Energy.list
+export STAR_VER=pro
+
+kD=$SLURM_ARRAY_TASK_ID
+echo pick list $kD from $SM List
+
+export LOG_PATH=/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu${Energy}/Log/SLURM
+mkdir -p $LOG_PATH
+echo write FillSpinAlignment logs to  $LOG_PATH
+
+# pick STAR library you want to use
+export EXEC_NAME=root4star
+
+# prepare sandbox - it is done for you by SLURM
+export WRK_DIR=$SLURM_TMP
+
+# used code must be copied to the sandbox
+# optional:
+# it is safer to copy all code to the sandbox, so job still runs fine even if you recompile your local code 
+codeDir=/global/homes/x/xusun/STAR/VecMesonSpinAlignment/
+
+echo Prepare a local copy of binaries
+time( cp -rpL FillSpinAlignment.csh $WRK_DIR ; cp -rpL $codeDir  $WRK_DIR )
+
+echo run job in STAR_VER=$STAR_VER  WRK_DIR=$WRK_DIR
+echo see vCores=$SLURM_CPUS_ON_NODE
+
+ls -l  ${job_sh}
+ls -l ${WRK_DIR}/VecMesonSpinAlignment/FillSpinAlignment/
+if [[ $SLURM_JOB_PARTITION == *"-chos" ]]
+then
+    echo  run-in-chos
+    CHOS=sl64 chos  $WRK_DIR/${job_sh}
+else
+    echo  run-in-shifter
+    # minor operation allowing to jump into tcsh inside shifter image
+    unset MODULE_VERSION_STACK
+    unset MODULE_VERSION
+    unset MODULEPATH MODULESHOME
+    unset LOADEDMODULES PRGENVMODULES
+    shifter   --volume=/global/project:/project   /bin/tcsh $WRK_DIR/${job_sh}
+fi
+echo end-A-slurm-job
+
+# mv slurm log to final destination 
+if [ -z ${SLURM_ARRAY_JOB_ID+x} ]; then 
+  mv slurm-${SLURM_JOB_ID}.out $LOG_PATH
+else 
+  mv slurm-${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.out $LOG_PATH
+fi
+
