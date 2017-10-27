@@ -142,7 +142,7 @@ namespace vmsa
 
   int const Norm_start = 0;
   int const Norm_stop  = 1;
-  int const Norm_QA    = 2;
+  int const Norm_QA    = 0;
 
   std::string const mInteMethod[2] = {"Count","Inte"};
   int const Method_start = 0;
@@ -151,8 +151,8 @@ namespace vmsa
 
   float const nSigVecSys[3] = {2.0,2.5,3.0};
   int const Sig_start = 0;
-  int const Sig_stop  = 3;
-  int const Sig_QA    = 2;
+  int const Sig_stop  = 1;
+  int const Sig_QA    = 0;
 
   // used for systematic errors
   int const FuncParNum[4] = {5,6,6,6};

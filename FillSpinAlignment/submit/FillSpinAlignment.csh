@@ -46,5 +46,5 @@ endif
     echo `date`" Fire: $EXEC_NAME  [wiat]"
     cd ${WRK_DIR}/VecMesonSpinAlignment/FillSpinAlignment
     echo `pwd`
-    /usr/bin/time -v  $EXEC_NAME -b -q FillSpinAlignment.C\($energy,$flag_ME,${SLURM_ARRAY_TASK_ID},$startEvent,$stopEvent,$mode\) >& $LOG_PATH/phi${SM}${Energy}_${SLURM_ARRAY_TASK_ID}.log
+    /usr/bin/time -v  $EXEC_NAME -b -q FillSpinAlignment.C\($energy,$flag_ME,${SLURM_ARRAY_TASK_ID},$startEvent,$stopEvent,$mode\) >& $LOG_PATH/phi${SM}${Energy}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log
 

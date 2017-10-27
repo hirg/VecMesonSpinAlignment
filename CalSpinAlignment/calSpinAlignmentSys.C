@@ -22,7 +22,7 @@
 #endif
 
 
-void calSpinAlignmentSys(int energy = 3, int pid = 0, int year = 0)
+void calSpinAlignmentSys(int energy = 6, int pid = 0, int year = 0)
 {
   string inputfile = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/rho00/InvMassSubBg.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str());
   TFile *File_InPut = TFile::Open(inputfile.c_str());

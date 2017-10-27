@@ -18,11 +18,11 @@
 #include "../Utility/type.h"
 
 #ifndef _PlotQA_
-#define _PlotQA_  0
+#define _PlotQA_  1
 #endif
 
 #ifndef _SaveQA_
-#define _SaveQA_  1
+#define _SaveQA_  0
 #endif
 
 TF1* getSgFunc(int nFunc, int pid);
@@ -56,15 +56,15 @@ static float const FuncPar[3][4][3] = { // 0 for norm | 1 for funcs | 2 for para
 
 static float const normL = 5.0;
 static float const normR = 5.0;
-void subBackGround(int energy = 3, int pid = 0, int year = 0)
+void subBackGround(int energy = 6, int pid = 0, int year = 0)
 {
   TGaxis::SetMaxDigits(4);
   ROOT::Math::MinimizerOptions::SetDefaultMaxFunctionCalls(50000);
 
   string InPutFile_SE = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_SE_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  TFile *File_SE = TFile::Open(InPutFile_SE.c_str());
   
   string InPutFile_ME = Form("/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/%s/Yields/merged_file/Yields_ME_%s.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mPID[pid].c_str(),vmsa::mBeamEnergy[energy].c_str());
-  TFile *File_SE = TFile::Open(InPutFile_SE.c_str());
   TFile *File_ME = TFile::Open(InPutFile_ME.c_str());
 
   // read in histogram for same event and mixed event
