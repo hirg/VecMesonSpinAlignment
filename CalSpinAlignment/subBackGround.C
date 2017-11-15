@@ -394,13 +394,13 @@ void subBackGround(int energy = 6, int pid = 0, int year = 0)
 		// f_sg->SetParameter(3,ParFit_theta[KEY_theta][3]/7.0);
 		for(int i_par = 3; i_par < vmsa::FuncParNum[i_func]; ++i_par)
 		{
-		  // f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
-		  f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
+		  f_sg->SetParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
+		  // f_sg->FixParameter(i_par,ParFit_theta[KEY_theta][i_par]/7.0);
 		}
-		float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
-		float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
-		f_sg->SetRange(Fit_start,Fit_stop);
-		// f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
+		// float Fit_start = vmsa::InvMass[pid]-normL*vmsa::Width[pid];
+		// float Fit_stop  = vmsa::InvMass[pid]+normR*vmsa::Width[pid];
+		// f_sg->SetRange(Fit_start,Fit_stop);
+		f_sg->SetRange(vmsa::BW_Start[pid],vmsa::BW_Stop[pid]);
 		cout << "i_pt = " << i_pt << ", i_theta = " << i_theta << ", i_norm = " << i_norm << ", i_func = " << i_func << endl;
 		h_mMass_func[KEY_func]->Fit(f_sg,"MNRI");
 		ParFit[KEY_func].clear();
