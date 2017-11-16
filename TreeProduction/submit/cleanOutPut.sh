@@ -6,7 +6,8 @@ date
 if [ $# -eq 0 ]
   then
     Energy=200GeV
-    InPutList="./deleteROOT_${Energy}.list"
+    SM=SE
+    InPutList="./deleteROOT_${Energy}_${SM}.list"
     for item in `cat $InPutList`
     do
       rm $item

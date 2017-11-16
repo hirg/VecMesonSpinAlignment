@@ -47,5 +47,5 @@ endif
     echo `date`" Fire: $EXEC_NAME  [wiat]"
     cd ${WRK_DIR}/VecMesonSpinAlignment/TreeProduction
     echo `pwd`
-    /usr/bin/time -v  $EXEC_NAME -b -q VecMesonTree.C\(\"$daqN\",${SLURM_ARRAY_TASK_ID},$mode,$energy,$flag_ME\) >& $LOG_PATH/phi${Energy}_${SLURM_ARRAY_TASK_ID}.log
+    /usr/bin/time -v  $EXEC_NAME -b -q VecMesonTree.C\(\"$daqN\",${SLURM_ARRAY_TASK_ID},$mode,$energy,$flag_ME\) >& $LOG_PATH/phi${SM}${Energy}_${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}.log
 

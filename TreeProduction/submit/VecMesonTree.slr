@@ -20,8 +20,8 @@ job_sh=VecMesonTree.csh
 
 # export mode=0  # fill ReCenterPar mode
 # export mode=1  # fill ShiftPar mode
-export mode=2  # Resolution mode
-# export mode=3  # Phi mode
+# export mode=2  # Resolution mode
+export mode=3  # Phi mode
 
 # export energy=0  # 7.7GeV
 # export energy=1  # 11.5GeV
@@ -32,12 +32,15 @@ export mode=2  # Resolution mode
 export energy=6  # 200GeV
 
 export flag_ME=0  # Same Event 
+export SM=SE
 # export flag_ME=1  # Mixed Event
+# export SM=ME
 
 export Energy=200GeV
 # use data from the submit_$Energy.list
 export PATH_XRD=/global/homes/x/xusun/STAR/VecMesonSpinAlignment/TreeProduction/submit
 dataList=${PATH_XRD}/submit_${Energy}.list
+# dataList=${PATH_XRD}/failed_${Energy}_${SM}.list # resubmit mode
 export STAR_VER=pro
 
 kD=$(($SLURM_ARRAY_TASK_ID + 1))
